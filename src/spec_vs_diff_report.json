@@ -1,29 +1,95 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T19:20:06.131Z",
-  "summary": "The diff only modifies `project_state.json` and does not implement the requested frontend code or documentation changes. Both REQ-1 and REQ-2 remain unaddressed in the provided changes.",
+  "generatedAt": "2026-02-16T19:57:32.921Z",
+  "summary": "Routing/navigation for Settings and Admin appears to be implemented via TanStack Router navigation in Header and isolated /settings and /admin views, and Callaway chart default data was updated in the persistence layer. However, due to truncation, some acceptance criteria (notably localStorage migration behavior and exact chart ranges across all rows) cannot be fully verified. The diff also includes several unrelated UI/behavior changes (styling, leaderboard/event setup, scoring rule tweak) that were not requested.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults (update `getDefault18GridChart()` / `getDefault9GridChart()` grid and columnAdjustments).",
-      "reason": "No changes are shown to `frontend/src/lib/callaway/callawayChartPersistence.ts`; only `project_state.json` was modified, so the default chart values were not updated.",
+      "requirement": "Settings screen \"Back\" returns to the main scoring flow at /, and Settings is rendered at /settings (route isolation).",
+      "reason": "Header navigates to /settings, and SettingsView exposes an onBack callback, but the diff snippet does not show App.tsx wiring the /settings route to render SettingsView and connect its Back button to router navigation back to / (App.tsx routing section is truncated).",
       "evidence": [
-        "project_state.json"
+        "frontend/src/components/Header.tsx",
+        "frontend/src/features/settings/SettingsView.tsx",
+        "frontend/src/App.tsx (truncated)"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes (update `frontend/docs/callaway-chart-defaults.md`).",
-      "reason": "No changes are shown to `frontend/docs/callaway-chart-defaults.md`; only `project_state.json` was modified, so documentation was not updated.",
+      "requirement": "Admin screen routing behaviors: /admin renders Admin UI when enabled; /admin shows access-disabled message when disabled; Admin \"Back\" returns to /; Admin \"Open Settings\" navigates to /settings.",
+      "reason": "Header navigates to /admin and AdminView has onBack/onOpenSettings props plus an access-disabled state, but the diff snippet does not show App.tsx connecting these callbacks to TanStack Router navigation and rendering AdminView on /admin (App.tsx routing section is truncated).",
       "evidence": [
-        "project_state.json"
+        "frontend/src/components/Header.tsx",
+        "frontend/src/features/admin/AdminView.tsx",
+        "frontend/src/App.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Previously persisted invalid/old shipped defaults in localStorage do not continue to force incorrect chart values after the fix (while preserving intentional custom edits).",
+      "reason": "The file summary claims an 'automatic migration to remove old shipped defaults from localStorage', but the provided diff content for callawayChartPersistence.ts is truncated and does not show the migration/removal logic or how it distinguishes old shipped defaults from intentional user edits.",
+      "evidence": [
+        "frontend/src/lib/callaway/callawayChartPersistence.ts (truncated)",
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Displayed Callaway chart matches the specified documented/legacy defaults for both 18-hole and 9-hole ranges/values.",
+      "reason": "The 18-hole grid defaults and column adjustments are shown, but the mapping from this grid to the exact AC ranges (e.g., 70-75→0/0, 106-110→4/-2, etc.) cannot be fully verified from the truncated snippet; the 9-hole defaults are also truncated before completing the grid.",
+      "evidence": [
+        "frontend/src/lib/callaway/callawayChartPersistence.ts (truncated)"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.86,
+  "hallucinated_features": [
+    {
+      "description": "Changed Callaway scoring behavior to force 'when gross score is at or below course par, net score equals gross score' (scoring rule change beyond just correcting default chart values).",
+      "reason": "This is explicitly a non-goal ('Changing the Callaway scoring rules beyond correcting the chart default values') and is described as newly implemented in the diff summary.",
+      "evidence": [
+        "frontend-file-summaries.txt (entry for frontend/src/lib/callaway/callaway.ts)"
+      ]
+    },
+    {
+      "description": "Golf-themed global styling updates (OKLCH color system, custom fonts) and Tailwind config extensions.",
+      "reason": "Not requested by any requirement (routing + chart defaults only).",
+      "evidence": [
+        "frontend-file-summaries.txt (entries for frontend/src/index.css, frontend/tailwind.config.js)"
+      ]
+    },
+    {
+      "description": "Event setup and scoring-entry UX changes (e.g., blank default title, golfer count validation, scorecard layout, gross total display conditions).",
+      "reason": "Not requested by any requirement.",
+      "evidence": [
+        "frontend-file-summaries.txt (entries for frontend/src/features/eventSetup/EventSetupForm.tsx, frontend/src/features/scoreEntry/GolferScoreEntryList.tsx, frontend/src/features/scoreEntry/validation.ts)"
+      ]
+    },
+    {
+      "description": "Leaderboard and breakdown UI behavior changes (conditional title section, additional breakdown details, formatting changes, PDF download mentions).",
+      "reason": "Not requested by any requirement.",
+      "evidence": [
+        "frontend-file-summaries.txt (entries for frontend/src/features/leaderboard/LeaderboardView.tsx, frontend/src/features/leaderboard/LeaderboardTable.tsx, frontend/src/features/leaderboard/BreakdownPanel.tsx)"
+      ]
+    },
+    {
+      "description": "Added developer documentation file about chart defaults (callaway-chart-defaults.md).",
+      "reason": "Not requested by any requirement.",
+      "evidence": [
+        "frontend/docs/callaway-chart-defaults.md"
+      ]
+    }
+  ],
+  "confidence": 0.62,
   "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/docs/callaway-chart-defaults.md",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/features/admin/AdminView.tsx",
+    "frontend/src/features/settings/SettingsView.tsx",
+    "frontend/src/hooks/useAdminAccessEnabled.ts",
+    "frontend/src/lib/callaway/callawayChartPersistence.ts",
+    "frontend/src/state/adminAccess.ts",
     "project_state.json"
   ]
 }

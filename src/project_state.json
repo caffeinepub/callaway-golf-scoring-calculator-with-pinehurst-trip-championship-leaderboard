@@ -1,36 +1,41 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project to manage scoring setup using a Callaway Chart Editor, including promoting edited draft chart values to become the default scoring table.",
+  "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
-  "existing_features": [],
-  "new_feature_requests": [
+  "known_issues": [
+    "Admin button does not work (non-functional).",
+    "Settings button does not work (non-functional).",
+    "Callaway Chart values are incorrect."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
     {
-      "id": "AR-1",
-      "summary": "Add ability to copy edited values from the Callaway Chart Editor (draft) into the default table and set them as the new default values.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults.",
+      "id": "feature-fix-routing-so-the-header-settings-button-navigates-to-and-renders-the-settings-screen-and-the-settings-screen-back-button-returns-to-the-main-scoring-flow",
+      "title": "Fix routing so the Header \"Settings\" button navigates to and renders the Settings screen, and the Settings screen \"Back\" button returns to the main scoring flow.",
       "reqIds": [
         "REQ-1"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-3",
-      "summary": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes.",
+      "id": "feature-fix-routing-so-the-header-admin-button-when-admin-access-is-enabled-navigates-to-and-renders-the-admin-screen-including-correct-back-and-open-settings-navigation-behaviors",
+      "title": "Fix routing so the Header \"Admin\" button (when admin access is enabled) navigates to and renders the Admin screen, including correct \"Back\" and \"Open Settings\" navigation behaviors.",
       "reqIds": [
         "REQ-2"
       ],
-      "status": "pending"
+      "version": 1
+    },
+    {
+      "id": "feature-correct-the-shipped-default-callaway-chart-values-used-by-the-app-so-calculations-and-the-displayed-chart-match-the-documented-legacy-callaway-chart-defaults-for-both-9-hole-and-18-hole-rounds",
+      "title": "Correct the shipped/default Callaway Chart values used by the app so calculations and the displayed chart match the documented/legacy Callaway chart defaults for both 9-hole and 18-hole rounds.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
     }
   ],
-  "gameProjectType": "none",
+  "new_feature_requests": [],
   "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0

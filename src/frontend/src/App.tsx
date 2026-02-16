@@ -1,209 +1,134 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet, useNavigate } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventSetupForm } from './features/eventSetup/EventSetupForm';
 import { GolferScoreEntryList } from './features/scoreEntry/GolferScoreEntryList';
 import { LeaderboardView } from './features/leaderboard/LeaderboardView';
 import { SettingsView } from './features/settings/SettingsView';
 import { AdminView } from './features/admin/AdminView';
-import { type EventSetup, type GolferData, type CallawayResultData } from './state/eventTypes';
-import { calculateCallaway } from './lib/callaway/callaway';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import { validateGolferData } from './features/scoreEntry/validation';
-import { isAdminAccessEnabled } from './state/adminAccess';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ChevronLeft, Trophy, Settings, ShieldCheck } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { calculateCallaway } from './lib/callaway/callaway';
+import type { EventSetup, GolferData, CallawayResultData } from './state/eventTypes';
 
-type AppStep = 'setup' | 'entry' | 'leaderboard' | 'settings' | 'admin';
+const queryClient = new QueryClient();
 
-function App() {
-  const [step, setStep] = useState<AppStep>('setup');
-  const [eventSetup, setEventSetup] = useState<EventSetup | null>(null);
+// Scoring flow context
+interface ScoringFlowContextType {
+  currentStep: number;
+  eventSetup: EventSetup;
+  golfers: GolferData[];
+  results: CallawayResultData[];
+  handleEventSetup: (setup: EventSetup) => void;
+  handleScoresComplete: () => void;
+  handleStartOver: () => void;
+  setGolfers: (golfers: GolferData[]) => void;
+}
+
+// Root layout with Header and Footer
+function RootLayout() {
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <Outlet />
+      <Footer />
+    </div>
+  );
+}
+
+// Main scoring flow component
+function ScoringFlow() {
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [eventSetup, setEventSetup] = useState<EventSetup>({
+    title: '',
+    courseName: '',
+    golferCount: 4,
+    holeCount: 18,
+    coursePar: 72,
+  });
   const [golfers, setGolfers] = useState<GolferData[]>([]);
   const [results, setResults] = useState<CallawayResultData[]>([]);
-  const [calculationError, setCalculationError] = useState<string>('');
-  const [adminAccessEnabled, setAdminAccessEnabled] = useState(isAdminAccessEnabled());
 
-  // Check admin access state periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAdminAccessEnabled(isAdminAccessEnabled());
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleSetupComplete = (setup: EventSetup) => {
+  const handleEventSetup = (setup: EventSetup) => {
     setEventSetup(setup);
-    // Initialize golfer data
     const initialGolfers: GolferData[] = Array.from({ length: setup.golferCount }, (_, i) => ({
       id: `golfer-${i + 1}`,
       name: '',
       holeScores: Array(setup.holeCount).fill(''),
     }));
     setGolfers(initialGolfers);
-    setStep('entry');
+    setCurrentStep(2);
   };
 
-  const handleGolfersUpdate = (updatedGolfers: GolferData[]) => {
-    setGolfers(updatedGolfers);
-  };
-
-  const handleCalculate = () => {
-    if (!eventSetup) return;
-
-    setCalculationError('');
-
+  const handleScoresComplete = () => {
     // Validate all golfers
-    const validationErrors: string[] = [];
-    golfers.forEach((golfer, index) => {
+    for (const golfer of golfers) {
       const error = validateGolferData(golfer, eventSetup.holeCount);
       if (error) {
-        validationErrors.push(`Golfer ${index + 1}: ${error}`);
+        alert(error);
+        return;
       }
+    }
+
+    // Calculate results for each golfer
+    const calculatedResults: CallawayResultData[] = golfers.map((golfer) => {
+      const holeScores = golfer.holeScores.map((score) => parseInt(score, 10));
+      const callawayResult = calculateCallaway(holeScores, eventSetup.coursePar, eventSetup.holeCount);
+      
+      return {
+        id: golfer.id,
+        name: golfer.name,
+        gross: callawayResult.gross,
+        deduction: callawayResult.deduction,
+        adjustment: callawayResult.adjustment,
+        net: callawayResult.net,
+        chartRowLabel: callawayResult.chartRowLabel,
+        worstHolesUsed: callawayResult.worstHolesUsed,
+      };
     });
 
-    if (validationErrors.length > 0) {
-      setCalculationError(validationErrors.join('\n'));
-      return;
-    }
-
-    // Calculate Callaway scores
-    try {
-      const calculatedResults = golfers.map((golfer) => {
-        const scores = golfer.holeScores.map((s) => parseInt(s, 10));
-        const result = calculateCallaway(scores, eventSetup.coursePar, eventSetup.holeCount);
-        return {
-          id: golfer.id,
-          name: golfer.name,
-          gross: result.gross,
-          deduction: result.deduction,
-          adjustment: result.adjustment,
-          net: result.net,
-          chartRowLabel: result.chartRowLabel,
-          worstHolesUsed: result.worstHolesUsed,
-        };
-      });
-
-      setResults(calculatedResults);
-      setStep('leaderboard');
-    } catch (error) {
-      setCalculationError(
-        error instanceof Error ? error.message : 'An error occurred during calculation'
-      );
-    }
+    setResults(calculatedResults);
+    setCurrentStep(3);
   };
 
   const handleStartOver = () => {
-    setStep('setup');
-    setEventSetup(null);
+    setCurrentStep(1);
+    setEventSetup({
+      title: '',
+      courseName: '',
+      golferCount: 4,
+      holeCount: 18,
+      coursePar: 72,
+    });
     setGolfers([]);
     setResults([]);
-    setCalculationError('');
   };
 
-  const handleOpenSettings = () => {
-    setStep('settings');
-  };
-
-  const handleOpenAdmin = () => {
-    setStep('admin');
-  };
-
-  const handleBackFromSettings = () => {
-    setStep(eventSetup ? 'leaderboard' : 'setup');
-  };
-
-  const handleBackFromAdmin = () => {
-    setStep(eventSetup ? 'leaderboard' : 'setup');
-  };
-
-  // Display title with fallback for header
-  const displayTitle = eventSetup?.title || 'Callaway Golf Scoring';
+  const displayTitle = eventSetup.title.trim() || 'Callaway Scoring System';
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Trophy className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-serif font-bold text-foreground">
-                  {displayTitle}
-                </h1>
-                <p className="text-sm text-muted-foreground">Professional Tournament Scoring System</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {adminAccessEnabled && step !== 'admin' && (
-                <Button variant="outline" onClick={handleOpenAdmin} className="gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  Admin
-                </Button>
-              )}
-              {step !== 'settings' && (
-                <Button variant="outline" onClick={handleOpenSettings} className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Button>
-              )}
-              {step !== 'setup' && step !== 'settings' && step !== 'admin' && (
-                <Button variant="outline" onClick={handleStartOver} className="gap-2">
-                  <ChevronLeft className="h-4 w-4" />
-                  Start Over
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {step === 'setup' && (
-          <div className="max-w-2xl mx-auto">
-            <Card className="p-6">
-              <EventSetupForm onComplete={handleSetupComplete} />
-            </Card>
+    <>
+      <Header title={displayTitle} currentStep={currentStep} onStartOver={handleStartOver} />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        {currentStep === 1 && <EventSetupForm onComplete={handleEventSetup} />}
+        {currentStep === 2 && (
+          <GolferScoreEntryList
+            golfers={golfers}
+            holeCount={eventSetup.holeCount}
+            onUpdate={setGolfers}
+          />
+        )}
+        {currentStep === 2 && (
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={handleScoresComplete}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Calculate Results
+            </button>
           </div>
         )}
-
-        {step === 'entry' && eventSetup && (
-          <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-serif font-bold text-foreground">Enter Scores</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Record gross scores for each hole ({eventSetup.holeCount} holes, Par {eventSetup.coursePar})
-                </p>
-              </div>
-            </div>
-
-            {calculationError && (
-              <Alert variant="destructive">
-                <AlertDescription className="whitespace-pre-line">{calculationError}</AlertDescription>
-              </Alert>
-            )}
-
-            <GolferScoreEntryList
-              golfers={golfers}
-              holeCount={eventSetup.holeCount}
-              onUpdate={handleGolfersUpdate}
-            />
-
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setStep('setup')}>
-                Back to Setup
-              </Button>
-              <Button onClick={handleCalculate} size="lg" className="gap-2">
-                <Trophy className="h-4 w-4" />
-                Calculate Results
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === 'leaderboard' && eventSetup && (
+        {currentStep === 3 && (
           <LeaderboardView
             title={eventSetup.title}
             courseName={eventSetup.courseName}
@@ -212,37 +137,92 @@ function App() {
             holeCount={eventSetup.holeCount}
           />
         )}
-
-        {step === 'settings' && (
-          <SettingsView onBack={handleBackFromSettings} />
-        )}
-
-        {step === 'admin' && (
-          <AdminView onBack={handleBackFromAdmin} onOpenSettings={handleOpenSettings} />
-        )}
       </main>
+    </>
+  );
+}
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-sm text-muted-foreground">
-            <p>
-              © {new Date().getFullYear()} Built with ❤️ using{' '}
-              <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                  typeof window !== 'undefined' ? window.location.hostname : 'callaway-golf-app'
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                caffeine.ai
-              </a>
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
+// Settings route wrapper
+function SettingsRoute() {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate({ to: '/' });
+  };
+
+  return (
+    <>
+      <Header title="Callaway Scoring System" currentStep={0} onStartOver={() => {}} />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <SettingsView onBack={handleBack} />
+      </main>
+    </>
+  );
+}
+
+// Admin route wrapper
+function AdminRoute() {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate({ to: '/' });
+  };
+
+  const handleOpenSettings = () => {
+    navigate({ to: '/settings' });
+  };
+
+  return (
+    <>
+      <Header title="Callaway Scoring System" currentStep={0} onStartOver={() => {}} />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <AdminView onBack={handleBack} onOpenSettings={handleOpenSettings} />
+      </main>
+    </>
+  );
+}
+
+// Root route with layout
+const rootRoute = createRootRoute({
+  component: RootLayout,
+});
+
+// Index route (main scoring flow)
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/',
+  component: ScoringFlow,
+});
+
+// Settings route
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/settings',
+  component: SettingsRoute,
+});
+
+// Admin route
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: AdminRoute,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, settingsRoute, adminRoute]);
+
+const router = createRouter({ routeTree });
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   );
 }
 

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getChart } from '../../lib/callaway/callawayChart';
+import { getChart } from '../../lib/callaway/callawayChartPersistence';
 import { BookOpen } from 'lucide-react';
 
 interface CallawayChartSectionProps {

@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ShieldAlert, Settings as SettingsIcon, Info, Code2 } from 'lucide-react';
-import { isAdminAccessEnabled } from '../../state/adminAccess';
+import { useAdminAccessEnabled } from '../../hooks/useAdminAccessEnabled';
 import { CallawayChartEditor } from './CallawayChartEditor';
 
 interface AdminViewProps {
@@ -12,12 +11,7 @@ interface AdminViewProps {
 }
 
 export function AdminView({ onBack, onOpenSettings }: AdminViewProps) {
-  const [hasAccess, setHasAccess] = useState(isAdminAccessEnabled());
-
-  useEffect(() => {
-    // Check access on mount and when returning to this view
-    setHasAccess(isAdminAccessEnabled());
-  }, []);
+  const hasAccess = useAdminAccessEnabled();
 
   if (!hasAccess) {
     return (

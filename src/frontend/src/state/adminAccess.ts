@@ -18,11 +18,13 @@ export function isAdminAccessEnabled(): boolean {
 }
 
 /**
- * Set admin access enabled state
+ * Set admin access enabled state and emit change event
  */
 export function setAdminAccessEnabled(enabled: boolean): void {
   try {
     localStorage.setItem(ADMIN_ACCESS_KEY, enabled ? 'true' : 'false');
+    // Emit custom event for same-tab reactivity
+    window.dispatchEvent(new Event('admin-access-changed'));
   } catch (error) {
     console.error('Failed to save admin access setting:', error);
   }

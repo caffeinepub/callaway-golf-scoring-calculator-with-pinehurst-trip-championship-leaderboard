@@ -4,17 +4,17 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Settings, ShieldCheck } from 'lucide-react';
-import { isAdminAccessEnabled, setAdminAccessEnabled } from '../../state/adminAccess';
+import { setAdminAccessEnabled } from '../../state/adminAccess';
+import { useAdminAccessEnabled } from '../../hooks/useAdminAccessEnabled';
 
 interface SettingsViewProps {
   onBack: () => void;
 }
 
 export function SettingsView({ onBack }: SettingsViewProps) {
-  const [adminEnabled, setAdminEnabled] = useState(isAdminAccessEnabled());
+  const adminEnabled = useAdminAccessEnabled();
 
   const handleAdminToggle = (checked: boolean) => {
-    setAdminEnabled(checked);
     setAdminAccessEnabled(checked);
   };
 

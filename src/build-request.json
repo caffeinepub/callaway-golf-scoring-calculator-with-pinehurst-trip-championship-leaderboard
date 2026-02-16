@@ -1,54 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Promote draft Callaway Chart Editor values to code-based default grid charts",
+  "title": "Fix non-functional Admin/Settings navigation and correct Callaway chart defaults",
   "projectName": "Callaway Scoring",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults.",
+      "text": "Fix routing so the Header \"Settings\" button navigates to and renders the Settings screen, and the Settings screen \"Back\" button returns to the main scoring flow.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "copy the edited values from the Callaway Chart Editor in the draft  into the default table  and use those for the new default values"
+          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/src/lib/callaway/callawayChartPersistence.ts` functions `getDefault18GridChart()` and `getDefault9GridChart()` are updated so their `grid` and `columnAdjustments` values exactly match the edited values from the draft Callaway Chart Editor.",
-        "With a fresh browser profile (no existing localStorage keys for Callaway charts), the app loads using the updated default grid chart values for both 9-hole and 18-hole.",
-        "After clearing localStorage keys `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default` (and any active grid keys), using “Reset to Defaults” results in the updated code-based defaults being used/initialized."
+        "Clicking the Header \"Settings\" button changes the URL to /settings and the Settings UI is visible (not the main scoring-step UI).",
+        "Clicking \"Back\" on the Settings screen returns to / and shows the main scoring-step UI again.",
+        "Navigation uses the existing TanStack Router setup (no full page refresh)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes.",
+      "text": "Fix routing so the Header \"Admin\" button (when admin access is enabled) navigates to and renders the Admin screen, including correct \"Back\" and \"Open Settings\" navigation behaviors.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "copy the edited values from the Callaway Chart Editor in the draft  into the default table  and use those for the new default values"
+          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/docs/callaway-chart-defaults.md` references the updated defaults and clearly states that existing localStorage user-default charts must be cleared to see code-default changes take effect.",
-        "All user-facing documentation text is in English."
+        "When Admin Access is enabled in Settings, the Header shows an \"Admin\" button.",
+        "Clicking the Header \"Admin\" button changes the URL to /admin and the Admin UI is visible (not the main scoring-step UI).",
+        "On /admin, clicking \"Back\" returns to / and shows the main scoring-step UI.",
+        "On /admin, clicking \"Open Settings\" navigates to /settings and shows the Settings UI.",
+        "When Admin Access is disabled, visiting /admin shows the existing access-disabled message and the \"Open Settings\" button navigates to /settings."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Correct the shipped/default Callaway Chart values used by the app so calculations and the displayed chart match the documented/legacy Callaway chart defaults for both 9-hole and 18-hole rounds.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
+        ]
+      },
+      "acceptanceCriteria": [
+        "For 18 holes, the displayed Callaway chart matches these ranges/values: 70-75→worst holes 0 adj 0; 76-80→1 adj 0; 81-85→2 adj 0; 86-90→2 adj 0; 91-95→3 adj 0; 96-100→3 adj 0; 101-105→4 adj 0; 106-110→4 adj -2; 111-115→5 adj -2; 116-120→5 adj -2; 121-125→6 adj -2; 126-130→6 adj -2; 131-135→7 adj -2; 136+→8 adj -2.",
+        "For 9 holes, the displayed Callaway chart matches these ranges/values: 35-39→worst holes 0 adj 0; 40-43→1 adj 0; 44-47→2 adj 0; 48-54→2 adj -1; 55-59→3 adj -1; 60+→4 adj -1.",
+        "Callaway net score calculations use the same corrected chart values as the chart displayed in the UI.",
+        "Any previously persisted invalid/old shipped defaults in localStorage do not continue to force incorrect chart values after this fix (users can still keep intentional custom edits made via the Admin chart editor)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files under `frontend/src/components/ui` (read-only UI components).",
-    "Do not modify immutable hook/bootstrap files: `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`.",
-    "Keep changes limited to updating shipped default chart values and related documentation; do not introduce new persistence keys or storage mechanisms."
+    "Do not edit files under frontend/src/components/ui (shadcn components are read-only).",
+    "Do not edit immutable hook entrypoints listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx)."
   ],
   "nonGoals": [
-    "Do not add new admin features or new UI flows in the Callaway Chart Editor.",
-    "Do not change backend Motoko state, schemas, or scoring algorithms beyond using the updated default chart values.",
-    "Do not add third-party integrations or authentication changes."
+    "Adding new authentication providers or changing auth flows (Internet Identity only).",
+    "Adding real-time updates or websocket-based navigation/state sync.",
+    "Changing the Callaway scoring rules beyond correcting the chart default values and ensuring the UI uses them consistently."
   ],
   "imageRequirements": {
     "required": [],

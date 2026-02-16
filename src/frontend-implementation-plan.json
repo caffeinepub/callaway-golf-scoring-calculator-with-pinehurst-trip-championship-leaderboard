@@ -1,36 +1,121 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Promote draft Callaway Chart Editor grid values to shipped code defaults",
+  "title": "Fix Settings/Admin routing and correct Callaway chart defaults",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Update shipped code-based default 9- and 18-hole Callaway grid charts to exactly match the edited draft Callaway Chart Editor values so fresh loads and resets use the new defaults.",
+      "summary": "Fix TanStack Router wiring so Header Settings navigates to /settings and Settings Back returns to the main scoring UI at /.",
       "acceptanceCriteria": [
-        "`frontend/src/lib/callaway/callawayChartPersistence.ts` functions `getDefault18GridChart()` and `getDefault9GridChart()` are updated so their `grid` and `columnAdjustments` values exactly match the edited values from the draft Callaway Chart Editor.",
-        "With a fresh browser profile (no existing localStorage keys for Callaway charts), the app loads using the updated default grid chart values for both 9-hole and 18-hole.",
-        "After clearing localStorage keys `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default` (and any active grid keys), using “Reset to Defaults” results in the updated code-based defaults being used/initialized."
+        "Clicking the Header \"Settings\" button changes the URL to /settings and the Settings UI is visible (not the main scoring-step UI).",
+        "Clicking \"Back\" on the Settings screen returns to / and shows the main scoring-step UI again.",
+        "Navigation uses the existing TanStack Router setup (no full page refresh)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Replace the hard-coded return values in `getDefault18GridChart()` and `getDefault9GridChart()` so the `grid` cell values and `columnAdjustments` exactly match the draft Callaway Chart Editor’s edited charts (copy the finalized draft values verbatim into these functions). Ensure no new localStorage keys or persistence mechanisms are introduced, and keep existing resolution order (active/edited → user-default → hard-coded default) intact."
+          "description": "Refactor routing to render child routes via TanStack Router's Outlet (instead of always rendering the scoring flow), and move the main scoring-step UI into the index (/) route so /settings can render SettingsView exclusively while preserving scoring-flow state in a shared layout."
+        },
+        {
+          "path": "frontend/src/state/scoringFlowContext.tsx",
+          "operation": "create",
+          "description": "Add a scoring-flow React context/provider to hold the main scoring state (currentStep, eventSetup, golfers, results, and handlers) so the index route can render the main scoring-step UI while Settings/Admin routes render different screens without duplicating or losing scoring state."
+        },
+        {
+          "path": "frontend/src/routes/IndexScoringRoute.tsx",
+          "operation": "create",
+          "description": "Create the index route component that renders the main scoring-step UI using the scoring-flow context (EventSetupForm, GolferScoreEntryList, LeaderboardView), ensuring it only appears on / and not on /settings."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Ensure the Header Settings button uses TanStack Router navigation to /settings and remains compatible with the refactored layout/index routing (no full refresh)."
+        },
+        {
+          "path": "frontend/src/features/settings/SettingsView.tsx",
+          "operation": "modify",
+          "description": "Confirm SettingsView Back uses the passed handler to navigate to / (TanStack Router navigation from the route wrapper) and that the screen is fully self-contained when rendered as the /settings route."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Update default-values documentation to reflect the new shipped defaults and explain how existing localStorage can hide code-default changes.",
+      "summary": "Fix TanStack Router wiring so Header Admin navigates to /admin when enabled, with correct Back and Open Settings navigation and correct disabled-access behavior.",
       "acceptanceCriteria": [
-        "`frontend/docs/callaway-chart-defaults.md` references the updated defaults and clearly states that existing localStorage user-default charts must be cleared to see code-default changes take effect.",
-        "All user-facing documentation text is in English."
+        "When Admin Access is enabled in Settings, the Header shows an \"Admin\" button.",
+        "Clicking the Header \"Admin\" button changes the URL to /admin and the Admin UI is visible (not the main scoring-step UI).",
+        "On /admin, clicking \"Back\" returns to / and shows the main scoring-step UI.",
+        "On /admin, clicking \"Open Settings\" navigates to /settings and shows the Settings UI.",
+        "When Admin Access is disabled, visiting /admin shows the existing access-disabled message and the \"Open Settings\" button navigates to /settings."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/hooks/useAdminAccessEnabled.ts",
+          "operation": "create",
+          "description": "Create a small hook that returns a reactive Admin Access enabled boolean by subscribing to localStorage changes (and an in-app change signal) so Header/Admin screens update immediately when the setting is toggled."
+        },
+        {
+          "path": "frontend/src/state/adminAccess.ts",
+          "operation": "modify",
+          "description": "Augment the admin access setter to emit an in-app change notification (in addition to writing localStorage) so same-tab UI (Header/AdminView) updates immediately after toggling Admin Access in Settings."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Switch Header's admin visibility logic from a one-time localStorage read to the reactive admin-access hook so the Admin button appears/disappears immediately after toggling in Settings; keep navigation using TanStack Router to /admin."
+        },
+        {
+          "path": "frontend/src/features/settings/SettingsView.tsx",
+          "operation": "modify",
+          "description": "Update SettingsView to use the reactive admin-access hook (instead of only initializing from localStorage once) so the toggle and any dependent UI messaging reflect the latest enabled/disabled state."
+        },
+        {
+          "path": "frontend/src/features/admin/AdminView.tsx",
+          "operation": "modify",
+          "description": "Update AdminView to use the reactive admin-access hook (instead of only checking on mount) so /admin correctly shows either the admin panel or the access-disabled message, and ensure the provided onBack and onOpenSettings handlers are used for in-app route navigation."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure the /admin route renders via the router Outlet (after routing refactor) and that the Admin route wrapper passes Back (to /) and Open Settings (to /settings) handlers that use TanStack Router navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Correct shipped/default Callaway chart values and ensure both UI display and calculations use the corrected defaults, while preventing previously persisted old shipped defaults from overriding the fix.",
+      "acceptanceCriteria": [
+        "For 18 holes, the displayed Callaway chart matches these ranges/values: 70-75→worst holes 0 adj 0; 76-80→1 adj 0; 81-85→2 adj 0; 86-90→2 adj 0; 91-95→3 adj 0; 96-100→3 adj 0; 101-105→4 adj 0; 106-110→4 adj -2; 111-115→5 adj -2; 116-120→5 adj -2; 121-125→6 adj -2; 126-130→6 adj -2; 131-135→7 adj -2; 136+→8 adj -2.",
+        "For 9 holes, the displayed Callaway chart matches these ranges/values: 35-39→worst holes 0 adj 0; 40-43→1 adj 0; 44-47→2 adj 0; 48-54→2 adj -1; 55-59→3 adj -1; 60+→4 adj -1.",
+        "Callaway net score calculations use the same corrected chart values as the chart displayed in the UI.",
+        "Any previously persisted invalid/old shipped defaults in localStorage do not continue to force incorrect chart values after this fix (users can still keep intentional custom edits made via the Admin chart editor)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/callaway/callawayChart.ts",
+          "operation": "modify",
+          "description": "Verify and (if necessary) update the shipped legacy Callaway chart constants for 9- and 18-hole rounds to exactly match the documented/legacy default ranges/values required by acceptance."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "operation": "modify",
+          "description": "Adjust chart loading so the displayed chart and calculation chart use the corrected shipped legacy defaults when there is no valid user customization, and add a localStorage migration/cleanup that detects and removes previously persisted old shipped defaults so they do not keep overriding corrected defaults (while preserving intentional Admin editor customizations)."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callaway.ts",
+          "operation": "modify",
+          "description": "Ensure the Callaway net score calculation continues to derive its chart entry from the same corrected chart source used by the UI (via the persistence layer), so calculations and chart display remain consistent for both 9- and 18-hole rounds."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+          "operation": "modify",
+          "description": "Confirm the chart display pulls from the same corrected chart source (persistence layer) and renders ranges/values that match the updated shipped defaults for both 9- and 18-hole rounds."
+        },
+        {
           "path": "frontend/docs/callaway-chart-defaults.md",
           "operation": "modify",
-          "description": "Revise the documentation to state that the shipped (code-based) defaults now match the draft Callaway Chart Editor’s edited chart values, and add/strengthen guidance that existing localStorage values (including user-default keys like `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default`, plus any active grid keys) can mask code-default updates until cleared. Ensure all user-facing text remains in English."
+          "description": "Update developer documentation to reflect the corrected shipped defaults, clarify how the app now prevents old shipped defaults in localStorage from overriding corrected defaults, and describe how intentional Admin editor customizations remain preserved."
         }
       ]
     }

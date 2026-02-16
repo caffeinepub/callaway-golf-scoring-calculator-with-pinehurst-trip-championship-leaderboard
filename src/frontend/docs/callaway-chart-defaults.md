@@ -1,31 +1,18 @@
-# Editing Callaway Chart Default Values in Code
+# Callaway Chart Defaults - Developer Guide
 
-This document explains how to modify the default Callaway scoring chart values directly in the codebase and how to verify those changes appear in the running application.
+This document explains how to modify the default Callaway scoring chart values in code and how the app's persistence layer affects what users see.
 
-## Overview
+## Where Chart Defaults Are Defined
 
-The Callaway scoring system uses a chart that maps gross scores to "worst holes" deductions and adjustments. The app stores these charts in two formats:
-
-1. **Code-based defaults** - Hard-coded values that ship with the application
-2. **localStorage-persisted edits** - User modifications made through the Admin Panel
-
-**Important:** The app always uses the localStorage-persisted chart when present. Code changes to defaults will NOT appear until the persisted chart is cleared.
-
-## Where to Edit Code-Based Defaults
-
-### 18-Hole and 9-Hole Grid Charts
-
-The primary default charts are defined as grid data structures (13 rows × 5 columns):
-
+### 1. Grid Chart Defaults (Primary Source)
 **File:** `frontend/src/lib/callaway/callawayChartPersistence.ts`
 
-- **18-hole defaults:** `getDefault18GridChart()` function (lines 16-35)
-- **9-hole defaults:** `getDefault9GridChart()` function (lines 40-59)
+**Functions:**
+- `getDefault18GridChart()` - Returns the default 13x5 grid for 18-hole rounds
+- `getDefault9GridChart()` - Returns the default 13x5 grid for 9-hole rounds
 
-Each grid cell contains:
-- `grossScore`: The gross score value
-- `worstHoles`: Number of worst holes to deduct (supports 0.5 increments)
-
-Each grid also has `columnAdjustments`: An array of 5 adjustment values (one per column) applied to net scores.
+These functions define the shipped defaults in a grid format (13 rows × 5 columns) where:
+- Each cell contains a `grossScore` and `worstHoles` value
+- Each column has an associated `adjustment` value in the `columnAdjustments` array
 
 **Example structure:**

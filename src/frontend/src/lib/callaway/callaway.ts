@@ -1,5 +1,4 @@
-import { findChartEntry } from './callawayChart';
-import { formatChartRowLabel } from './callawayChartPersistence';
+import { findChartEntry, formatChartRowLabel } from './callawayChartPersistence';
 
 export interface CallawayResult {
   gross: number;
