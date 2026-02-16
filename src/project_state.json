@@ -1,41 +1,33 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project to ensure the production app displays the user-provided chart values by updating the backend chart data source to match the provided 13×11 table.",
-  "architectural_notes": [
-    "Production app chart values come from a hard-coded backend function (e.g., getBackendChart), which can differ from UI draft data unless updated."
-  ],
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [
-    "Chart values shown in the live app do not match the user-provided dataset or the draft because the backend is still using an old hard-coded chart."
+    "Version 21 backend update is causing incorrect calculations; user requested to undo/revert this change."
   ],
   "isFixRequest": true,
   "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Replace the hard-coded backend chart (getBackendChart) with the user-provided 13×11 table so production matches draft and provided values",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Replace the hard-coded backend Callaway chart in `backend/main.mo` (currently returned by `getBackendChart()`) with the user-provided 13-row dataset so that production calculations and chart values match the exact provided grossScore→holesToDeduct pairs (including 0.5 increments and placeholder cells with grossScore=0 / worstHoles=0).",
+      "summary": "Undo the Version 21 backend scoring change by fixing `backend/main.mo` so Callaway deductions are computed from the worst (highest) hole scores, including correct handling of fractional (0.5) holes.",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-3",
-      "summary": "Update backend chart exposure and lookup so that `getCallawayChart()` returns correct ranges and values for the updated chart, and scoring uses the same updated chart semantics (i.e., range-based matching rather than the current `grossScoreTo = lowerBound + 4` heuristic if it does not reflect the real chart groups).",
+      "id": "AR-2",
+      "summary": "Undo the Version 21 backend chart change by reverting the hard-coded `chart` data in `backend/main.mo` to the last known-correct production chart (removing placeholder rows/ranges that lead to incorrect lookups), and ensure `getCallawayChart()` returns the reverted chart exactly as used by backend calculations.",
       "reqIds": [
         "REQ-2"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-4",
-      "summary": "Align or remove the backend `getGrossToDeductionTable()` output so it is consistent with the updated backend chart data (no stale ranges/values that contradict the chart used by `calculateCallaway`).",
+      "id": "AR-3",
+      "summary": "Add a small, deterministic backend-level verification (unit-style logic or debug-only checks) to confirm that backend deduction/net calculations match the frontend’s intended behavior for representative sample scorecards (including fractional and non-fractional deduction cases).",
       "reqIds": [
         "REQ-3"
       ],

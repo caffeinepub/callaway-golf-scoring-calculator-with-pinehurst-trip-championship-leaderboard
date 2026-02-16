@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Callaway Scoring — Frontend plan (no changes required for backend-only chart update)",
+  "title": "Callaway Scoring – Frontend-only plan for Version 21 scoring revert",
   "requirements": []
 }

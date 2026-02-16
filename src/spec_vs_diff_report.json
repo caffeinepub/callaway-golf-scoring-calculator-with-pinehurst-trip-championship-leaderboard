@@ -1,106 +1,54 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T21:24:04.714Z",
-  "summary": "The diff does not demonstrate that the backend Callaway chart was replaced with the requested 13×11 dataset or that backend chart exposure/lookup endpoints were updated to match that dataset. The only visible backend change is a new in-actor `chart` array that still starts at gross 69 and contains range groupings/placeholder ranges that conflict with the BuildRequest’s example mappings (e.g., 73 and 92). The diff also includes substantial frontend UI/feature work (admin/settings/chart display, router flow, PDF export, styling, localStorage persistence) that was not requested and exceeds the stated focus on backend source-of-truth alignment.",
+  "generatedAt": "2026-02-16T21:34:23.722Z",
+  "summary": "The diff clearly updates the hard-coded Callaway chart in `backend/main.mo`, but the key scoring/deduction logic changes and the requested backend-level verification are not evidenced in the provided (truncated) diff. Additionally, non-requested changes were made to `frontend-file-summaries.txt` and `project_state.json`.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Replace the hard-coded backend Callaway chart in `backend/main.mo` (returned by `getBackendChart()`) with the user-provided 13-row dataset so grossScore→holesToDeduct pairs (including 0.5 increments and placeholder cells) match exactly.",
-      "reason": "The shown backend `chart` still begins at grossScoreFrom=69 and uses broad ranges that do not match the provided dataset examples (e.g., the request cites 73→0.5 and 92→2.5, but the displayed ranges imply 73 is in 72–75 with deduction 1.0 and 92 is in 91–93 with deduction 4.5). Also, the diff snippet does not show `getBackendChart()` being updated or replaced.",
+      "requirement": "Fix `backend/main.mo` so Callaway deductions are computed from the worst (highest) hole scores, including correct handling of fractional (0.5) holes, and keep net score calculation semantics.",
+      "reason": "The diff snippet only shows type definitions and a `chart` array; it does not show the deduction calculation implementation (sorting worst holes, fractional half-hole handling/rounding, or net-score formula). The summary even says 'Remaining implementation unchanged', and the relevant code is not present due to truncation.",
       "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (truncated): shows chart + 'Remaining implementation unchanged' but no deduction logic visible"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Update backend chart exposure and lookup so `getCallawayChart()` returns correct ranges/values for the updated chart and scoring uses the same updated semantics (not fabricated via `lowerBound + 4` where inaccurate).",
-      "reason": "The diff does not show the implementation of `getCallawayChart()` or any updated lookup logic. The only visible chart data uses fixed ranges that conflict with requested representative score mappings (e.g., 92, 116, 126) and includes placeholder ranges (126–129, 130–133, 134–137) rather than the requested explicit dataset-driven behavior.",
+      "requirement": "Ensure `getCallawayChart()` returns the reverted chart exactly as used by backend calculations, and ensure deterministic lookup behavior above the highest defined range.",
+      "reason": "While the `chart` array is shown, there is no visible implementation of `getCallawayChart()` or the lookup logic in `calculateCallaway()` due to truncation, so alignment and deterministic behavior for gross scores above the max band cannot be verified from the diff summary.",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/hooks/useQueries.ts"
+        "backend/main.mo (truncated): chart defined, but `getCallawayChart()` and lookup behavior not shown"
       ]
     },
     {
       "id": "REQ-3",
-      "requirement": "Align or remove `getGrossToDeductionTable()` so it is consistent with the updated backend chart used by scoring.",
-      "reason": "The diff summary does not show any changes to `getGrossToDeductionTable()` (or its removal). With the backend chart not clearly updated to the provided dataset, there is also no evidence the table output was aligned to avoid stale/conflicting ranges.",
+      "requirement": "Add deterministic backend-level verification (unit-style logic or debug-only checks) covering integer and 0.5 fractional deductions and demonstrating worst holes are highest scores.",
+      "reason": "No test/verification code, debug assertions, or unit-style checks are shown or mentioned in the diff summary for `backend/main.mo` (or elsewhere).",
       "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (truncated): no verification/test logic shown"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Frontend redesign/flow changes with TanStack Router-based multi-step scoring flow, new Settings/Admin routes, and revised App layout.",
-      "reason": "BuildRequest is backend-focused and explicitly states ‘Do not redesign the frontend UI; focus only on making production chart values match the provided dataset by fixing the backend source of truth.’ These routing/flow/UI changes were not requested.",
+      "description": "Updated/added extensive frontend file summary content.",
+      "reason": "The BuildRequest constraints and requirements are backend-focused and explicitly warn against modifying certain frontend paths; updating a generated `frontend-file-summaries.txt` artifact is not requested by any REQ and is unrelated to reverting backend scoring.",
       "evidence": [
-        "frontend/src/App.tsx"
+        "frontend-file-summaries.txt (modified)"
       ]
     },
     {
-      "description": "Admin access gating/toggle behavior and disabled-admin UI messaging.",
-      "reason": "Not requested; BuildRequest non-goals include not adding new auth methods, but no admin feature work was requested at all. This adds new product behavior beyond chart correction.",
+      "description": "Updated `project_state.json` to add/track AR-1/AR-2/AR-3 request metadata and statuses.",
+      "reason": "Not requested by any requirement; the BuildRequest only calls for backend scoring/chart fixes and backend verification logic.",
       "evidence": [
-        "frontend/src/features/admin/AdminView.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Frontend Callaway chart display section (read-only table) and detailed breakdown panel additions/changes.",
-      "reason": "Not requested; requirement was to fix backend chart source of truth, not to add new chart visualization UI.",
-      "evidence": [
-        "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-        "frontend/src/features/leaderboard/BreakdownPanel.tsx"
-      ]
-    },
-    {
-      "description": "PDF export feature for standings.",
-      "reason": "Not requested and unrelated to backend chart dataset alignment.",
-      "evidence": [
-        "frontend/src/features/leaderboard/LeaderboardView.tsx"
-      ]
-    },
-    {
-      "description": "Client-side Callaway calculation engine updated to use backend chart and compute fractional-hole deductions (including rounding to 0.1), plus special rule for gross <= par.",
-      "reason": "BuildRequest focuses on backend chart/lookup correctness. This adds new/changed client scoring semantics; also introduces rounding behavior not specified by the request.",
-      "evidence": [
-        "frontend/src/lib/callaway/callaway.ts"
-      ]
-    },
-    {
-      "description": "React Query hooks added/changed for fetching `getCallawayChart()` and `getLatestResult()`.",
-      "reason": "Not requested; backend change request did not ask for frontend data-fetching refactors.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "description": "LocalStorage-based admin access state management and chart persistence/migration utilities (including legacy constants and migration logic).",
-      "reason": "Not requested and conflicts with the stated intent to make the backend the source of truth for chart values (this introduces/keeps client-side chart persistence behavior).",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Global styling/theme changes (OKLCH golf-themed palette, fonts) and Tailwind config changes.",
-      "reason": "Not requested and constitutes UI redesign work.",
-      "evidence": [
-        "frontend-file-summaries.txt"
+        "project_state.json (modified)"
       ]
     }
   ],
-  "confidence": 0.78,
+  "confidence": 0.62,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/features/admin/AdminView.tsx",
-    "frontend/src/features/leaderboard/BreakdownPanel.tsx",
-    "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-    "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/lib/callaway/callaway.ts",
     "project_state.json"
   ]
 }

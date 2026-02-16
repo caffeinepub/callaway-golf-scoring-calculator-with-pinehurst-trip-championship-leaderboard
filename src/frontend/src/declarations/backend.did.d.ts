@@ -50,6 +50,10 @@ export interface _SERVICE {
    */
   'getLatestResult' : ActorMethod<[], [] | [EventResult]>,
   /**
+   * / Returns whether all validation tests pass for backend calculations
+   */
+  'isValidBackendCalculations' : ActorMethod<[], boolean>,
+  /**
    * / Submit new event (scores)
    */
   'submitEvent' : ActorMethod<[GolferId, bigint, Array<bigint>], undefined>,

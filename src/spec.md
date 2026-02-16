@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Update the backend Callaway scoring chart to exactly match the provided 13×11 dataset so production scoring and exposed chart data are consistent and accurate.
+**Goal:** Revert and fix the Version 21 Callaway backend changes so deductions, chart lookups, and net score calculations match the previously correct behavior (including fractional 0.5-hole deductions).
 
 **Planned changes:**
-- Replace the hard-coded chart data returned by `getBackendChart()` in `backend/main.mo` with the provided 13-row dataset values (including 0.5 increments and placeholder cells with grossScore=0 / worstHoles=0).
-- Update `getCallawayChart()` and its lookup/range semantics so the exposed chart entries align with the provided dataset (avoiding inaccurate fabricated ranges such as `lowerBound + 4` when they don’t match the chart).
-- Align (or remove/adjust) `getGrossToDeductionTable()` so it cannot return stale or conflicting ranges/values versus the chart used by `calculateCallaway(...)`.
+- Update `backend/main.mo` to compute Callaway deductions from the worst (highest) hole scores, including consistent handling of fractional (0.5) deduction holes using the same sorted ordering.
+- Revert the hard-coded Callaway `chart` in `backend/main.mo` to the last known-correct production version, removing placeholder rows/ranges and ensuring `getCallawayChart()` matches the chart used for backend lookup.
+- Add small deterministic backend-level verification logic/checks covering both integer and fractional deduction scenarios to confirm worst-hole selection and net calculation behavior.
 
-**User-visible outcome:** Callaway scoring results and any chart data returned by backend endpoints match the exact provided dataset (including half-hole deductions), with no inconsistencies between chart exposure and scoring.
+**User-visible outcome:** Callaway scoring calculations (deduction, adjustment lookup, and net score) produce correct, consistent results again for both standard and fractional deduction cases.

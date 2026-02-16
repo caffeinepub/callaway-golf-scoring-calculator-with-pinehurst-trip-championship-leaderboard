@@ -49,6 +49,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getLatestResult' : IDL.Func([], [IDL.Opt(EventResult)], ['query']),
+  'isValidBackendCalculations' : IDL.Func([], [IDL.Bool], []),
   'submitEvent' : IDL.Func([GolferId, IDL.Nat, IDL.Vec(IDL.Nat)], [], []),
   'updateEvent' : IDL.Func([GolferId, IDL.Vec(IDL.Nat)], [], []),
 });
@@ -92,6 +93,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getLatestResult' : IDL.Func([], [IDL.Opt(EventResult)], ['query']),
+    'isValidBackendCalculations' : IDL.Func([], [IDL.Bool], []),
     'submitEvent' : IDL.Func([GolferId, IDL.Nat, IDL.Vec(IDL.Nat)], [], []),
     'updateEvent' : IDL.Func([GolferId, IDL.Vec(IDL.Nat)], [], []),
   });

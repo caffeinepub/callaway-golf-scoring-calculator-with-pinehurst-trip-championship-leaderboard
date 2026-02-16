@@ -44,6 +44,10 @@ export interface backendInterface {
      */
     getLatestResult(): Promise<EventResult | null>;
     /**
+     * / Returns whether all validation tests pass for backend calculations
+     */
+    isValidBackendCalculations(): Promise<boolean>;
+    /**
      * / Submit new event (scores)
      */
     submitEvent(golferId: GolferId, coursePar: bigint, holeScores: Array<bigint>): Promise<void>;

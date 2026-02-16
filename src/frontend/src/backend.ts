@@ -126,6 +126,10 @@ export interface backendInterface {
      */
     getLatestResult(): Promise<EventResult | null>;
     /**
+     * / Returns whether all validation tests pass for backend calculations
+     */
+    isValidBackendCalculations(): Promise<boolean>;
+    /**
      * / Submit new event (scores)
      */
     submitEvent(golferId: GolferId, coursePar: bigint, holeScores: Array<bigint>): Promise<void>;
@@ -191,6 +195,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getLatestResult();
             return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async isValidBackendCalculations(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isValidBackendCalculations();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isValidBackendCalculations();
+            return result;
         }
     }
     async submitEvent(arg0: GolferId, arg1: bigint, arg2: Array<bigint>): Promise<void> {

@@ -24,5 +24,6 @@
   "frontend/src/components/Header.tsx": "Header component displaying the application title with navigation buttons for settings and admin (when enabled via reactive hook), plus start over functionality.",
   "frontend/src/components/Footer.tsx": "Footer component displaying attribution to caffeine.ai with UTM tracking and copyright information.",
   "frontend/src/hooks/useAdminAccessEnabled.ts": "Custom React hook that provides reactive admin access state by listening to localStorage changes and custom events, ensuring UI updates immediately when admin access is toggled.",
-  "frontend/src/lib/callaway/gridPlaceholders.ts": "Helper utilities for handling placeholder cells in Callaway chart grids, providing functions to check if a cell is a placeholder (grossScore=0 and worstHoles=0), display empty values for placeholders in the UI, and parse input values."
+  "frontend/src/lib/callaway/gridPlaceholders.ts": "Helper utilities for handling placeholder cells in Callaway chart grids, providing functions to check if a cell is a placeholder (grossScore=0 and worstHoles=0), display empty values for placeholders in the UI, and parse input values.",
+  "backend/main.mo": "Motoko backend actor for Callaway golf scoring system with chart-based handicap calculation that correctly sums the highest (worst) hole scores for deductions, supporting fractional holes by taking an exact fractional portion of the next worst score without rounding up."
 }
