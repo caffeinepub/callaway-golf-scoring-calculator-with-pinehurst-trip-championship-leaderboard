@@ -1,0 +1,83 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-settings-ui-that-includes-a-toggle-to-enable-disable-access-to-an-admin-screen-and-persist-this-toggle-across-reloads",
+      "featureTitle": "Add a Settings UI that includes a toggle to enable/disable access to an Admin screen, and persist this toggle across reloads.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/features/settings/SettingsView.tsx",
+        "frontend/src/state/adminAccess.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-an-admin-screen-that-is-only-accessible-when-the-settings-toggle-is-enabled-and-add-navigation-to-reach-it-when-enabled",
+      "featureTitle": "Create an Admin screen that is only accessible when the Settings toggle is enabled, and add navigation to reach it when enabled.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/features/admin/AdminView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-callaway-scoring-chart-editor-within-the-admin-screen-that-supports-editing-both-the-9-hole-and-18-hole-chart-rows-gross-range-bounds-worst-holes-deducted-and-adjustment-with-validation-and-save-reset-actions",
+      "featureTitle": "Implement a Callaway scoring chart editor within the Admin screen that supports editing both the 9-hole and 18-hole chart rows (gross range bounds, worst holes deducted, and adjustment), with validation and save/reset actions.",
+      "files": [
+        "frontend/src/features/admin/AdminView.tsx",
+        "frontend/src/features/admin/CallawayChartEditor.tsx",
+        "frontend/src/lib/callaway/callawayChartPersistence.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-app-s-callaway-calculation-and-chart-display-to-use-the-currently-persisted-edited-chart-instead-of-the-hard-coded-chart-with-a-safe-fallback-to-the-default-chart-if-no-edits-exist",
+      "featureTitle": "Update the app’s Callaway calculation and chart display to use the currently persisted (edited) chart instead of the hard-coded chart, with a safe fallback to the default chart if no edits exist.",
+      "files": [
+        "frontend/src/lib/callaway/callaway.ts",
+        "frontend/src/lib/callaway/callawayChart.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

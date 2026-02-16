@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Build a Callaway scoring app with an editable Callaway scoring chart managed via an admin screen hidden behind a settings toggle.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-add-a-settings-ui-that-includes-a-toggle-to-enable-disable-access-to-an-admin-screen-and-persist-this-toggle-across-reloads",
+      "title": "Add a Settings UI that includes a toggle to enable/disable access to an Admin screen, and persist this toggle across reloads.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-an-admin-screen-that-is-only-accessible-when-the-settings-toggle-is-enabled-and-add-navigation-to-reach-it-when-enabled",
+      "title": "Create an Admin screen that is only accessible when the Settings toggle is enabled, and add navigation to reach it when enabled.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-callaway-scoring-chart-editor-within-the-admin-screen-that-supports-editing-both-the-9-hole-and-18-hole-chart-rows-gross-range-bounds-worst-holes-deducted-and-adjustment-with-validation-and-save-reset-actions",
+      "title": "Implement a Callaway scoring chart editor within the Admin screen that supports editing both the 9-hole and 18-hole chart rows (gross range bounds, worst holes deducted, and adjustment), with validation and save/reset actions.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-app-s-callaway-calculation-and-chart-display-to-use-the-currently-persisted-edited-chart-instead-of-the-hard-coded-chart-with-a-safe-fallback-to-the-default-chart-if-no-edits-exist",
+      "title": "Update the app’s Callaway calculation and chart display to use the currently persisted (edited) chart instead of the hard-coded chart, with a safe fallback to the default chart if no edits exist.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add an editable Callaway scoring chart editor accessible from an admin screen, with the admin screen hidden behind a toggle in Settings.",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Add hidden Admin screen with Callaway chart editor (toggle in Settings)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

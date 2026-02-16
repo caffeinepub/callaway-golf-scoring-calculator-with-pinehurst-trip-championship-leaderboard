@@ -1,0 +1,110 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Hidden Admin screen with Settings toggle and Callaway chart editor",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Settings UI with an Admin access toggle persisted across reloads and reachable from the main header.",
+      "acceptanceCriteria": [
+        "A Settings entry point is available from the main app UI (e.g., in the header).",
+        "Settings includes a clearly labeled toggle (English text) that controls whether Admin access is visible/available.",
+        "The toggle state persists across page reloads (e.g., via local storage).",
+        "When the toggle is OFF, there is no visible Admin navigation entry or button anywhere in the UI."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/state/adminAccess.ts",
+          "operation": "create",
+          "description": "Create a small localStorage-backed settings module for reading/writing the Admin access enabled flag (including safe parsing + default OFF) and exposing helper functions for the rest of the UI."
+        },
+        {
+          "path": "frontend/src/features/settings/SettingsView.tsx",
+          "operation": "create",
+          "description": "Create a Settings screen component that shows a clearly labeled Admin access toggle (English text) wired to the localStorage-backed admin access flag. Use existing shadcn/ui primitives already present in the app (e.g., Card/Button) for layout where helpful. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add a Settings entry point in the header (e.g., a Settings button) and a new app step/state for showing the Settings screen. Wire the Settings screen into the app flow and connect it to the localStorage-backed admin access toggle. Ensure no Admin entry point is rendered anywhere when the toggle is OFF."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Create an Admin screen that is only reachable when Admin access is enabled in Settings, with guarded navigation/redirect behavior.",
+      "acceptanceCriteria": [
+        "When the Settings toggle is ON, the UI exposes an Admin entry point (button/link) that opens the Admin screen.",
+        "When the Settings toggle is OFF, attempts to access the Admin screen from the UI are not possible (no navigation entry shown).",
+        "If the user somehow reaches the Admin screen state while the toggle is OFF (e.g., after turning it off), the UI redirects back to a non-admin screen or shows a clear 'Admin is disabled in Settings' message."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/admin/AdminView.tsx",
+          "operation": "create",
+          "description": "Create the Admin screen container component. It must be guard-aware: if Admin access is disabled, show a clear English message (e.g., 'Admin is disabled in Settings') and provide a way back to a non-admin screen."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add an Admin entry point that is conditionally visible only when the persisted Admin access toggle is ON. Wire navigation to the Admin screen only when enabled, and add a guard so that if Admin becomes disabled while viewing Admin, the app automatically redirects to a non-admin step (or shows the Admin-disabled message) to satisfy the requirement."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement an editable Callaway scoring chart editor in Admin for both 9-hole and 18-hole charts with validation plus Save and Reset to Defaults.",
+      "acceptanceCriteria": [
+        "Admin screen provides controls to switch between editing the 9-hole and 18-hole charts.",
+        "Each chart row can be edited for: lower bound, upper bound (or no upper limit for the last row), worst holes deducted, and adjustment value.",
+        "Editor validates chart integrity before saving (at minimum: numeric bounds; lowerBound <= upperBound when upperBound exists; rows ordered by increasing lowerBound; last row supports open-ended upper bound; no obvious overlaps).",
+        "There is a Save action that persists the edited chart across reloads.",
+        "There is a Reset to Defaults action that restores the current chart to the app’s built-in default chart values.",
+        "User-facing validation and button text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "operation": "create",
+          "description": "Add a localStorage-backed persistence layer for edited Callaway charts (9 and 18) including: load (safe parse + validation), save, clear/reset, and utilities for formatting a row label from bounds. This module should provide a safe fallback behavior when persisted data is invalid/unreadable."
+        },
+        {
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "operation": "create",
+          "description": "Create the Callaway chart editor UI used inside Admin. Provide a control to switch between 9-hole and 18-hole editing, render editable rows for lower/upper bounds, worst holes deducted, and adjustment, plus English validation messages. Include Save (persist via the chart persistence module) and Reset to Defaults (restore from built-in defaults) actions. Use existing shadcn/ui primitives already present in the app (e.g., Card/Button/Table) where helpful. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/admin/AdminView.tsx",
+          "operation": "modify",
+          "description": "Wire the CallawayChartEditor into the Admin screen so the editor is reachable when Admin access is enabled, and ensure all user-facing labels/actions remain in English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Update Callaway calculation and chart display to use the persisted edited chart with a safe fallback to defaults.",
+      "acceptanceCriteria": [
+        "After saving changes in the chart editor, subsequent Callaway calculations use the updated chart values (net score, deduction, adjustment, and displayed chart row label reflect the edited chart).",
+        "The chart displayed in the leaderboard view matches the currently active chart (edited or default).",
+        "If no edited chart is present (fresh install) or persisted data is invalid/unreadable, the app uses the built-in default chart without crashing."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/callaway/callawayChart.ts",
+          "operation": "modify",
+          "description": "Refactor chart retrieval helpers to support 'active chart' resolution (edited chart from local storage when valid, otherwise built-in defaults). Keep built-in default chart values available for Reset-to-Defaults and fallback behavior."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callaway.ts",
+          "operation": "modify",
+          "description": "Update the Callaway calculation to select chart rows from the currently active chart (edited or default), and ensure the returned chartRowLabel reflects the active chart bounds (including the open-ended last row)."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+          "operation": "modify",
+          "description": "Update chart rendering to display the currently active chart (edited or default) so the leaderboard view matches what calculations are using. Use existing UI primitives already present in the project (e.g., Card/Table) for consistent display. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

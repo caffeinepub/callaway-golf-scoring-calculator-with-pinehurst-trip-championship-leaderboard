@@ -1,0 +1,107 @@
+{
+  "kind": "build_request",
+  "title": "Add hidden Admin screen with Callaway chart editor (toggle in Settings)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a Settings UI that includes a toggle to enable/disable access to an Admin screen, and persist this toggle across reloads.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "hide the admin screen behind a toggle in the settings"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A Settings entry point is available from the main app UI (e.g., in the header).",
+        "Settings includes a clearly labeled toggle (English text) that controls whether Admin access is visible/available.",
+        "The toggle state persists across page reloads (e.g., via local storage).",
+        "When the toggle is OFF, there is no visible Admin navigation entry or button anywhere in the UI."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create an Admin screen that is only accessible when the Settings toggle is enabled, and add navigation to reach it when enabled.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "create the chart editor that I can access from an admin screen."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the Settings toggle is ON, the UI exposes an Admin entry point (button/link) that opens the Admin screen.",
+        "When the Settings toggle is OFF, attempts to access the Admin screen from the UI are not possible (no navigation entry shown).",
+        "If the user somehow reaches the Admin screen state while the toggle is OFF (e.g., after turning it off), the UI redirects back to a non-admin screen or shows a clear 'Admin is disabled in Settings' message."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a Callaway scoring chart editor within the Admin screen that supports editing both the 9-hole and 18-hole chart rows (gross range bounds, worst holes deducted, and adjustment), with validation and save/reset actions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "create the chart editor"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin screen provides controls to switch between editing the 9-hole and 18-hole charts.",
+        "Each chart row can be edited for: lower bound, upper bound (or no upper limit for the last row), worst holes deducted, and adjustment value.",
+        "Editor validates chart integrity before saving (at minimum: numeric bounds; lowerBound <= upperBound when upperBound exists; rows ordered by increasing lowerBound; last row supports open-ended upper bound; no obvious overlaps).",
+        "There is a Save action that persists the edited chart across reloads.",
+        "There is a Reset to Defaults action that restores the current chart to the app’s built-in default chart values.",
+        "User-facing validation and button text is in English."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Update the app’s Callaway calculation and chart display to use the currently persisted (edited) chart instead of the hard-coded chart, with a safe fallback to the default chart if no edits exist.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "provide a mechanism for me to edit it"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After saving changes in the chart editor, subsequent Callaway calculations use the updated chart values (net score, deduction, adjustment, and displayed chart row label reflect the edited chart).",
+        "The chart displayed in the leaderboard view matches the currently active chart (edited or default).",
+        "If no edited chart is present (fresh install) or persisted data is invalid/unreadable, the app uses the built-in default chart without crashing."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui; compose and use these modules/components as-is.",
+    "Keep all user-facing text in English."
+  ],
+  "nonGoals": [
+    "Implementing password-based admin access or role-based authorization.",
+    "Adding Internet Identity-based admin roles.",
+    "Persisting edited charts to the backend canister (chart persistence may be frontend-only storage for this change unless separately requested).",
+    "Adding real-time collaboration or multi-user sync for chart edits."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}
