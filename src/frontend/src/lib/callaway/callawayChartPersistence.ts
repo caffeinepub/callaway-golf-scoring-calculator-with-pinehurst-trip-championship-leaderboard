@@ -17,52 +17,75 @@ const USER_DEFAULT_GRID_CHART_18_KEY = 'callaway-grid-chart-18-user-default';
 const USER_DEFAULT_GRID_CHART_9_KEY = 'callaway-grid-chart-9-user-default';
 
 /**
+ * Previous shipped 18-hole defaults (frozen for migration detection)
+ * This represents the old default values that were shipped before the update
+ */
+const OLD_SHIPPED_18_GRID: GridChartData = {
+  grid: [
+    [{ grossScore: 70, worstHoles: 0 }, { grossScore: 71, worstHoles: 0 }, { grossScore: 73, worstHoles: 0.5 }, { grossScore: 76, worstHoles: 1 }, { grossScore: 81, worstHoles: 1.5 }],
+    [{ grossScore: 72, worstHoles: 0 }, { grossScore: 74, worstHoles: 0.5 }, { grossScore: 77, worstHoles: 1 }, { grossScore: 82, worstHoles: 1.5 }, { grossScore: 86, worstHoles: 2 }],
+    [{ grossScore: 75, worstHoles: 0.5 }, { grossScore: 78, worstHoles: 1 }, { grossScore: 83, worstHoles: 1.5 }, { grossScore: 87, worstHoles: 2 }, { grossScore: 91, worstHoles: 2.5 }],
+    [{ grossScore: 79, worstHoles: 1 }, { grossScore: 84, worstHoles: 1.5 }, { grossScore: 88, worstHoles: 2 }, { grossScore: 92, worstHoles: 2.5 }, { grossScore: 96, worstHoles: 3 }],
+    [{ grossScore: 80, worstHoles: 1 }, { grossScore: 85, worstHoles: 1.5 }, { grossScore: 89, worstHoles: 2 }, { grossScore: 93, worstHoles: 2.5 }, { grossScore: 97, worstHoles: 3 }],
+    [{ grossScore: 90, worstHoles: 2 }, { grossScore: 94, worstHoles: 2.5 }, { grossScore: 98, worstHoles: 3 }, { grossScore: 101, worstHoles: 3.5 }, { grossScore: 106, worstHoles: 4 }],
+    [{ grossScore: 95, worstHoles: 2.5 }, { grossScore: 99, worstHoles: 3 }, { grossScore: 102, worstHoles: 3.5 }, { grossScore: 107, worstHoles: 4 }, { grossScore: 111, worstHoles: 4.5 }],
+    [{ grossScore: 100, worstHoles: 3 }, { grossScore: 103, worstHoles: 3.5 }, { grossScore: 108, worstHoles: 4 }, { grossScore: 112, worstHoles: 4.5 }, { grossScore: 116, worstHoles: 5 }],
+    [{ grossScore: 104, worstHoles: 3.5 }, { grossScore: 109, worstHoles: 4 }, { grossScore: 113, worstHoles: 4.5 }, { grossScore: 117, worstHoles: 5 }, { grossScore: 121, worstHoles: 5.5 }],
+    [{ grossScore: 105, worstHoles: 3.5 }, { grossScore: 110, worstHoles: 4 }, { grossScore: 114, worstHoles: 4.5 }, { grossScore: 118, worstHoles: 5 }, { grossScore: 122, worstHoles: 5.5 }],
+    [{ grossScore: 115, worstHoles: 4.5 }, { grossScore: 119, worstHoles: 5 }, { grossScore: 123, worstHoles: 5.5 }, { grossScore: 126, worstHoles: 6 }, { grossScore: 131, worstHoles: 6.5 }],
+    [{ grossScore: 120, worstHoles: 5 }, { grossScore: 124, worstHoles: 5.5 }, { grossScore: 127, worstHoles: 6 }, { grossScore: 132, worstHoles: 6.5 }, { grossScore: 136, worstHoles: 7 }],
+    [{ grossScore: 125, worstHoles: 5.5 }, { grossScore: 128, worstHoles: 6 }, { grossScore: 133, worstHoles: 6.5 }, { grossScore: 137, worstHoles: 7 }, { grossScore: 141, worstHoles: 7.5 }],
+  ],
+  columnAdjustments: [-2, -1, 0, 1, 2],
+};
+
+/**
  * Default grid chart data for 18-hole (13 rows x 5 columns)
- * Corrected defaults matching legacy Callaway chart
+ * Updated defaults matching the provided 13-row table
  */
 export function getDefault18GridChart(): GridChartData {
   return {
     grid: [
-      [{ grossScore: 70, worstHoles: 0 }, { grossScore: 71, worstHoles: 0 }, { grossScore: 76, worstHoles: 1 }, { grossScore: 81, worstHoles: 2 }, { grossScore: 86, worstHoles: 2 }],
-      [{ grossScore: 72, worstHoles: 0 }, { grossScore: 73, worstHoles: 0 }, { grossScore: 77, worstHoles: 1 }, { grossScore: 82, worstHoles: 2 }, { grossScore: 87, worstHoles: 2 }],
-      [{ grossScore: 74, worstHoles: 0 }, { grossScore: 75, worstHoles: 0 }, { grossScore: 78, worstHoles: 1 }, { grossScore: 83, worstHoles: 2 }, { grossScore: 88, worstHoles: 2 }],
-      [{ grossScore: 91, worstHoles: 3 }, { grossScore: 96, worstHoles: 3 }, { grossScore: 79, worstHoles: 1 }, { grossScore: 84, worstHoles: 2 }, { grossScore: 89, worstHoles: 2 }],
-      [{ grossScore: 92, worstHoles: 3 }, { grossScore: 97, worstHoles: 3 }, { grossScore: 80, worstHoles: 1 }, { grossScore: 85, worstHoles: 2 }, { grossScore: 90, worstHoles: 2 }],
-      [{ grossScore: 93, worstHoles: 3 }, { grossScore: 98, worstHoles: 3 }, { grossScore: 101, worstHoles: 4 }, { grossScore: 106, worstHoles: 4 }, { grossScore: 111, worstHoles: 5 }],
-      [{ grossScore: 94, worstHoles: 3 }, { grossScore: 99, worstHoles: 3 }, { grossScore: 102, worstHoles: 4 }, { grossScore: 107, worstHoles: 4 }, { grossScore: 112, worstHoles: 5 }],
-      [{ grossScore: 95, worstHoles: 3 }, { grossScore: 100, worstHoles: 3 }, { grossScore: 103, worstHoles: 4 }, { grossScore: 108, worstHoles: 4 }, { grossScore: 113, worstHoles: 5 }],
-      [{ grossScore: 116, worstHoles: 5 }, { grossScore: 121, worstHoles: 6 }, { grossScore: 104, worstHoles: 4 }, { grossScore: 109, worstHoles: 4 }, { grossScore: 114, worstHoles: 5 }],
-      [{ grossScore: 117, worstHoles: 5 }, { grossScore: 122, worstHoles: 6 }, { grossScore: 105, worstHoles: 4 }, { grossScore: 110, worstHoles: 4 }, { grossScore: 115, worstHoles: 5 }],
-      [{ grossScore: 118, worstHoles: 5 }, { grossScore: 123, worstHoles: 6 }, { grossScore: 126, worstHoles: 6 }, { grossScore: 131, worstHoles: 7 }, { grossScore: 136, worstHoles: 8 }],
-      [{ grossScore: 119, worstHoles: 5 }, { grossScore: 124, worstHoles: 6 }, { grossScore: 127, worstHoles: 6 }, { grossScore: 132, worstHoles: 7 }, { grossScore: 137, worstHoles: 8 }],
-      [{ grossScore: 120, worstHoles: 5 }, { grossScore: 125, worstHoles: 6 }, { grossScore: 128, worstHoles: 6 }, { grossScore: 133, worstHoles: 7 }, { grossScore: 138, worstHoles: 8 }],
+      [{ grossScore: 0, worstHoles: 0 }, { grossScore: 0, worstHoles: 0 }, { grossScore: 72, worstHoles: 0 }, { grossScore: 0, worstHoles: 0 }, { grossScore: 0, worstHoles: 0 }],
+      [{ grossScore: 73, worstHoles: 0.5 }, { grossScore: 74, worstHoles: 0.5 }, { grossScore: 75, worstHoles: 0.5 }, { grossScore: 0, worstHoles: 0 }, { grossScore: 0, worstHoles: 0 }],
+      [{ grossScore: 76, worstHoles: 1 }, { grossScore: 77, worstHoles: 1 }, { grossScore: 78, worstHoles: 1 }, { grossScore: 79, worstHoles: 1 }, { grossScore: 80, worstHoles: 1 }],
+      [{ grossScore: 81, worstHoles: 1.5 }, { grossScore: 82, worstHoles: 1.5 }, { grossScore: 83, worstHoles: 1.5 }, { grossScore: 84, worstHoles: 1.5 }, { grossScore: 85, worstHoles: 1.5 }],
+      [{ grossScore: 86, worstHoles: 2 }, { grossScore: 87, worstHoles: 2 }, { grossScore: 88, worstHoles: 2 }, { grossScore: 89, worstHoles: 2 }, { grossScore: 90, worstHoles: 2 }],
+      [{ grossScore: 91, worstHoles: 3 }, { grossScore: 92, worstHoles: 2.5 }, { grossScore: 93, worstHoles: 2.5 }, { grossScore: 94, worstHoles: 2.5 }, { grossScore: 95, worstHoles: 2.5 }],
+      [{ grossScore: 96, worstHoles: 3.5 }, { grossScore: 97, worstHoles: 3 }, { grossScore: 98, worstHoles: 3.5 }, { grossScore: 99, worstHoles: 3 }, { grossScore: 100, worstHoles: 3 }],
+      [{ grossScore: 101, worstHoles: 4 }, { grossScore: 102, worstHoles: 3.5 }, { grossScore: 103, worstHoles: 3.5 }, { grossScore: 104, worstHoles: 3.5 }, { grossScore: 105, worstHoles: 3.5 }],
+      [{ grossScore: 106, worstHoles: 4.5 }, { grossScore: 107, worstHoles: 4 }, { grossScore: 108, worstHoles: 4 }, { grossScore: 109, worstHoles: 4 }, { grossScore: 110, worstHoles: 4 }],
+      [{ grossScore: 111, worstHoles: 5 }, { grossScore: 112, worstHoles: 4.5 }, { grossScore: 113, worstHoles: 4.5 }, { grossScore: 114, worstHoles: 4.5 }, { grossScore: 115, worstHoles: 4.5 }],
+      [{ grossScore: 116, worstHoles: 5.5 }, { grossScore: 117, worstHoles: 5 }, { grossScore: 118, worstHoles: 5 }, { grossScore: 119, worstHoles: 5 }, { grossScore: 120, worstHoles: 5 }],
+      [{ grossScore: 121, worstHoles: 6 }, { grossScore: 122, worstHoles: 5.5 }, { grossScore: 123, worstHoles: 5.5 }, { grossScore: 124, worstHoles: 5.5 }, { grossScore: 125, worstHoles: 5.5 }],
+      [{ grossScore: 126, worstHoles: 5.5 }, { grossScore: 127, worstHoles: 6 }, { grossScore: 128, worstHoles: 6 }, { grossScore: 129, worstHoles: 6 }, { grossScore: 130, worstHoles: 6 }],
     ],
-    columnAdjustments: [0, 0, 0, -2, -2],
+    columnAdjustments: [-2, -1, 0, 1, 2],
   };
 }
 
 /**
  * Default grid chart data for 9-hole (13 rows x 5 columns)
- * Corrected defaults matching legacy Callaway chart
+ * Corrected defaults matching official Callaway chart for 9 holes
  */
 export function getDefault9GridChart(): GridChartData {
   return {
     grid: [
-      [{ grossScore: 35, worstHoles: 0 }, { grossScore: 36, worstHoles: 0 }, { grossScore: 40, worstHoles: 1 }, { grossScore: 44, worstHoles: 2 }, { grossScore: 48, worstHoles: 2 }],
-      [{ grossScore: 37, worstHoles: 0 }, { grossScore: 38, worstHoles: 0 }, { grossScore: 41, worstHoles: 1 }, { grossScore: 45, worstHoles: 2 }, { grossScore: 49, worstHoles: 2 }],
-      [{ grossScore: 39, worstHoles: 0 }, { grossScore: 50, worstHoles: 2 }, { grossScore: 42, worstHoles: 1 }, { grossScore: 46, worstHoles: 2 }, { grossScore: 55, worstHoles: 3 }],
-      [{ grossScore: 51, worstHoles: 2 }, { grossScore: 56, worstHoles: 3 }, { grossScore: 43, worstHoles: 1 }, { grossScore: 47, worstHoles: 2 }, { grossScore: 60, worstHoles: 4 }],
-      [{ grossScore: 52, worstHoles: 2 }, { grossScore: 57, worstHoles: 3 }, { grossScore: 61, worstHoles: 4 }, { grossScore: 65, worstHoles: 4 }, { grossScore: 69, worstHoles: 4 }],
-      [{ grossScore: 53, worstHoles: 2 }, { grossScore: 58, worstHoles: 3 }, { grossScore: 62, worstHoles: 4 }, { grossScore: 66, worstHoles: 4 }, { grossScore: 70, worstHoles: 4 }],
-      [{ grossScore: 54, worstHoles: 2 }, { grossScore: 59, worstHoles: 3 }, { grossScore: 63, worstHoles: 4 }, { grossScore: 67, worstHoles: 4 }, { grossScore: 71, worstHoles: 4 }],
-      [{ grossScore: 72, worstHoles: 4 }, { grossScore: 76, worstHoles: 4 }, { grossScore: 64, worstHoles: 4 }, { grossScore: 68, worstHoles: 4 }, { grossScore: 80, worstHoles: 4 }],
-      [{ grossScore: 73, worstHoles: 4 }, { grossScore: 77, worstHoles: 4 }, { grossScore: 81, worstHoles: 4 }, { grossScore: 85, worstHoles: 4 }, { grossScore: 89, worstHoles: 4 }],
-      [{ grossScore: 74, worstHoles: 4 }, { grossScore: 78, worstHoles: 4 }, { grossScore: 82, worstHoles: 4 }, { grossScore: 86, worstHoles: 4 }, { grossScore: 90, worstHoles: 4 }],
-      [{ grossScore: 75, worstHoles: 4 }, { grossScore: 79, worstHoles: 4 }, { grossScore: 83, worstHoles: 4 }, { grossScore: 87, worstHoles: 4 }, { grossScore: 91, worstHoles: 4 }],
-      [{ grossScore: 92, worstHoles: 4 }, { grossScore: 96, worstHoles: 4 }, { grossScore: 84, worstHoles: 4 }, { grossScore: 88, worstHoles: 4 }, { grossScore: 100, worstHoles: 4 }],
-      [{ grossScore: 93, worstHoles: 4 }, { grossScore: 97, worstHoles: 4 }, { grossScore: 101, worstHoles: 4 }, { grossScore: 105, worstHoles: 4 }, { grossScore: 109, worstHoles: 4 }],
+      [{ grossScore: 35, worstHoles: 0 }, { grossScore: 36, worstHoles: 0 }, { grossScore: 37, worstHoles: 0.5 }, { grossScore: 40, worstHoles: 1 }, { grossScore: 45, worstHoles: 1.5 }],
+      [{ grossScore: 38, worstHoles: 0.5 }, { grossScore: 41, worstHoles: 1 }, { grossScore: 46, worstHoles: 1.5 }, { grossScore: 50, worstHoles: 2 }, { grossScore: 55, worstHoles: 2.5 }],
+      [{ grossScore: 39, worstHoles: 0.5 }, { grossScore: 42, worstHoles: 1 }, { grossScore: 47, worstHoles: 1.5 }, { grossScore: 51, worstHoles: 2 }, { grossScore: 56, worstHoles: 2.5 }],
+      [{ grossScore: 43, worstHoles: 1 }, { grossScore: 48, worstHoles: 1.5 }, { grossScore: 52, worstHoles: 2 }, { grossScore: 57, worstHoles: 2.5 }, { grossScore: 60, worstHoles: 3 }],
+      [{ grossScore: 44, worstHoles: 1 }, { grossScore: 49, worstHoles: 1.5 }, { grossScore: 53, worstHoles: 2 }, { grossScore: 58, worstHoles: 2.5 }, { grossScore: 61, worstHoles: 3 }],
+      [{ grossScore: 54, worstHoles: 2 }, { grossScore: 59, worstHoles: 2.5 }, { grossScore: 62, worstHoles: 3 }, { grossScore: 65, worstHoles: 3.5 }, { grossScore: 69, worstHoles: 4 }],
+      [{ grossScore: 63, worstHoles: 3 }, { grossScore: 66, worstHoles: 3.5 }, { grossScore: 70, worstHoles: 4 }, { grossScore: 73, worstHoles: 4 }, { grossScore: 76, worstHoles: 4 }],
+      [{ grossScore: 64, worstHoles: 3 }, { grossScore: 67, worstHoles: 3.5 }, { grossScore: 71, worstHoles: 4 }, { grossScore: 74, worstHoles: 4 }, { grossScore: 77, worstHoles: 4 }],
+      [{ grossScore: 68, worstHoles: 3.5 }, { grossScore: 72, worstHoles: 4 }, { grossScore: 75, worstHoles: 4 }, { grossScore: 78, worstHoles: 4 }, { grossScore: 81, worstHoles: 4 }],
+      [{ grossScore: 79, worstHoles: 4 }, { grossScore: 82, worstHoles: 4 }, { grossScore: 85, worstHoles: 4 }, { grossScore: 88, worstHoles: 4 }, { grossScore: 91, worstHoles: 4 }],
+      [{ grossScore: 80, worstHoles: 4 }, { grossScore: 83, worstHoles: 4 }, { grossScore: 86, worstHoles: 4 }, { grossScore: 89, worstHoles: 4 }, { grossScore: 92, worstHoles: 4 }],
+      [{ grossScore: 84, worstHoles: 4 }, { grossScore: 87, worstHoles: 4 }, { grossScore: 90, worstHoles: 4 }, { grossScore: 93, worstHoles: 4 }, { grossScore: 96, worstHoles: 4 }],
+      [{ grossScore: 94, worstHoles: 4 }, { grossScore: 97, worstHoles: 4 }, { grossScore: 100, worstHoles: 4 }, { grossScore: 103, worstHoles: 4 }, { grossScore: 106, worstHoles: 4 }],
     ],
-    columnAdjustments: [0, 0, -1, -1, -1],
+    columnAdjustments: [-2, -1, 0, 1, 2],
   };
 }
 
@@ -97,26 +120,28 @@ function validateGridChart(data: GridChartData): boolean {
 }
 
 /**
- * Check if a persisted chart matches the shipped defaults
+ * Check if a persisted chart matches the old shipped defaults (for migration)
  */
-function isShippedDefault(data: GridChartData, holeCount: 9 | 18): boolean {
-  const shippedDefault = holeCount === 18 ? getDefault18GridChart() : getDefault9GridChart();
-  return JSON.stringify(data) === JSON.stringify(shippedDefault);
+function isOldShippedDefault18(data: GridChartData): boolean {
+  return JSON.stringify(data) === JSON.stringify(OLD_SHIPPED_18_GRID);
 }
 
 /**
  * Migrate old shipped defaults: remove them from localStorage so corrected defaults are used
  */
 function migrateOldShippedDefaults(holeCount: 9 | 18): void {
-  const activeKey = holeCount === 18 ? GRID_CHART_18_KEY : GRID_CHART_9_KEY;
-  const userDefaultKey = holeCount === 18 ? USER_DEFAULT_GRID_CHART_18_KEY : USER_DEFAULT_GRID_CHART_9_KEY;
+  // Only migrate 18-hole charts (9-hole defaults haven't changed)
+  if (holeCount !== 18) return;
+
+  const activeKey = GRID_CHART_18_KEY;
+  const userDefaultKey = USER_DEFAULT_GRID_CHART_18_KEY;
 
   try {
     // Check active chart
     const activeData = localStorage.getItem(activeKey);
     if (activeData) {
       const parsed = JSON.parse(activeData);
-      if (validateGridChart(parsed) && isShippedDefault(parsed, holeCount)) {
+      if (validateGridChart(parsed) && isOldShippedDefault18(parsed)) {
         // This is an old shipped default, remove it
         localStorage.removeItem(activeKey);
       }
@@ -126,7 +151,7 @@ function migrateOldShippedDefaults(holeCount: 9 | 18): void {
     const userDefaultData = localStorage.getItem(userDefaultKey);
     if (userDefaultData) {
       const parsed = JSON.parse(userDefaultData);
-      if (validateGridChart(parsed) && isShippedDefault(parsed, holeCount)) {
+      if (validateGridChart(parsed) && isOldShippedDefault18(parsed)) {
         // This is an old shipped default, remove it
         localStorage.removeItem(userDefaultKey);
       }
@@ -161,7 +186,10 @@ export function gridToLegacyChart(gridData: GridChartData): CallawayChartEntry[]
     for (let row = 0; row < 13; row++) {
       const cell = gridData.grid[row][col];
       const adjustment = gridData.columnAdjustments[col];
-      scoreMap.set(cell.grossScore, { worstHoles: cell.worstHoles, adjustment });
+      // Skip zero gross scores (placeholders)
+      if (cell.grossScore > 0) {
+        scoreMap.set(cell.grossScore, { worstHoles: cell.worstHoles, adjustment });
+      }
     }
   }
 

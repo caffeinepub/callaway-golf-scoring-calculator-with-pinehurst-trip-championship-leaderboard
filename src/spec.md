@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Restore functional navigation to Settings and Admin screens and correct the app’s default Callaway chart values for accurate display and scoring.
+**Goal:** Update the shipped 18-hole Callaway grid defaults to the user-provided 13-row table, ensure localStorage behavior picks up the new shipped defaults appropriately, and align backend scoring logic with the updated chart behavior.
 
 **Planned changes:**
-- Fix TanStack Router navigation so the header “Settings” button routes to `/settings` and the Settings “Back” button returns to `/` without a full page refresh.
-- Fix TanStack Router navigation so the header “Admin” button (when enabled) routes to `/admin`, with working “Back” (to `/`) and “Open Settings” (to `/settings`) behaviors, including the access-disabled `/admin` state linking to Settings.
-- Update shipped/default Callaway chart values for both 9-hole and 18-hole rounds to match the documented/legacy defaults, and ensure net score calculations use the same corrected values.
-- Ensure previously persisted invalid/old shipped defaults in localStorage do not keep forcing incorrect chart values after the fix, while preserving intentional custom edits made via the Admin chart editor.
+- Replace `getDefault18GridChart()` defaults in `frontend/src/lib/callaway/callawayChartPersistence.ts` with the provided 13-row × 5-column (grossScore, worstHoles) pairs so fresh installs load the new grid.
+- Update frontend localStorage migration/reset logic to clear previously cached *shipped-default* 18-hole data so the new shipped defaults load, while preserving user-edited (non-shipped-default) 18-hole charts.
+- Align backend Callaway chart/scoring logic in `backend/main.mo` so calculations are consistent with the updated 18-hole chart behavior used by the frontend (including 0.5 worst-hole increments and any applicable adjustments).
+- Ensure all user-facing UI strings touched by these changes (chart editing/validation/save/reset messaging) remain in English.
 
-**User-visible outcome:** Users can reliably navigate between the main scoring flow, Settings, and Admin (when enabled), and the displayed Callaway chart and net score calculations match the correct default values for 9-hole and 18-hole rounds.
+**User-visible outcome:** On a fresh install, the app shows the updated 18-hole Callaway grid by default; users with older cached shipped defaults are automatically moved to the new shipped defaults without losing any user-edited charts; scoring results match between frontend and backend for 18-hole submissions.

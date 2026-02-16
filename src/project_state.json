@@ -1,41 +1,56 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
+  "summary": "Project involves building/deploying an app that uses an 18-hole chart/grid of values provided by the user; current focus is recovering from a deployment failure and rebuilding with a clean 18-hole grid.",
+  "architectural_notes": [
+    "App build process should accept an 18-hole grid input (rows keyed by hole number with numeric values, including decimals) as configuration/data for the build."
+  ],
   "known_issues": [
-    "Admin button does not work (non-functional).",
-    "Settings button does not work (non-functional).",
-    "Callaway Chart values are incorrect."
+    "Deployment/build failed during last publish; system recovery/retry needed."
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-fix-routing-so-the-header-settings-button-navigates-to-and-renders-the-settings-screen-and-the-settings-screen-back-button-returns-to-the-main-scoring-flow",
-      "title": "Fix routing so the Header \"Settings\" button navigates to and renders the Settings screen, and the Settings screen \"Back\" button returns to the main scoring flow.",
+      "id": "feature-update-the-shipped-18-hole-callaway-grid-defaults-to-match-the-user-provided-13-row-table-row-number-followed-by-five-grossscore-worstholes-pairs-store-these-values-in-frontend-src-lib-callaway-callawaychartpersistence-ts-within-getdefault18gridchart-so-a-fresh-install-no-localstorage-uses-the-new-grid",
+      "title": "Update the shipped 18-hole Callaway grid defaults to match the user-provided 13-row table (row number followed by five (grossScore, worstHoles) pairs). Store these values in frontend/src/lib/callaway/callawayChartPersistence.ts within getDefault18GridChart() so a fresh install (no localStorage) uses the new grid.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-fix-routing-so-the-header-admin-button-when-admin-access-is-enabled-navigates-to-and-renders-the-admin-screen-including-correct-back-and-open-settings-navigation-behaviors",
-      "title": "Fix routing so the Header \"Admin\" button (when admin access is enabled) navigates to and renders the Admin screen, including correct \"Back\" and \"Open Settings\" navigation behaviors.",
+      "id": "feature-ensure-existing-localstorage-migration-reset-behavior-correctly-picks-up-the-new-shipped-18-hole-defaults-for-users-who-still-have-older-shipped-defaults-cached-in-localstorage-i-e-remove-old-shipped-defaults-so-the-updated-shipped-defaults-are-used-when-appropriate",
+      "title": "Ensure existing localStorage migration/reset behavior correctly picks up the new shipped 18-hole defaults for users who still have older shipped defaults cached in localStorage (i.e., remove old shipped defaults so the updated shipped defaults are used when appropriate).",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Support entering/ingesting a clean 18-hole grid (chart values) provided by the user for rebuilding the app",
+      "reqIds": [],
+      "status": "pending"
     },
     {
-      "id": "feature-correct-the-shipped-default-callaway-chart-values-used-by-the-app-so-calculations-and-the-displayed-chart-match-the-documented-legacy-callaway-chart-defaults-for-both-9-hole-and-18-hole-rounds",
-      "title": "Correct the shipped/default Callaway Chart values used by the app so calculations and the displayed chart match the documented/legacy Callaway chart defaults for both 9-hole and 18-hole rounds.",
+      "id": "AR-4",
+      "summary": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
       "reqIds": [
         "REQ-3"
       ],
-      "version": 1
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Use English for all user-facing UI strings involved in chart editing, validation, save/reset messaging, and any new messaging introduced by these changes.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
     }
   ],
-  "new_feature_requests": [],
   "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0

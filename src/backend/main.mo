@@ -6,7 +6,9 @@ import Map "mo:core/Map";
 import Iter "mo:core/Iter";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   type GolferId = Principal;
 

@@ -1,84 +1,66 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T19:57:32.924Z",
+  "generatedAt": "2026-02-16T20:57:10.102Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix routing so the Header \"Settings\" button navigates to and renders the Settings screen, and the Settings screen \"Back\" button returns to the main scoring flow.",
+        "summary": "Update the shipped 18-hole Callaway grid defaults to match the user-provided 13-row table (row number followed by five (grossScore, worstHoles) pairs). Store these values in frontend/src/lib/callaway/callawayChartPersistence.ts within getDefault18GridChart() so a fresh install (no localStorage) uses the new grid.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/state/scoringFlowContext.tsx",
-          "frontend/src/routes/IndexScoringRoute.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/features/settings/SettingsView.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/docs/callaway-chart-defaults.md"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/features/settings/SettingsView.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Fix routing so the Header \"Admin\" button (when admin access is enabled) navigates to and renders the Admin screen, including correct \"Back\" and \"Open Settings\" navigation behaviors.",
+        "summary": "Ensure existing localStorage migration/reset behavior correctly picks up the new shipped 18-hole defaults for users who still have older shipped defaults cached in localStorage (i.e., remove old shipped defaults so the updated shipped defaults are used when appropriate).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useAdminAccessEnabled.ts",
-          "frontend/src/state/adminAccess.ts",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/features/settings/SettingsView.tsx",
-          "frontend/src/features/admin/AdminView.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/docs/callaway-chart-defaults.md"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useAdminAccessEnabled.ts",
-          "frontend/src/state/adminAccess.ts",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/features/settings/SettingsView.tsx",
-          "frontend/src/features/admin/AdminView.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Correct the shipped/default Callaway Chart values used by the app so calculations and the displayed chart match the documented/legacy Callaway chart defaults for both 9-hole and 18-hole rounds.",
-        "status": "implemented",
+        "summary": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Use English for all user-facing UI strings involved in chart editing, validation, save/reset messaging, and any new messaging introduced by these changes.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/lib/callaway/callawayChart.ts",
-          "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "frontend/src/lib/callaway/callaway.ts",
-          "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-          "frontend/docs/callaway-chart-defaults.md"
+          "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "frontend/src/features/admin/AdminView.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "frontend/docs/callaway-chart-defaults.md"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/docs/callaway-chart-defaults.md",
-    "frontend/src/App.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/features/admin/AdminView.tsx",
-    "frontend/src/features/settings/SettingsView.tsx",
-    "frontend/src/hooks/useAdminAccessEnabled.ts",
     "frontend/src/lib/callaway/callawayChartPersistence.ts",
-    "frontend/src/state/adminAccess.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

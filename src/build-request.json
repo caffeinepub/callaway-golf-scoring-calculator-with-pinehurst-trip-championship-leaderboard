@@ -1,88 +1,89 @@
 {
   "kind": "build_request",
-  "title": "Fix non-functional Admin/Settings navigation and correct Callaway chart defaults",
+  "title": "Apply user-provided 18-hole Callaway grid defaults and align scoring logic",
   "projectName": "Callaway Scoring",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix routing so the Header \"Settings\" button navigates to and renders the Settings screen, and the Settings screen \"Back\" button returns to the main scoring flow.",
+      "text": "Update the shipped 18-hole Callaway grid defaults to match the user-provided 13-row table (row number followed by five (grossScore, worstHoles) pairs). Store these values in frontend/src/lib/callaway/callawayChartPersistence.ts within getDefault18GridChart() so a fresh install (no localStorage) uses the new grid.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
+          "1\t0\t0\t0\t0\t72\t0\t0\t0\t0\t0\n2\t73\t0.5\t74\t0.5\t75\t0.5\t0\t0\t0\t0\n3\t76\t1\t77\t1\t78\t1\t79\t1\t80\t1\n4\t81\t1.5\t82\t1.5\t83\t1.5\t84\t1.5\t85\t1.5\n5\t86\t2\t87\t2\t88\t2\t89\t2\t90\t2\n6\t91\t3\t92\t2.5\t93\t2.5\t94\t2.5\t95\t2.5\n7\t96\t3.5\t97\t3\t98\t3.5\t99\t3\t100\t3\n8\t101\t4\t102\t3.5\t103\t3.5\t104\t3.5\t105\t3.5\n9\t106\t4.5\t107\t4\t108\t4\t109\t4\t110\t4\n10\t111\t5\t112\t4.5\t113\t4.5\t114\t4.5\t115\t4.5\n11\t116\t5.5\t117\t5\t118\t5\t119\t5\t120\t5\n12\t121\t6\t122\t5.5\t123\t5.5\t124\t5.5\t125\t5.5\n13\t126\t5.5\t127\t6\t128\t6\t129\t6\t130\t6"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the Header \"Settings\" button changes the URL to /settings and the Settings UI is visible (not the main scoring-step UI).",
-        "Clicking \"Back\" on the Settings screen returns to / and shows the main scoring-step UI again.",
-        "Navigation uses the existing TanStack Router setup (no full page refresh)."
+        "With empty browser localStorage, the 18-hole chart displayed in the app matches the provided 13-row table values.",
+        "The default 18-hole grid remains exactly 13 rows x 5 columns and passes existing grid validation (numeric values; worstHoles in 0.5 increments; non-negative)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Fix routing so the Header \"Admin\" button (when admin access is enabled) navigates to and renders the Admin screen, including correct \"Back\" and \"Open Settings\" navigation behaviors.",
+      "text": "Ensure existing localStorage migration/reset behavior correctly picks up the new shipped 18-hole defaults for users who still have older shipped defaults cached in localStorage (i.e., remove old shipped defaults so the updated shipped defaults are used when appropriate).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
+          "Use English for any user-facing text in the build request."
         ]
       },
       "acceptanceCriteria": [
-        "When Admin Access is enabled in Settings, the Header shows an \"Admin\" button.",
-        "Clicking the Header \"Admin\" button changes the URL to /admin and the Admin UI is visible (not the main scoring-step UI).",
-        "On /admin, clicking \"Back\" returns to / and shows the main scoring-step UI.",
-        "On /admin, clicking \"Open Settings\" navigates to /settings and shows the Settings UI.",
-        "When Admin Access is disabled, visiting /admin shows the existing access-disabled message and the \"Open Settings\" button navigates to /settings."
+        "If localStorage contains the previous shipped 18-hole grid defaults, the app clears that stored shipped-default data and loads the updated shipped 18-hole defaults.",
+        "If localStorage contains a user-edited 18-hole chart (non-shipped-default), the app preserves it and does not overwrite it with shipped defaults."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Correct the shipped/default Callaway Chart values used by the app so calculations and the displayed chart match the documented/legacy Callaway chart defaults for both 9-hole and 18-hole rounds.",
+      "text": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "I will enter a clean grid for 18 holes in my next post"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend Callaway chart thresholds/deductions/adjustments produce results consistent with the updated 18-hole chart behavior used in the frontend for representative gross scores across the chart (including cases that use 0.5 worst-hole deductions and non-zero adjustments if applicable).",
+        "Backend continues to trap on non-18-length score submissions as it does currently."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Use English for all user-facing UI strings involved in chart editing, validation, save/reset messaging, and any new messaging introduced by these changes.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "the admin and settings buttons do not work, the Callaway Chart values are incorrect"
+          "Use English for any user-facing text in the build request."
         ]
       },
       "acceptanceCriteria": [
-        "For 18 holes, the displayed Callaway chart matches these ranges/values: 70-75→worst holes 0 adj 0; 76-80→1 adj 0; 81-85→2 adj 0; 86-90→2 adj 0; 91-95→3 adj 0; 96-100→3 adj 0; 101-105→4 adj 0; 106-110→4 adj -2; 111-115→5 adj -2; 116-120→5 adj -2; 121-125→6 adj -2; 126-130→6 adj -2; 131-135→7 adj -2; 136+→8 adj -2.",
-        "For 9 holes, the displayed Callaway chart matches these ranges/values: 35-39→worst holes 0 adj 0; 40-43→1 adj 0; 44-47→2 adj 0; 48-54→2 adj -1; 55-59→3 adj -1; 60+→4 adj -1.",
-        "Callaway net score calculations use the same corrected chart values as the chart displayed in the UI.",
-        "Any previously persisted invalid/old shipped defaults in localStorage do not continue to force incorrect chart values after this fix (users can still keep intentional custom edits made via the Admin chart editor)."
+        "No new non-English user-facing strings are introduced in the modified areas (including admin chart editor success/error/reset confirmations)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (shadcn components are read-only).",
-    "Do not edit immutable hook entrypoints listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx)."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if an upgrade of stable state is required.",
+    "Do not modify files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
+    "Do not introduce third-party authentication beyond Internet Identity."
   ],
   "nonGoals": [
-    "Adding new authentication providers or changing auth flows (Internet Identity only).",
-    "Adding real-time updates or websocket-based navigation/state sync.",
-    "Changing the Callaway scoring rules beyond correcting the chart default values and ensuring the UI uses them consistently."
+    "Adding 9-hole grid values (not provided in this request).",
+    "Adding new external storage/database for chart persistence beyond the existing localStorage approach.",
+    "Implementing real-time features or multi-user synchronization for chart edits."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

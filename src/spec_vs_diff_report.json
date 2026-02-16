@@ -1,95 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T19:57:32.921Z",
-  "summary": "Routing/navigation for Settings and Admin appears to be implemented via TanStack Router navigation in Header and isolated /settings and /admin views, and Callaway chart default data was updated in the persistence layer. However, due to truncation, some acceptance criteria (notably localStorage migration behavior and exact chart ranges across all rows) cannot be fully verified. The diff also includes several unrelated UI/behavior changes (styling, leaderboard/event setup, scoring rule tweak) that were not requested.",
+  "generatedAt": "2026-02-16T20:57:10.099Z",
+  "summary": "REQ-1 and REQ-2 appear to be addressed in the frontend persistence layer (new default 18-hole grid plus an OLD_SHIPPED_18_GRID constant intended for migration detection), but the diff is truncated so the full 13x5 table and the actual migration logic cannot be fully verified. Backend scoring logic was changed, but there is insufficient evidence that it was aligned to the updated frontend 18-hole grid defaults as required. A new backend/migration.mo module was added without clear evidence it was required by a stable-state upgrade.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Settings screen \"Back\" returns to the main scoring flow at /, and Settings is rendered at /settings (route isolation).",
-      "reason": "Header navigates to /settings, and SettingsView exposes an onBack callback, but the diff snippet does not show App.tsx wiring the /settings route to render SettingsView and connect its Back button to router navigation back to / (App.tsx routing section is truncated).",
-      "evidence": [
-        "frontend/src/components/Header.tsx",
-        "frontend/src/features/settings/SettingsView.tsx",
-        "frontend/src/App.tsx (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Admin screen routing behaviors: /admin renders Admin UI when enabled; /admin shows access-disabled message when disabled; Admin \"Back\" returns to /; Admin \"Open Settings\" navigates to /settings.",
-      "reason": "Header navigates to /admin and AdminView has onBack/onOpenSettings props plus an access-disabled state, but the diff snippet does not show App.tsx connecting these callbacks to TanStack Router navigation and rendering AdminView on /admin (App.tsx routing section is truncated).",
-      "evidence": [
-        "frontend/src/components/Header.tsx",
-        "frontend/src/features/admin/AdminView.tsx",
-        "frontend/src/App.tsx (truncated)"
-      ]
-    },
-    {
       "id": "REQ-3",
-      "requirement": "Previously persisted invalid/old shipped defaults in localStorage do not continue to force incorrect chart values after the fix (while preserving intentional custom edits).",
-      "reason": "The file summary claims an 'automatic migration to remove old shipped defaults from localStorage', but the provided diff content for callawayChartPersistence.ts is truncated and does not show the migration/removal logic or how it distinguishes old shipped defaults from intentional user edits.",
+      "requirement": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
+      "reason": "The backend uses a hard-coded threshold-based chart ([ChartEntry] with lowerBound/deductionHoles/adjustment). The diff provides no evidence that this chart corresponds to the updated 13-row x 5-column frontend grid defaults (which are grid-based and include 0.5 increments). With truncation, alignment cannot be confirmed, and the shown backend chart values appear to follow a different structure than the grid defaults.",
       "evidence": [
-        "frontend/src/lib/callaway/callawayChartPersistence.ts (truncated)",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Displayed Callaway chart matches the specified documented/legacy defaults for both 18-hole and 9-hole ranges/values.",
-      "reason": "The 18-hole grid defaults and column adjustments are shown, but the mapping from this grid to the exact AC ranges (e.g., 70-75→0/0, 106-110→4/-2, etc.) cannot be fully verified from the truncated snippet; the 9-hole defaults are also truncated before completing the grid.",
-      "evidence": [
-        "frontend/src/lib/callaway/callawayChartPersistence.ts (truncated)"
+        "backend/main.mo (getCallawayChart() hard-coded lowerBound/deductionHoles/adjustment; truncated)",
+        "frontend/src/lib/callaway/callawayChartPersistence.ts (getDefault18GridChart() grid-based defaults; truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Changed Callaway scoring behavior to force 'when gross score is at or below course par, net score equals gross score' (scoring rule change beyond just correcting default chart values).",
-      "reason": "This is explicitly a non-goal ('Changing the Callaway scoring rules beyond correcting the chart default values') and is described as newly implemented in the diff summary.",
+      "description": "Added a backend migration module and wired it into backend/main.mo without clear evidence that a stable-state upgrade/migration was required by the request.",
+      "reason": "The BuildRequest allows adding backend/migration.mo only if an upgrade of stable state is required. The diff shows backend/migration.mo added as a no-op and imported/used in backend/main.mo, but the diff summary does not show any stable variable schema change or upgrade logic necessitating it.",
       "evidence": [
-        "frontend-file-summaries.txt (entry for frontend/src/lib/callaway/callaway.ts)"
+        "backend/migration.mo (new file; no-op run(old : {}) : {} )",
+        "backend/main.mo (imports Migration \"migration\" and uses Migration.run)"
       ]
     },
     {
-      "description": "Golf-themed global styling updates (OKLCH color system, custom fonts) and Tailwind config extensions.",
-      "reason": "Not requested by any requirement (routing + chart defaults only).",
+      "description": "Project metadata/state tracking updates not requested (project_state.json).",
+      "reason": "The BuildRequest focuses on Callaway grid defaults, localStorage migration behavior, backend scoring alignment, and English UI strings. Updating project_state.json is not part of those requirements.",
       "evidence": [
-        "frontend-file-summaries.txt (entries for frontend/src/index.css, frontend/tailwind.config.js)"
-      ]
-    },
-    {
-      "description": "Event setup and scoring-entry UX changes (e.g., blank default title, golfer count validation, scorecard layout, gross total display conditions).",
-      "reason": "Not requested by any requirement.",
-      "evidence": [
-        "frontend-file-summaries.txt (entries for frontend/src/features/eventSetup/EventSetupForm.tsx, frontend/src/features/scoreEntry/GolferScoreEntryList.tsx, frontend/src/features/scoreEntry/validation.ts)"
-      ]
-    },
-    {
-      "description": "Leaderboard and breakdown UI behavior changes (conditional title section, additional breakdown details, formatting changes, PDF download mentions).",
-      "reason": "Not requested by any requirement.",
-      "evidence": [
-        "frontend-file-summaries.txt (entries for frontend/src/features/leaderboard/LeaderboardView.tsx, frontend/src/features/leaderboard/LeaderboardTable.tsx, frontend/src/features/leaderboard/BreakdownPanel.tsx)"
-      ]
-    },
-    {
-      "description": "Added developer documentation file about chart defaults (callaway-chart-defaults.md).",
-      "reason": "Not requested by any requirement.",
-      "evidence": [
-        "frontend/docs/callaway-chart-defaults.md"
+        "project_state.json"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.66,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/docs/callaway-chart-defaults.md",
-    "frontend/src/App.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/features/admin/AdminView.tsx",
-    "frontend/src/features/settings/SettingsView.tsx",
-    "frontend/src/hooks/useAdminAccessEnabled.ts",
     "frontend/src/lib/callaway/callawayChartPersistence.ts",
-    "frontend/src/state/adminAccess.ts",
     "project_state.json"
   ]
 }
