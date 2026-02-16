@@ -6,9 +6,9 @@ import { LeaderboardTable } from './LeaderboardTable';
 import { BreakdownPanel } from './BreakdownPanel';
 import { CallawayChartSection } from './CallawayChartSection';
 import { exportStandingsToPdf } from './exportStandingsPdf';
-import { calculateCallaway } from '../../lib/callaway/callaway';
+import { calculateCallawayFromLocalChart } from '../../lib/callaway/callaway';
 import type { EventSetup, GolferData, CallawayResultData } from '../../state/eventTypes';
-import { useGetCallawayChart } from '../../hooks/useQueries';
+import { getActiveGridChart } from '../../lib/callaway/callawayChartPersistence';
 
 interface LeaderboardViewProps {
   eventSetup: EventSetup;
@@ -16,19 +16,16 @@ interface LeaderboardViewProps {
 }
 
 export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
-  const { data: backendChart, isLoading: isChartLoading } = useGetCallawayChart();
-
   const results = useMemo(() => {
-    if (!backendChart || backendChart.length === 0) {
-      return [];
-    }
+    // Load the locally editable chart for the event's hole count
+    const localChart = getActiveGridChart(eventSetup.holeCount);
 
     const calculatedResults: CallawayResultData[] = golfers.map((golfer) => {
       const holeScores = golfer.holeScores.map((score) => parseInt(score, 10));
-      const callawayResult = calculateCallaway(
+      const callawayResult = calculateCallawayFromLocalChart(
         holeScores,
         eventSetup.coursePar,
-        backendChart
+        localChart
       );
       
       return {
@@ -44,7 +41,7 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
     });
 
     return calculatedResults.sort((a, b) => a.net - b.net);
-  }, [golfers, eventSetup.coursePar, backendChart]);
+  }, [golfers, eventSetup.coursePar, eventSetup.holeCount]);
 
   const handleExportPdf = () => {
     exportStandingsToPdf({
@@ -54,30 +51,6 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
       coursePar: eventSetup.coursePar,
     });
   };
-
-  if (isChartLoading) {
-    return (
-      <div className="container mx-auto max-w-6xl space-y-6 p-4">
-        <Card>
-          <CardContent className="flex items-center justify-center p-12">
-            <p className="text-muted-foreground">Loading scoring chart...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!backendChart || backendChart.length === 0) {
-    return (
-      <div className="container mx-auto max-w-6xl space-y-6 p-4">
-        <Card>
-          <CardContent className="flex items-center justify-center p-12">
-            <p className="text-destructive">Error: Unable to load scoring chart from backend.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-6xl space-y-6 p-4">
@@ -135,7 +108,7 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
         })}
       </div>
 
-      <CallawayChartSection backendChart={backendChart} />
+      <CallawayChartSection holeCount={eventSetup.holeCount} />
     </div>
   );
 }

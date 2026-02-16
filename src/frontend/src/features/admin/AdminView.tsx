@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Settings, Lock } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { useAdminAccessEnabled } from '../../hooks/useAdminAccessEnabled';
+import { CallawayChartEditor } from './CallawayChartEditor';
 
 export function AdminView() {
   const navigate = useNavigate();
@@ -32,28 +33,5 @@ export function AdminView() {
     );
   }
 
-  return (
-    <div className="container mx-auto max-w-4xl space-y-6 p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin Panel</CardTitle>
-          <CardDescription>
-            The Callaway scoring chart is now managed by the backend system.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-lg border border-muted bg-muted/30 p-4">
-            <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> Chart editing has been moved to the backend. The scoring chart is now
-              centrally managed and automatically applied to all calculations. Contact your system administrator
-              to request chart modifications.
-            </p>
-          </div>
-          <Button onClick={() => navigate({ to: '/' })} variant="outline">
-            Return to Main App
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <CallawayChartEditor />;
 }

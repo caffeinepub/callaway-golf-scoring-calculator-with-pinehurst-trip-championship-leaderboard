@@ -1,85 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Revert Version 21 Callaway scoring change causing incorrect calculations",
+  "title": "Restore editable Callaway chart (revert backend-managed chart lock)",
   "projectName": "Callaway Scoring",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Undo the Version 21 backend scoring change by fixing `backend/main.mo` so Callaway deductions are computed from the worst (highest) hole scores, including correct handling of fractional (0.5) holes.",
-      "target": "backend",
+      "text": "Re-enable the Admin Callaway chart editor UI so that when Admin Access is enabled, the /admin page shows the editable chart interface instead of a locked “backend-managed chart” message.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-6"
         ],
         "quotes": [
-          "this is not calculating correctly undo this change"
+          "return the app to the last version that allows editing the chart"
         ]
       },
       "acceptanceCriteria": [
-        "For a non-fractional deductionHoles value (e.g., 3.0), the backend sums the 3 highest hole scores (worst holes), not the 3 lowest.",
-        "For a fractional deductionHoles value (e.g., 3.5), the backend sums the 3 highest hole scores plus half of the next-highest hole score using a documented, consistent rounding rule.",
-        "The half-hole calculation uses the same sorted ordering as the full-hole calculation (i.e., it takes the next worst score, not an arbitrary unsorted score).",
-        "Net score calculation remains: if gross <= par then net = gross, else net = gross - deduction + adjustment."
+        "With Admin Access disabled, /admin continues to show the existing \"Admin Access Disabled\" card and Settings navigation.",
+        "With Admin Access enabled, /admin renders the CallawayChartEditor (18-hole and 9-hole tabs, editable grid, Save Changes, Reset to Defaults) and does not show messaging that chart editing is moved to the backend.",
+        "All user-facing text on the /admin page is in English."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Undo the Version 21 backend chart change by reverting the hard-coded `chart` data in `backend/main.mo` to the last known-correct production chart (removing placeholder rows/ranges that lead to incorrect lookups), and ensure `getCallawayChart()` returns the reverted chart exactly as used by backend calculations.",
-      "target": "backend",
+      "text": "Restore chart editing functionality end-to-end by making the scoring calculations and chart display use the locally editable Callaway chart (from the localStorage-backed chart persistence layer) so user edits affect results.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-6"
         ],
         "quotes": [
-          "this is not calculating correctly undo this change"
+          "return the app to the last version that allows editing the chart"
         ]
       },
       "acceptanceCriteria": [
-        "The backend no longer contains placeholder chart rows/ranges that can match real gross scores with 0 deduction/0 adjustment unexpectedly.",
-        "`getCallawayChart()` returns the same chart values/ranges that `calculateCallaway()` uses for lookup (no divergence).",
-        "For gross scores above the highest defined range, lookup behavior is correct and deterministic (e.g., an open-ended last band or equivalent), matching the reverted chart semantics."
+        "Editing chart values in the CallawayChartEditor and clicking \"Save Changes\" changes the chart used by the app when calculating results in LeaderboardView.",
+        "LeaderboardView no longer blocks results rendering solely due to failure to load the backend chart; it can calculate and display results using the locally editable chart.",
+        "The chart shown in the leaderboard \"Callaway Scoring Chart\" section reflects the same chart data being used for calculations (including any saved edits)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a small, deterministic backend-level verification (unit-style logic or debug-only checks) to confirm that backend deduction/net calculations match the frontend’s intended behavior for representative sample scorecards (including fractional and non-fractional deduction cases).",
-      "target": "backend",
+      "text": "Ensure the app no longer presents the Callaway chart as backend-locked/centrally managed, and remove any UI copy that implies chart edits require contacting a system administrator.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-6"
         ],
         "quotes": [
-          "this is not calculating correctly undo this change"
+          "return the app to the last version that allows editing the chart"
         ]
       },
       "acceptanceCriteria": [
-        "There is at least one verification covering a case where deductionHoles is an integer (e.g., 1.0, 3.0).",
-        "There is at least one verification covering a case where deductionHoles has a 0.5 fraction (e.g., 0.5, 2.5, 3.5).",
-        "Verification explicitly demonstrates that worst holes are the highest hole scores."
+        "The Admin panel no longer shows text stating \"The Callaway scoring chart is now managed by the backend system\" or similar locked/centralized-management messaging.",
+        "The app’s Settings description for Admin Access remains accurate (admin features include the Callaway chart editor)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in `backend/main.mo` (no additional backend services).",
-    "Do not modify any files under `frontend/src/components/ui` or other frontend immutable paths listed in SYSTEM_CONTEXT."
+    "Do not edit files under frontend/src/components/ui (read-only UI component sources).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx (immutable paths).",
+    "Keep all backend logic (if any is modified) within the single Motoko actor in backend/main.mo; add backend/migration.mo only if state migration is required."
   ],
   "nonGoals": [
-    "Do not add new product features or new scoring systems beyond reverting/fixing the incorrect calculation change.",
-    "Do not redesign the UI/UX; this request is specifically about correcting/reverting scoring calculations."
+    "Do not add multi-user or shared chart synchronization across devices.",
+    "Do not add third-party authentication or external database/storage.",
+    "Do not redesign the scoring algorithm beyond restoring chart editability impact (no new scoring modes)."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

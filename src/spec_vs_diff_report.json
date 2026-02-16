@@ -1,54 +1,17 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T21:34:23.722Z",
-  "summary": "The diff clearly updates the hard-coded Callaway chart in `backend/main.mo`, but the key scoring/deduction logic changes and the requested backend-level verification are not evidenced in the provided (truncated) diff. Additionally, non-requested changes were made to `frontend-file-summaries.txt` and `project_state.json`.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "Fix `backend/main.mo` so Callaway deductions are computed from the worst (highest) hole scores, including correct handling of fractional (0.5) holes, and keep net score calculation semantics.",
-      "reason": "The diff snippet only shows type definitions and a `chart` array; it does not show the deduction calculation implementation (sorting worst holes, fractional half-hole handling/rounding, or net-score formula). The summary even says 'Remaining implementation unchanged', and the relevant code is not present due to truncation.",
-      "evidence": [
-        "backend/main.mo (truncated): shows chart + 'Remaining implementation unchanged' but no deduction logic visible"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Ensure `getCallawayChart()` returns the reverted chart exactly as used by backend calculations, and ensure deterministic lookup behavior above the highest defined range.",
-      "reason": "While the `chart` array is shown, there is no visible implementation of `getCallawayChart()` or the lookup logic in `calculateCallaway()` due to truncation, so alignment and deterministic behavior for gross scores above the max band cannot be verified from the diff summary.",
-      "evidence": [
-        "backend/main.mo (truncated): chart defined, but `getCallawayChart()` and lookup behavior not shown"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Add deterministic backend-level verification (unit-style logic or debug-only checks) covering integer and 0.5 fractional deductions and demonstrating worst holes are highest scores.",
-      "reason": "No test/verification code, debug assertions, or unit-style checks are shown or mentioned in the diff summary for `backend/main.mo` (or elsewhere).",
-      "evidence": [
-        "backend/main.mo (truncated): no verification/test logic shown"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Updated/added extensive frontend file summary content.",
-      "reason": "The BuildRequest constraints and requirements are backend-focused and explicitly warn against modifying certain frontend paths; updating a generated `frontend-file-summaries.txt` artifact is not requested by any REQ and is unrelated to reverting backend scoring.",
-      "evidence": [
-        "frontend-file-summaries.txt (modified)"
-      ]
-    },
-    {
-      "description": "Updated `project_state.json` to add/track AR-1/AR-2/AR-3 request metadata and statuses.",
-      "reason": "Not requested by any requirement; the BuildRequest only calls for backend scoring/chart fixes and backend verification logic.",
-      "evidence": [
-        "project_state.json (modified)"
-      ]
-    }
-  ],
-  "confidence": 0.62,
+  "generatedAt": "2026-02-16T21:53:49.373Z",
+  "summary": "Diff re-enables the Admin Callaway chart editor by rendering CallawayChartEditor when Admin Access is enabled, switches leaderboard calculations and chart display to use the locally editable (localStorage-backed) grid chart, and updates the leaderboard’s Callaway chart section to read from local persistence rather than backend-managed chart data. No clear unrequested features are evident from the provided diff summary.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.72,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
+    "frontend/src/features/admin/AdminView.tsx",
+    "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+    "frontend/src/features/leaderboard/LeaderboardView.tsx",
+    "frontend/src/lib/callaway/callaway.ts",
     "project_state.json"
   ]
 }

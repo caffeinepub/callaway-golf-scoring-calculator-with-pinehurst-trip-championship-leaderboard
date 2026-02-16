@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Revert and fix the Version 21 Callaway backend changes so deductions, chart lookups, and net score calculations match the previously correct behavior (including fractional 0.5-hole deductions).
+**Goal:** Restore the locally editable Callaway scoring chart experience so admins can edit the chart in the UI and those edits are used for scoring and chart display.
 
 **Planned changes:**
-- Update `backend/main.mo` to compute Callaway deductions from the worst (highest) hole scores, including consistent handling of fractional (0.5) deduction holes using the same sorted ordering.
-- Revert the hard-coded Callaway `chart` in `backend/main.mo` to the last known-correct production version, removing placeholder rows/ranges and ensuring `getCallawayChart()` matches the chart used for backend lookup.
-- Add small deterministic backend-level verification logic/checks covering both integer and fractional deduction scenarios to confirm worst-hole selection and net calculation behavior.
+- Re-enable the Admin Callaway chart editor UI on `/admin` when Admin Access is enabled (18-hole/9-hole tabs, editable grid, Save Changes, Reset to Defaults).
+- Ensure scoring calculations and leaderboard chart display use the localStorage-backed, locally editable Callaway chart so saved edits affect results.
+- Remove any UI messaging that presents the chart as backend-locked/centrally managed or implies edits require contacting an administrator, while keeping Admin Access descriptions accurate and all `/admin` text in English.
 
-**User-visible outcome:** Callaway scoring calculations (deduction, adjustment lookup, and net score) produce correct, consistent results again for both standard and fractional deduction cases.
+**User-visible outcome:** When Admin Access is enabled, admins can edit and save the Callaway chart on `/admin`, and the leaderboard both calculates results and displays the Callaway chart using those saved edits without showing backend-managed/locked messaging.

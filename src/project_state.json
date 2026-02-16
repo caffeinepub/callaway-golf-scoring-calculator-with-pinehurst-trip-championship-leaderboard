@@ -4,36 +4,36 @@
   "summary": "New project",
   "architectural_notes": [],
   "known_issues": [
-    "Version 21 backend update is causing incorrect calculations; user requested to undo/revert this change."
+    "Regression: chart editing not available/working in the latest version; user requests reverting to the last version where chart editing works."
   ],
   "isFixRequest": true,
-  "existing_features": [],
-  "new_feature_requests": [
+  "existing_features": [
     {
-      "id": "AR-1",
-      "summary": "Undo the Version 21 backend scoring change by fixing `backend/main.mo` so Callaway deductions are computed from the worst (highest) hole scores, including correct handling of fractional (0.5) holes.",
+      "id": "feature-re-enable-the-admin-callaway-chart-editor-ui-so-that-when-admin-access-is-enabled-the-admin-page-shows-the-editable-chart-interface-instead-of-a-locked-backend-managed-chart-message",
+      "title": "Re-enable the Admin Callaway chart editor UI so that when Admin Access is enabled, the /admin page shows the editable chart interface instead of a locked “backend-managed chart” message.",
       "reqIds": [
         "REQ-1"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-2",
-      "summary": "Undo the Version 21 backend chart change by reverting the hard-coded `chart` data in `backend/main.mo` to the last known-correct production chart (removing placeholder rows/ranges that lead to incorrect lookups), and ensure `getCallawayChart()` returns the reverted chart exactly as used by backend calculations.",
+      "id": "feature-restore-chart-editing-functionality-end-to-end-by-making-the-scoring-calculations-and-chart-display-use-the-locally-editable-callaway-chart-from-the-localstorage-backed-chart-persistence-layer-so-user-edits-affect-results",
+      "title": "Restore chart editing functionality end-to-end by making the scoring calculations and chart display use the locally editable Callaway chart (from the localStorage-backed chart persistence layer) so user edits affect results.",
       "reqIds": [
         "REQ-2"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-3",
-      "summary": "Add a small, deterministic backend-level verification (unit-style logic or debug-only checks) to confirm that backend deduction/net calculations match the frontend’s intended behavior for representative sample scorecards (including fractional and non-fractional deduction cases).",
+      "id": "feature-ensure-the-app-no-longer-presents-the-callaway-chart-as-backend-locked-centrally-managed-and-remove-any-ui-copy-that-implies-chart-edits-require-contacting-a-system-administrator",
+      "title": "Ensure the app no longer presents the Callaway chart as backend-locked/centrally managed, and remove any UI copy that implies chart edits require contacting a system administrator.",
       "reqIds": [
         "REQ-3"
       ],
-      "status": "pending"
+      "version": 1
     }
   ],
+  "new_feature_requests": [],
   "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0

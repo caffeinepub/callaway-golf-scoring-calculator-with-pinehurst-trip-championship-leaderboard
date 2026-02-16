@@ -1,6 +1,79 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Callaway Scoring – Frontend-only plan for Version 21 scoring revert",
-  "requirements": []
+  "title": "Restore locally editable Callaway chart editing and usage",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Restore the Admin Callaway chart editor UI when Admin Access is enabled (show editor instead of locked backend-managed messaging).",
+      "acceptanceCriteria": [
+        "With Admin Access disabled, /admin continues to show the existing \"Admin Access Disabled\" card and Settings navigation.",
+        "With Admin Access enabled, /admin renders the CallawayChartEditor (18-hole and 9-hole tabs, editable grid, Save Changes, Reset to Defaults) and does not show messaging that chart editing is moved to the backend.",
+        "All user-facing text on the /admin page is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/admin/AdminView.tsx",
+          "operation": "modify",
+          "description": "Replace the admin-enabled locked/centrally-managed chart card with the editable Admin UI by rendering CallawayChartEditor. Keep the Admin Access disabled state unchanged (existing disabled card + Settings navigation). Use existing shadcn-ui Card/Button layout primitives for consistency; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "operation": "modify",
+          "description": "Confirm the editor can be embedded as the primary /admin content (no reliance on removed locked-state UI). Keep user-facing text English and aligned with the restored admin workflow; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Make calculations and leaderboard chart display use the locally editable (localStorage-backed) Callaway chart so saved edits affect results and rendering no longer blocks on backend chart loading.",
+      "acceptanceCriteria": [
+        "Editing chart values in the CallawayChartEditor and clicking \"Save Changes\" changes the chart used by the app when calculating results in LeaderboardView.",
+        "LeaderboardView no longer blocks results rendering solely due to failure to load the backend chart; it can calculate and display results using the locally editable chart.",
+        "The chart shown in the leaderboard \"Callaway Scoring Chart\" section reflects the same chart data being used for calculations (including any saved edits)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
+          "operation": "modify",
+          "description": "Stop hard-blocking results on backend chart availability. Source the chart used for calculations from the localStorage-backed chart persistence layer (matching the event's holeCount) and ensure calculations re-run when users save chart edits. Keep any backend chart fetch (if retained) as optional/fallback but not a blocker; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callaway.ts",
+          "operation": "modify",
+          "description": "Update the calculation utility to accept and use the locally editable chart representation (from the local chart persistence layer) for deduction/adjustment lookup, while keeping behavior consistent for 9/18 holes. Ensure the returned metadata (row label / worst holes used) matches the chart being applied."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+          "operation": "modify",
+          "description": "Change the chart display component to render the same locally editable chart data that is used by calculations (including any saved edits), instead of assuming a backend-provided SharedChartEntry array. Continue using existing shadcn-ui Card/Table components for layout; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "operation": "modify",
+          "description": "Add/adjust a small helper (or exported accessor) that provides the exact chart shape needed by both calculations and CallawayChartSection (derived from the active local grid chart for 9/18 holes), so both consumers share a single source of truth."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Remove UI copy implying the Callaway chart is backend-locked/centrally managed and ensure Admin Access settings text remains accurate.",
+      "acceptanceCriteria": [
+        "The Admin panel no longer shows text stating \"The Callaway scoring chart is now managed by the backend system\" or similar locked/centralized-management messaging.",
+        "The app’s Settings description for Admin Access remains accurate (admin features include the Callaway chart editor)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/admin/AdminView.tsx",
+          "operation": "modify",
+          "description": "Remove any remaining locked/centralized-management messaging and any copy implying users must contact a system administrator to change the chart. Ensure /admin copy is English-only and consistent with local editability; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/settings/SettingsView.tsx",
+          "operation": "modify",
+          "description": "Verify the Admin Access description remains accurate after restoring the editor (admin features include the Callaway chart editor) and adjust wording only if needed to match the restored behavior; verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
 }
