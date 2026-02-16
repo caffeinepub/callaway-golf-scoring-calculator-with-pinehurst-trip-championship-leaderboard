@@ -35,6 +35,10 @@ export function LeaderboardTable({ results }: LeaderboardTableProps) {
     return null;
   };
 
+  const formatNumber = (num: number) => {
+    return num % 1 === 0 ? num.toString() : num.toFixed(1);
+  };
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -58,9 +62,9 @@ export function LeaderboardTable({ results }: LeaderboardTableProps) {
                 </div>
               </TableCell>
               <TableCell className="font-medium">{result.name}</TableCell>
-              <TableCell className="text-right font-bold text-lg">{result.net}</TableCell>
+              <TableCell className="text-right font-bold text-lg">{formatNumber(result.net)}</TableCell>
               <TableCell className="text-right text-muted-foreground">{result.gross}</TableCell>
-              <TableCell className="text-right text-muted-foreground">-{result.deduction}</TableCell>
+              <TableCell className="text-right text-muted-foreground">-{formatNumber(result.deduction)}</TableCell>
               <TableCell className="text-right text-muted-foreground">
                 {result.adjustment === 0 ? '0' : result.adjustment}
               </TableCell>

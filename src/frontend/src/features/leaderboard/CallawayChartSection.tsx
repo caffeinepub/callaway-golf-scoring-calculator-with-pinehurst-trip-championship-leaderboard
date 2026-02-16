@@ -39,7 +39,9 @@ export function CallawayChartSection({ holeCount }: CallawayChartSectionProps) {
               {chart.map((entry, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">{entry.grossRange}</TableCell>
-                  <TableCell className="text-center">{entry.worstHoles}</TableCell>
+                  <TableCell className="text-center">
+                    {entry.worstHoles % 1 === 0 ? entry.worstHoles : entry.worstHoles.toFixed(1)}
+                  </TableCell>
                   <TableCell className="text-center">
                     {entry.adjustment === 0 ? '0' : entry.adjustment}
                   </TableCell>
@@ -53,7 +55,8 @@ export function CallawayChartSection({ holeCount }: CallawayChartSectionProps) {
           <ul className="space-y-1 list-disc list-inside">
             <li>Your gross score determines which chart row applies</li>
             <li>The worst holes (highest scores) are summed for the deduction</li>
-            <li>The chart adjustment is applied (typically 0 or -2)</li>
+            <li>Fractional worst holes (e.g., 2.5) deduct the worst 2 holes plus half of the 3rd worst hole</li>
+            <li>The chart adjustment is applied (typically 0 or negative)</li>
             <li>Net Score = Gross - Deduction + Adjustment</li>
           </ul>
         </div>

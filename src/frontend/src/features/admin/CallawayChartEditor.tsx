@@ -4,31 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Edit3, Save, RotateCcw, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
-  getActiveChart,
-  getDefaultChart,
-  saveEditedChart,
-  resetChartToDefaults,
-  formatChartRowLabel,
+  getActiveGridChart,
+  saveGridChart,
+  resetGridChartToDefaults,
+  getDefault18GridChart,
+  getDefault9GridChart,
 } from '../../lib/callaway/callawayChartPersistence';
-import { type CallawayChartEntry } from '../../lib/callaway/callawayChart';
+import { type GridChartData } from '../../lib/callaway/callawayChart';
 
 type HoleCount = 9 | 18;
 
 export function CallawayChartEditor() {
   const [activeTab, setActiveTab] = useState<'18' | '9'>('18');
-  const [chart18, setChart18] = useState<CallawayChartEntry[]>(getActiveChart(18));
-  const [chart9, setChart9] = useState<CallawayChartEntry[]>(getActiveChart(9));
+  const [chart18, setChart18] = useState<GridChartData>(getActiveGridChart(18));
+  const [chart9, setChart9] = useState<GridChartData>(getActiveGridChart(9));
   const [validationError, setValidationError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
@@ -36,84 +28,77 @@ export function CallawayChartEditor() {
   const setCurrentChart = activeTab === '18' ? setChart18 : setChart9;
   const holeCount: HoleCount = activeTab === '18' ? 18 : 9;
 
-  const handleFieldChange = (index: number, field: keyof CallawayChartEntry, value: string) => {
-    const newChart = [...currentChart];
-    const entry = { ...newChart[index] };
+  const handleCellChange = (row: number, col: number, field: 'grossScore' | 'worstHoles', value: string) => {
+    const newChart = { ...currentChart };
+    newChart.grid = newChart.grid.map((r, i) => (i === row ? [...r] : r));
 
-    if (field === 'lowerBound' || field === 'worstHoles' || field === 'adjustment') {
-      const numValue = parseInt(value, 10);
-      if (!isNaN(numValue)) {
-        entry[field] = numValue;
-      }
-    } else if (field === 'upperBound') {
-      if (value === '' || value === 'null') {
-        entry.upperBound = null;
-      } else {
-        const numValue = parseInt(value, 10);
-        if (!isNaN(numValue)) {
-          entry.upperBound = numValue;
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue)) {
+      if (field === 'worstHoles') {
+        // Validate 0.5 increments
+        if ((numValue * 2) % 1 === 0 && numValue >= 0) {
+          newChart.grid[row][col] = { ...newChart.grid[row][col], [field]: numValue };
         }
+      } else {
+        newChart.grid[row][col] = { ...newChart.grid[row][col], [field]: Math.round(numValue) };
       }
     }
 
-    // Update grossRange label
-    entry.grossRange = formatChartRowLabel(entry.lowerBound, entry.upperBound);
+    setCurrentChart(newChart);
+    setValidationError('');
+    setSuccessMessage('');
+  };
 
-    newChart[index] = entry;
+  const handleAdjustmentChange = (col: number, value: string) => {
+    const newChart = { ...currentChart };
+    newChart.columnAdjustments = [...newChart.columnAdjustments];
+
+    const numValue = parseInt(value, 10);
+    if (!isNaN(numValue)) {
+      newChart.columnAdjustments[col] = numValue;
+    }
+
     setCurrentChart(newChart);
     setValidationError('');
     setSuccessMessage('');
   };
 
   const validateCurrentChart = (): string | null => {
-    if (currentChart.length === 0) {
-      return 'Chart cannot be empty';
+    if (!currentChart.grid || currentChart.grid.length !== 13) {
+      return 'Chart must have exactly 13 rows';
     }
 
-    for (let i = 0; i < currentChart.length; i++) {
-      const entry = currentChart[i];
-
-      // Check numeric validity
-      if (typeof entry.lowerBound !== 'number' || entry.lowerBound < 0) {
-        return `Row ${i + 1}: Lower bound must be a non-negative number`;
+    for (let row = 0; row < 13; row++) {
+      if (currentChart.grid[row].length !== 5) {
+        return `Row ${row + 1} must have exactly 5 columns`;
       }
 
-      if (typeof entry.worstHoles !== 'number' || entry.worstHoles < 0) {
-        return `Row ${i + 1}: Worst holes must be a non-negative number`;
-      }
+      for (let col = 0; col < 5; col++) {
+        const cell = currentChart.grid[row][col];
 
-      if (typeof entry.adjustment !== 'number') {
-        return `Row ${i + 1}: Adjustment must be a number`;
-      }
-
-      // Check upperBound validity
-      if (entry.upperBound !== null) {
-        if (typeof entry.upperBound !== 'number' || entry.upperBound < 0) {
-          return `Row ${i + 1}: Upper bound must be a non-negative number or empty for open-ended`;
+        if (typeof cell.grossScore !== 'number' || cell.grossScore < 0) {
+          return `Row ${row + 1}, Column ${col + 1}: Gross score must be a non-negative number`;
         }
 
-        if (entry.lowerBound > entry.upperBound) {
-          return `Row ${i + 1}: Lower bound cannot be greater than upper bound`;
+        if (typeof cell.worstHoles !== 'number' || cell.worstHoles < 0) {
+          return `Row ${row + 1}, Column ${col + 1}: Worst holes must be a non-negative number`;
         }
-      }
 
-      // Check ordering
-      if (i > 0 && entry.lowerBound < currentChart[i - 1].lowerBound) {
-        return `Row ${i + 1}: Rows must be ordered by increasing lower bound`;
-      }
-
-      // Check for gaps or overlaps
-      if (i > 0) {
-        const prevEntry = currentChart[i - 1];
-        if (prevEntry.upperBound !== null && entry.lowerBound <= prevEntry.upperBound) {
-          return `Row ${i + 1}: Overlaps with previous row`;
+        // Validate 0.5 increments
+        if ((cell.worstHoles * 2) % 1 !== 0) {
+          return `Row ${row + 1}, Column ${col + 1}: Worst holes must be in 0.5 increments (e.g., 0, 0.5, 1, 1.5, 2, ...)`;
         }
       }
     }
 
-    // Last row should have null upperBound
-    if (currentChart[currentChart.length - 1].upperBound !== null) {
-      return 'Last row should have no upper limit (leave upper bound empty)';
+    if (currentChart.columnAdjustments.length !== 5) {
+      return 'Must have exactly 5 column adjustments';
+    }
+
+    for (let col = 0; col < 5; col++) {
+      if (typeof currentChart.columnAdjustments[col] !== 'number') {
+        return `Column ${col + 1} adjustment must be a number`;
+      }
     }
 
     return null;
@@ -127,7 +112,7 @@ export function CallawayChartEditor() {
       return;
     }
 
-    const success = saveEditedChart(holeCount, currentChart);
+    const success = saveGridChart(holeCount, currentChart);
     if (success) {
       setSuccessMessage(`${holeCount}-hole chart saved successfully!`);
       setValidationError('');
@@ -139,8 +124,8 @@ export function CallawayChartEditor() {
 
   const handleReset = () => {
     if (confirm(`Reset ${holeCount}-hole chart to default values?`)) {
-      resetChartToDefaults(holeCount);
-      const defaultChart = getDefaultChart(holeCount);
+      resetGridChartToDefaults(holeCount);
+      const defaultChart = holeCount === 18 ? getDefault18GridChart() : getDefault9GridChart();
       setCurrentChart(defaultChart);
       setSuccessMessage(`${holeCount}-hole chart reset to defaults`);
       setValidationError('');
@@ -155,7 +140,7 @@ export function CallawayChartEditor() {
           Callaway Chart Editor
         </CardTitle>
         <CardDescription>
-          Edit the Callaway scoring charts for 9-hole and 18-hole rounds. Changes will be applied to all future calculations.
+          Edit the Callaway scoring charts for 9-hole and 18-hole rounds. The grid shows gross scores with their corresponding worst holes to deduct. Each column has an adjustment that applies to all scores in that column.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -182,16 +167,18 @@ export function CallawayChartEditor() {
           </TabsList>
 
           <TabsContent value="18" className="space-y-4">
-            <ChartTable
+            <ChartGrid
               chart={chart18}
-              onFieldChange={(index, field, value) => handleFieldChange(index, field, value)}
+              onCellChange={(row, col, field, value) => handleCellChange(row, col, field, value)}
+              onAdjustmentChange={(col, value) => handleAdjustmentChange(col, value)}
             />
           </TabsContent>
 
           <TabsContent value="9" className="space-y-4">
-            <ChartTable
+            <ChartGrid
               chart={chart9}
-              onFieldChange={(index, field, value) => handleFieldChange(index, field, value)}
+              onCellChange={(row, col, field, value) => handleCellChange(row, col, field, value)}
+              onAdjustmentChange={(col, value) => handleAdjustmentChange(col, value)}
             />
           </TabsContent>
         </Tabs>
@@ -210,11 +197,11 @@ export function CallawayChartEditor() {
         <div className="text-sm text-muted-foreground space-y-1 pt-2">
           <p className="font-medium">Editing Tips:</p>
           <ul className="list-disc list-inside space-y-1 ml-2">
-            <li>Lower bound: Starting gross score for this range</li>
-            <li>Upper bound: Ending gross score (leave empty for last row to make it open-ended)</li>
-            <li>Worst holes: Number of highest-scoring holes to deduct</li>
-            <li>Adjustment: Additional score adjustment (typically 0 or negative)</li>
-            <li>Rows must be ordered by increasing lower bound with no overlaps</li>
+            <li>Each cell contains a gross score and the number of worst holes to deduct</li>
+            <li>Worst holes can be entered in 0.5 increments (e.g., 0, 0.5, 1, 1.5, 2, 2.5, etc.)</li>
+            <li>Each column has an adjustment value that applies to all scores in that column</li>
+            <li>Adjustments are typically 0 or negative (e.g., -1, -2)</li>
+            <li>The grid is 13 rows by 5 columns for both 9-hole and 18-hole charts</li>
           </ul>
         </div>
       </CardContent>
@@ -222,67 +209,95 @@ export function CallawayChartEditor() {
   );
 }
 
-interface ChartTableProps {
-  chart: CallawayChartEntry[];
-  onFieldChange: (index: number, field: keyof CallawayChartEntry, value: string) => void;
+interface ChartGridProps {
+  chart: GridChartData;
+  onCellChange: (row: number, col: number, field: 'grossScore' | 'worstHoles', value: string) => void;
+  onAdjustmentChange: (col: number, value: string) => void;
 }
 
-function ChartTable({ chart, onFieldChange }: ChartTableProps) {
+function ChartGrid({ chart, onCellChange, onAdjustmentChange }: ChartGridProps) {
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Row</TableHead>
-            <TableHead>Lower Bound</TableHead>
-            <TableHead>Upper Bound</TableHead>
-            <TableHead>Worst Holes</TableHead>
-            <TableHead>Adjustment</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {chart.map((entry, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  value={entry.lowerBound}
-                  onChange={(e) => onFieldChange(index, 'lowerBound', e.target.value)}
-                  className="w-24"
-                  min="0"
-                />
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="text"
-                  value={entry.upperBound === null ? '' : entry.upperBound}
-                  onChange={(e) => onFieldChange(index, 'upperBound', e.target.value)}
-                  placeholder="(none)"
-                  className="w-24"
-                />
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  value={entry.worstHoles}
-                  onChange={(e) => onFieldChange(index, 'worstHoles', e.target.value)}
-                  className="w-24"
-                  min="0"
-                />
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  value={entry.adjustment}
-                  onChange={(e) => onFieldChange(index, 'adjustment', e.target.value)}
-                  className="w-24"
-                />
-              </TableCell>
-            </TableRow>
+    <div className="space-y-4">
+      {/* Column Adjustments */}
+      <div className="border rounded-lg p-4 bg-muted/30">
+        <Label className="text-sm font-semibold mb-3 block">Column Adjustments</Label>
+        <div className="grid grid-cols-5 gap-3">
+          {chart.columnAdjustments.map((adj, col) => (
+            <div key={col} className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Col {col + 1}</Label>
+              <Input
+                type="number"
+                value={adj}
+                onChange={(e) => onAdjustmentChange(col, e.target.value)}
+                className="text-center font-medium"
+              />
+            </div>
           ))}
-        </TableBody>
-      </Table>
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-muted/50">
+                <th className="border p-2 text-xs font-semibold text-muted-foreground w-16">Row</th>
+                {[1, 2, 3, 4, 5].map((col) => (
+                  <th key={col} className="border p-2 text-xs font-semibold text-center" colSpan={2}>
+                    Column {col}
+                  </th>
+                ))}
+              </tr>
+              <tr className="bg-muted/30">
+                <th className="border p-1"></th>
+                {[1, 2, 3, 4, 5].map((col) => (
+                  <>
+                    <th key={`${col}-gross`} className="border p-1 text-xs text-muted-foreground">
+                      Gross
+                    </th>
+                    <th key={`${col}-worst`} className="border p-1 text-xs text-muted-foreground">
+                      Worst
+                    </th>
+                  </>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {chart.grid.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td className="border p-2 text-center font-medium text-sm bg-muted/20">
+                    {rowIndex + 1}
+                  </td>
+                  {row.map((cell, colIndex) => (
+                    <>
+                      <td key={`${rowIndex}-${colIndex}-gross`} className="border p-1">
+                        <Input
+                          type="number"
+                          value={cell.grossScore}
+                          onChange={(e) => onCellChange(rowIndex, colIndex, 'grossScore', e.target.value)}
+                          className="w-16 h-8 text-center text-sm"
+                          min="0"
+                        />
+                      </td>
+                      <td key={`${rowIndex}-${colIndex}-worst`} className="border p-1">
+                        <Input
+                          type="number"
+                          value={cell.worstHoles}
+                          onChange={(e) => onCellChange(rowIndex, colIndex, 'worstHoles', e.target.value)}
+                          className="w-16 h-8 text-center text-sm"
+                          min="0"
+                          step="0.5"
+                        />
+                      </td>
+                    </>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

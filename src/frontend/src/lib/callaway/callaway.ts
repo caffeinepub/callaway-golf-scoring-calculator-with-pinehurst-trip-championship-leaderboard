@@ -39,10 +39,20 @@ export function calculateCallaway(
   // Sort scores descending to find worst holes (highest scores)
   const sortedScores = [...holeScores].sort((a, b) => b - a);
 
-  // Calculate deduction: sum of the worst holes
+  // Calculate deduction: sum of the worst holes (supporting fractional holes)
   let deduction = 0;
-  for (let i = 0; i < chartEntry.worstHoles && i < sortedScores.length; i++) {
+  const worstHolesCount = chartEntry.worstHoles;
+  const fullHoles = Math.floor(worstHolesCount);
+  const fractionalPart = worstHolesCount - fullHoles;
+
+  // Add full worst holes
+  for (let i = 0; i < fullHoles && i < sortedScores.length; i++) {
     deduction += sortedScores[i];
+  }
+
+  // Add fractional hole if needed (e.g., 0.5 means half of the next worst hole)
+  if (fractionalPart > 0 && fullHoles < sortedScores.length) {
+    deduction += sortedScores[fullHoles] * fractionalPart;
   }
 
   // Apply adjustment from chart (note: adjustment is typically negative or zero)
@@ -50,14 +60,14 @@ export function calculateCallaway(
 
   // Calculate net score: gross - deduction + adjustment
   // (adjustment is negative, so adding it reduces the score further)
-  const net = gross - deduction + adjustment;
+  const net = Math.round((gross - deduction + adjustment) * 10) / 10;
 
   return {
     gross,
-    deduction,
+    deduction: Math.round(deduction * 10) / 10,
     adjustment,
     net,
     chartRowLabel: formatChartRowLabel(chartEntry.lowerBound, chartEntry.upperBound),
-    worstHolesUsed: chartEntry.worstHoles,
+    worstHolesUsed: worstHolesCount,
   };
 }

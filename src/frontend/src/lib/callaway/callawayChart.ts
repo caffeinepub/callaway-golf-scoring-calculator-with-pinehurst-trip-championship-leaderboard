@@ -13,6 +13,16 @@ export interface CallawayChartEntry {
   adjustment: number;
 }
 
+export interface GridChartData {
+  grid: GridCell[][];
+  columnAdjustments: number[];
+}
+
+export interface GridCell {
+  grossScore: number;
+  worstHoles: number;
+}
+
 /**
  * Official Callaway Chart for 18-hole rounds (default/built-in)
  */

@@ -1,12 +1,13 @@
 import Principal "mo:core/Principal";
 import Int "mo:core/Int";
+import Float "mo:core/Float";
 import Array "mo:core/Array";
 import Map "mo:core/Map";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
-
-
+(with migration = Migration.run)
 actor {
   type GolferId = Principal;
 
@@ -40,8 +41,7 @@ actor {
 
   type ChartEntry = {
     lowerBound : Int;
-    deductionHoles : Nat;
-    deductionFraction : Nat;
+    deductionHoles : Float;
     adjustment : Int;
   };
 
@@ -98,7 +98,7 @@ actor {
     let chart = getCallawayChart();
     let entry = findChartEntry(gross.toInt(), chart);
 
-    let deduction = calculateDeduction(scores, entry.deductionHoles, entry.deductionFraction.toInt());
+    let deduction = calculateDeduction(scores, entry.deductionHoles);
     let net = gross.toInt() - deduction.toInt() + entry.adjustment;
 
     {
@@ -111,21 +111,21 @@ actor {
 
   func getCallawayChart() : [ChartEntry] {
     [
-      { lowerBound = 0; deductionHoles = 0; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 71; deductionHoles = 0; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 76; deductionHoles = 1; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 81; deductionHoles = 2; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 86; deductionHoles = 2; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 91; deductionHoles = 3; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 96; deductionHoles = 3; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 101; deductionHoles = 4; deductionFraction = 1; adjustment = 0 },
-      { lowerBound = 106; deductionHoles = 4; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 111; deductionHoles = 5; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 116; deductionHoles = 5; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 121; deductionHoles = 6; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 126; deductionHoles = 6; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 131; deductionHoles = 7; deductionFraction = 1; adjustment = -2 },
-      { lowerBound = 136; deductionHoles = 8; deductionFraction = 1; adjustment = -2 },
+      { lowerBound = 0; deductionHoles = 0; adjustment = 0 },
+      { lowerBound = 71; deductionHoles = 0; adjustment = 0 },
+      { lowerBound = 76; deductionHoles = 1; adjustment = 0 },
+      { lowerBound = 81; deductionHoles = 2; adjustment = 0 },
+      { lowerBound = 86; deductionHoles = 2; adjustment = 0 },
+      { lowerBound = 91; deductionHoles = 3; adjustment = 0 },
+      { lowerBound = 96; deductionHoles = 3; adjustment = 0 },
+      { lowerBound = 101; deductionHoles = 4; adjustment = 0 },
+      { lowerBound = 106; deductionHoles = 4; adjustment = -2 },
+      { lowerBound = 111; deductionHoles = 5; adjustment = -2 },
+      { lowerBound = 116; deductionHoles = 5; adjustment = -2 },
+      { lowerBound = 121; deductionHoles = 6; adjustment = -2 },
+      { lowerBound = 126; deductionHoles = 6; adjustment = -2 },
+      { lowerBound = 131; deductionHoles = 7; adjustment = -2 },
+      { lowerBound = 136; deductionHoles = 8; adjustment = -2 },
     ];
   };
 
@@ -139,22 +139,26 @@ actor {
     entry;
   };
 
-  func calculateDeduction(scores : [Nat], holes : Nat, fraction : Int) : Nat {
-    if (holes == 0) { return 0 };
+  func calculateDeduction(scores : [Nat], holes : Float) : Nat {
+    if (holes < 1.0) { return 0 };
 
     let sortedScores = scores.sort();
-    let worstScores = sortedScores.sliceToArray(0, holes);
+    let worstScores = sortedScores.sliceToArray(0, holes.toInt().toNat());
 
     var total : Nat = 0;
-    var count = 0;
     for (score in worstScores.values()) {
-      if (count < holes) {
-        total += score;
-        count += 1;
+      total += score;
+    };
+
+    if (holes % 1.0 == 0.5) {
+      let nextScore = scores.sliceToArray(holes.toInt().toNat(), scores.size());
+      if (nextScore.size() > 0) {
+        let firstScore = nextScore[0];
+        let roundedHalf = (firstScore / 2 + 1).toNat();
+        total += roundedHalf;
       };
     };
 
-    let finalFraction : Int = if (fraction > 0) { fraction } else { 1 };
-    ((total * 100) / finalFraction.toNat()) / 100;
+    total;
   };
 };

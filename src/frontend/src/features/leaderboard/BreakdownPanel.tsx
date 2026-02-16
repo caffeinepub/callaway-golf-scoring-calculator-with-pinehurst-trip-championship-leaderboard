@@ -8,6 +8,15 @@ interface BreakdownPanelProps {
 }
 
 export function BreakdownPanel({ result }: BreakdownPanelProps) {
+  const formatNumber = (num: number) => {
+    return num % 1 === 0 ? num.toString() : num.toFixed(1);
+  };
+
+  const formatWorstHoles = (num: number) => {
+    if (num % 1 === 0) return num.toString();
+    return num.toFixed(1);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -29,11 +38,11 @@ export function BreakdownPanel({ result }: BreakdownPanelProps) {
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Worst Holes</p>
-            <p className="text-2xl font-bold text-primary">{result.worstHolesUsed}</p>
+            <p className="text-2xl font-bold text-primary">{formatWorstHoles(result.worstHolesUsed)}</p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Deduction</p>
-            <p className="text-2xl font-bold text-primary">-{result.deduction}</p>
+            <p className="text-2xl font-bold text-primary">-{formatNumber(result.deduction)}</p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Adjustment</p>
@@ -43,12 +52,12 @@ export function BreakdownPanel({ result }: BreakdownPanelProps) {
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Net Score</p>
-            <p className="text-2xl font-bold text-foreground">{result.net}</p>
+            <p className="text-2xl font-bold text-foreground">{formatNumber(result.net)}</p>
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-border">
           <p className="text-xs text-muted-foreground">
-            Calculation: {result.gross} (gross) - {result.deduction} (deduction from {result.worstHolesUsed} worst holes) {result.adjustment !== 0 ? `+ ${result.adjustment} (adjustment)` : ''} = <span className="font-semibold text-foreground">{result.net}</span>
+            Calculation: {result.gross} (gross) - {formatNumber(result.deduction)} (deduction from {formatWorstHoles(result.worstHolesUsed)} worst holes) {result.adjustment !== 0 ? `+ ${result.adjustment} (adjustment)` : ''} = <span className="font-semibold text-foreground">{formatNumber(result.net)}</span>
           </p>
         </div>
       </CardContent>

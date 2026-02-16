@@ -1,108 +1,132 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Hidden Admin screen with Settings toggle and Callaway chart editor",
+  "title": "Callaway chart editor grid (13x5) with column adjustments and 0.5 worst-hole increments",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add Settings UI with an Admin access toggle persisted across reloads and reachable from the main header.",
+      "summary": "Replace the Admin Callaway chart editor’s row-based table with a fixed 13x5 gross-score editing grid for both 18-hole and 9-hole charts.",
       "acceptanceCriteria": [
-        "A Settings entry point is available from the main app UI (e.g., in the header).",
-        "Settings includes a clearly labeled toggle (English text) that controls whether Admin access is visible/available.",
-        "The toggle state persists across page reloads (e.g., via local storage).",
-        "When the toggle is OFF, there is no visible Admin navigation entry or button anywhere in the UI."
+        "In the Admin Panel > Callaway Chart Editor, the chart editing surface is a 13 (rows) x 5 (columns) grid for gross-score chart editing.",
+        "The previous row-based table UI (Row / Lower Bound / Upper Bound / Worst Holes / Adjustment) is no longer the primary editing format for gross scores.",
+        "The grid is rendered for both 18-hole and 9-hole tabs (even if their underlying defaults differ)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/state/adminAccess.ts",
-          "operation": "create",
-          "description": "Create a small localStorage-backed settings module for reading/writing the Admin access enabled flag (including safe parsing + default OFF) and exposing helper functions for the rest of the UI."
-        },
-        {
-          "path": "frontend/src/features/settings/SettingsView.tsx",
-          "operation": "create",
-          "description": "Create a Settings screen component that shows a clearly labeled Admin access toggle (English text) wired to the localStorage-backed admin access flag. Use existing shadcn/ui primitives already present in the app (e.g., Card/Button) for layout where helpful. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
           "operation": "modify",
-          "description": "Add a Settings entry point in the header (e.g., a Settings button) and a new app step/state for showing the Settings screen. Wire the Settings screen into the app flow and connect it to the localStorage-backed admin access toggle. Ensure no Admin entry point is rendered anywhere when the toggle is OFF."
+          "description": "Refactor the chart editing UI to render a fixed 13x5 grid of gross-score cells (for both 18-hole and 9-hole tabs), replacing the current variable-length row table as the primary editor. Use existing shadcn-ui components (e.g., Tabs, Input, Label, Card, Button, Alert) to compose the grid and section headers; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callawayChart.ts",
+          "operation": "modify",
+          "description": "Introduce/adjust chart data utilities so the app can represent and consume the new fixed 13x5 grid chart shape for gross-score mapping (for both 9- and 18-hole modes), while still supporting read-only display and calculation lookups."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+          "operation": "modify",
+          "description": "Update the chart display section to render correctly with the new underlying chart representation (grid-derived values), ensuring the leaderboard view can still show the active chart without relying on the legacy row-list structure. Use existing shadcn-ui Table/Card components; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Create an Admin screen that is only reachable when Admin access is enabled in Settings, with guarded navigation/redirect behavior.",
+      "summary": "Add per-column Adjustment inputs (one per grid column) and persist/load them with the edited chart, including reset-to-default support.",
       "acceptanceCriteria": [
-        "When the Settings toggle is ON, the UI exposes an Admin entry point (button/link) that opens the Admin screen.",
-        "When the Settings toggle is OFF, attempts to access the Admin screen from the UI are not possible (no navigation entry shown).",
-        "If the user somehow reaches the Admin screen state while the toggle is OFF (e.g., after turning it off), the UI redirects back to a non-admin screen or shows a clear 'Admin is disabled in Settings' message."
+        "Each of the 5 columns has a clearly labeled Adjustment input that is visually associated with that column (one adjustment value per column).",
+        "Changing a column’s adjustment affects the calculated adjustment used for any gross score that maps to that column.",
+        "Saving and reloading the chart preserves the per-column adjustments.",
+        "Reset-to-defaults restores the default per-column adjustments."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/admin/AdminView.tsx",
-          "operation": "create",
-          "description": "Create the Admin screen container component. It must be guard-aware: if Admin access is disabled, show a clear English message (e.g., 'Admin is disabled in Settings') and provide a way back to a non-admin screen."
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "operation": "modify",
+          "description": "Add an Adjustment input row (or header controls) for each of the 5 columns and wire these values into the editor state so they apply to all gross-score cells in the same column. Use existing shadcn-ui Input/Label and layout utilities to keep each adjustment visually associated with its column; verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
           "operation": "modify",
-          "description": "Add an Admin entry point that is conditionally visible only when the persisted Admin access toggle is ON. Wire navigation to the Admin screen only when enabled, and add a guard so that if Admin becomes disabled while viewing Admin, the app automatically redirects to a non-admin step (or shows the Admin-disabled message) to satisfy the requirement."
+          "description": "Extend localStorage persistence to save/load the new chart representation including the 5 per-column adjustment values, and ensure reset-to-defaults restores default column adjustments along with default grid contents."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callawayChart.ts",
+          "operation": "modify",
+          "description": "Update chart lookup helpers so the effective adjustment for a gross score is computed as the per-column adjustment associated with the mapped column (and used consistently by calculation and display)."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callaway.ts",
+          "operation": "modify",
+          "description": "Update Callaway calculation to use the new chart lookup output, ensuring the adjustment applied for a player is derived from the correct column adjustment for their gross score mapping."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Implement an editable Callaway scoring chart editor in Admin for both 9-hole and 18-hole charts with validation plus Save and Reset to Defaults.",
+      "summary": "Support worst-holes values in 0.5 increments in the editor and calculation, and ensure all result displays remain stable with fractional deductions.",
       "acceptanceCriteria": [
-        "Admin screen provides controls to switch between editing the 9-hole and 18-hole charts.",
-        "Each chart row can be edited for: lower bound, upper bound (or no upper limit for the last row), worst holes deducted, and adjustment value.",
-        "Editor validates chart integrity before saving (at minimum: numeric bounds; lowerBound <= upperBound when upperBound exists; rows ordered by increasing lowerBound; last row supports open-ended upper bound; no obvious overlaps).",
-        "There is a Save action that persists the edited chart across reloads.",
-        "There is a Reset to Defaults action that restores the current chart to the app’s built-in default chart values.",
-        "User-facing validation and button text is in English."
+        "The worst-holes input(s) in the chart editor accept values like 3, 3.5, 4, 4.5 (step 0.5) and reject values not on a 0.5 increment.",
+        "Chart validation allows non-negative worst-holes values in 0.5 increments.",
+        "Callaway deduction calculation correctly handles X.5 worst holes by deducting the sum of the worst X holes plus half of the next-worst hole (based on sorted worst hole scores).",
+        "All screens that display calculation results (leaderboard and breakdown) continue to work with fractional worst-hole deductions without crashing or showing NaN.",
+        "Backend Callaway calculation (backend/main.mo) is updated to match the same half-hole deduction behavior if backend results are used for ranking/output."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "operation": "create",
-          "description": "Add a localStorage-backed persistence layer for edited Callaway charts (9 and 18) including: load (safe parse + validation), save, clear/reset, and utilities for formatting a row label from bounds. This module should provide a safe fallback behavior when persisted data is invalid/unreadable."
-        },
-        {
           "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
-          "operation": "create",
-          "description": "Create the Callaway chart editor UI used inside Admin. Provide a control to switch between 9-hole and 18-hole editing, render editable rows for lower/upper bounds, worst holes deducted, and adjustment, plus English validation messages. Include Save (persist via the chart persistence module) and Reset to Defaults (restore from built-in defaults) actions. Use existing shadcn/ui primitives already present in the app (e.g., Card/Button/Table) where helpful. Verify the component's usage instructions before implementing."
+          "operation": "modify",
+          "description": "Change worst-holes editing inputs in the new grid to accept 0.5 steps (e.g., number input with step 0.5) and add UI-level validation feedback for values not aligned to 0.5 increments. Use existing shadcn-ui Input/Alert components; verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/features/admin/AdminView.tsx",
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
           "operation": "modify",
-          "description": "Wire the CallawayChartEditor into the Admin screen so the editor is reachable when Admin access is enabled, and ensure all user-facing labels/actions remain in English."
+          "description": "Update chart validation logic to allow non-negative worst-holes values in 0.5 increments (and reject values not on a 0.5 boundary) for the persisted chart format."
+        },
+        {
+          "path": "frontend/src/lib/callaway/callaway.ts",
+          "operation": "modify",
+          "description": "Update deduction logic to correctly handle fractional worst holes: for X.5, deduct sum of worst floor(X) holes plus half of the next-worst hole score, preventing NaN and ensuring numeric stability."
+        },
+        {
+          "path": "frontend/src/state/eventTypes.ts",
+          "operation": "modify",
+          "description": "Adjust types used in UI result data (e.g., deduction and worstHolesUsed) as needed to safely represent fractional worst-hole usage/deductions without breaking rendering or ranking logic."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/LeaderboardTable.tsx",
+          "operation": "modify",
+          "description": "Ensure leaderboard rendering formats fractional deduction/adjustment values safely (no NaN), and continues to rank by net score correctly when decimals are possible. Use existing shadcn-ui Table components; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/leaderboard/BreakdownPanel.tsx",
+          "operation": "modify",
+          "description": "Ensure the breakdown panel displays fractional worst-holes usage and deductions consistently and safely in the calculation explanation line. Use existing shadcn-ui Card/Badge components; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Update Callaway calculation and chart display to use the persisted edited chart with a safe fallback to defaults.",
+      "summary": "Make localStorage chart loading backward compatible with legacy row-based saved charts by migrating or safely falling back to defaults.",
       "acceptanceCriteria": [
-        "After saving changes in the chart editor, subsequent Callaway calculations use the updated chart values (net score, deduction, adjustment, and displayed chart row label reflect the edited chart).",
-        "The chart displayed in the leaderboard view matches the currently active chart (edited or default).",
-        "If no edited chart is present (fresh install) or persisted data is invalid/unreadable, the app uses the built-in default chart without crashing."
+        "If old edited chart data exists in localStorage (saved by the previous row-based format), the app does not crash on Admin screen load.",
+        "The persistence layer either (a) migrates old stored data into the new 13x5 + per-column adjustments representation, or (b) safely ignores invalid/legacy data and falls back to defaults.",
+        "Save and Reset actions continue to work after the change."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "operation": "modify",
+          "description": "Implement backward-compatible loading for legacy localStorage data (previous row-based array format) by detecting legacy shapes and either migrating them into the new 13x5 grid + per-column adjustments representation or clearing them and falling back to defaults, ensuring Admin load never crashes."
+        },
+        {
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "operation": "modify",
+          "description": "Update editor initialization and Save/Reset flows to use the updated persistence API and to handle migrated/fallback data paths cleanly, preserving existing Save and Reset behaviors. Use existing shadcn-ui Button/Alert components; verify the component's usage instructions before implementing."
+        },
+        {
           "path": "frontend/src/lib/callaway/callawayChart.ts",
           "operation": "modify",
-          "description": "Refactor chart retrieval helpers to support 'active chart' resolution (edited chart from local storage when valid, otherwise built-in defaults). Keep built-in default chart values available for Reset-to-Defaults and fallback behavior."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callaway.ts",
-          "operation": "modify",
-          "description": "Update the Callaway calculation to select chart rows from the currently active chart (edited or default), and ensure the returned chartRowLabel reflects the active chart bounds (including the open-ended last row)."
-        },
-        {
-          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-          "operation": "modify",
-          "description": "Update chart rendering to display the currently active chart (edited or default) so the leaderboard view matches what calculations are using. Use existing UI primitives already present in the project (e.g., Card/Table) for consistent display. Verify the component's usage instructions before implementing."
+          "description": "Add/adjust helpers needed for migration (e.g., mapping from legacy row-based ranges to the new fixed gross-score grid values and deriving per-column adjustments), keeping runtime lookups robust even when legacy data is encountered."
         }
       ]
     }

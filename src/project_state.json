@@ -1,38 +1,38 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Build a Callaway scoring app with an editable Callaway scoring chart managed via an admin screen hidden behind a settings toggle.",
+  "summary": "Admin chart editor formatting updates for gross scores and scoring inputs.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-a-settings-ui-that-includes-a-toggle-to-enable-disable-access-to-an-admin-screen-and-persist-this-toggle-across-reloads",
-      "title": "Add a Settings UI that includes a toggle to enable/disable access to an Admin screen, and persist this toggle across reloads.",
+      "id": "feature-update-the-admin-callaway-chart-editor-ui-to-use-a-fixed-grid-layout-of-13-rows-by-5-columns-for-gross-score-chart-entry-replacing-the-current-variable-length-row-list-table",
+      "title": "Update the Admin Callaway chart editor UI to use a fixed grid layout of 13 rows by 5 columns for gross-score chart entry, replacing the current variable-length row list table.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-an-admin-screen-that-is-only-accessible-when-the-settings-toggle-is-enabled-and-add-navigation-to-reach-it-when-enabled",
-      "title": "Create an Admin screen that is only accessible when the Settings toggle is enabled, and add navigation to reach it when enabled.",
+      "id": "feature-for-each-of-the-5-gross-score-columns-in-the-chart-editor-grid-add-an-adjustment-input-row-that-applies-to-all-gross-score-cells-in-that-same-column-and-ensure-this-per-column-adjustment-is-saved-loaded-alongside-the-chart-data",
+      "title": "For each of the 5 gross-score columns in the chart editor grid, add an 'Adjustment' input row that applies to all gross-score cells in that same column, and ensure this per-column adjustment is saved/loaded alongside the chart data.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-callaway-scoring-chart-editor-within-the-admin-screen-that-supports-editing-both-the-9-hole-and-18-hole-chart-rows-gross-range-bounds-worst-holes-deducted-and-adjustment-with-validation-and-save-reset-actions",
-      "title": "Implement a Callaway scoring chart editor within the Admin screen that supports editing both the 9-hole and 18-hole chart rows (gross range bounds, worst holes deducted, and adjustment), with validation and save/reset actions.",
+      "id": "feature-allow-worst-holes-values-in-the-chart-editor-to-be-entered-and-persisted-in-increments-of-0-5-and-update-callaway-calculation-logic-to-correctly-handle-half-hole-deductions",
+      "title": "Allow 'worst holes' values in the chart editor to be entered and persisted in increments of 0.5, and update Callaway calculation logic to correctly handle half-hole deductions.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-app-s-callaway-calculation-and-chart-display-to-use-the-currently-persisted-edited-chart-instead-of-the-hard-coded-chart-with-a-safe-fallback-to-the-default-chart-if-no-edits-exist",
-      "title": "Update the app’s Callaway calculation and chart display to use the currently persisted (edited) chart instead of the hard-coded chart, with a safe fallback to the default chart if no edits exist.",
+      "id": "feature-update-chart-persistence-and-loading-to-be-backward-compatible-with-any-previously-saved-row-based-edited-charts-in-localstorage-so-the-app-can-still-load-without-errors-after-this-chart-format-change",
+      "title": "Update chart persistence and loading to be backward compatible with any previously saved row-based edited charts in localStorage, so the app can still load without errors after this chart format change.",
       "reqIds": [
         "REQ-4"
       ],
@@ -42,12 +42,24 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add an editable Callaway scoring chart editor accessible from an admin screen, with the admin screen hidden behind a toggle in Settings.",
+      "summary": "Format the admin chart editor to have 13 rows and 5 columns for gross scores.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add a per-column adjustments row that applies to all scores in the corresponding gross score column.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Allow 'worst holes' to be entered in increments of 0.5.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Add hidden Admin screen with Callaway chart editor (toggle in Settings)",
+  "projectName": "Restructure Callaway chart editor into a 13x5 gross-score grid with per-column adjustments and 0.5 worst-hole increments",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
