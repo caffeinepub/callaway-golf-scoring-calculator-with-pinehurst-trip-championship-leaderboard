@@ -1,38 +1,36 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Callaway scoring app: persist Calloway Chart Editor edits as the default values in browser localStorage.",
-  "architectural_notes": [
-    "Persist Callaway Chart Editor configuration to browser localStorage and load it as the default on app start."
-  ],
+  "summary": "Project to manage scoring setup using a Callaway Chart Editor, including promoting edited draft chart values to become the default scoring table.",
+  "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "existing_features": [
-    {
-      "id": "feature-when-a-user-saves-changes-in-the-callaway-chart-editor-persist-the-saved-9-hole-and-18-hole-grid-charts-as-the-new-default-chart-values-in-localstorage-so-that-future-loads-and-reset-to-defaults-use-those-saved-values-instead-of-the-hard-coded-code-defaults",
-      "title": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-callaway-chart-persistence-layer-to-support-separate-localstorage-keys-for-a-user-default-grid-charts-and-b-the-currently-active-edited-grid-charts-and-update-the-runtime-chart-selection-logic-to-fall-back-to-the-localstorage-defaults-before-falling-back-to-hard-coded-defaults",
-      "title": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    }
-  ],
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Make edits from the Callaway Chart Editor become the default values stored in localStorage (persist and load as defaults).",
+      "summary": "Add ability to copy edited values from the Callaway Chart Editor (draft) into the default table and set them as the new default values.",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes.",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     }
   ],
+  "gameProjectType": "none",
   "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0

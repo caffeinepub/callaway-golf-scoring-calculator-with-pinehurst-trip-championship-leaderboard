@@ -1,24 +1,29 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T19:08:42.530Z",
-  "summary": "The persistence layer changes clearly introduce separate localStorage keys for user-default vs active/edited Callaway grid charts and describe the required fallback/initialization behavior. However, the CallawayChartEditor save/reset wiring is truncated in the diff, so it’s not fully evidenced that “Save Changes” updates user-defaults and that “Reset to Defaults” restores from those user-defaults.",
+  "generatedAt": "2026-02-16T19:20:06.131Z",
+  "summary": "The diff only modifies `project_state.json` and does not implement the requested frontend code or documentation changes. Both REQ-1 and REQ-2 remain unaddressed in the provided changes.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new default chart values in localStorage so future loads and “Reset to Defaults” use those saved values (and initialize defaults from hard-coded when missing).",
-      "reason": "The editor file shows new imports for `saveGridChartAsDefault` and `resetGridChartToUserDefaults`, but the actual `handleSave` / reset implementation is truncated, so the diff summary does not provide explicit evidence that clicking “Save Changes” writes the saved chart into the new user-default localStorage keys for both 9 and 18, nor that “Reset to Defaults” loads from those user-defaults.",
+      "requirement": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults (update `getDefault18GridChart()` / `getDefault9GridChart()` grid and columnAdjustments).",
+      "reason": "No changes are shown to `frontend/src/lib/callaway/callawayChartPersistence.ts`; only `project_state.json` was modified, so the default chart values were not updated.",
       "evidence": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx (truncated)"
+        "project_state.json"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes (update `frontend/docs/callaway-chart-defaults.md`).",
+      "reason": "No changes are shown to `frontend/docs/callaway-chart-defaults.md`; only `project_state.json` was modified, so documentation was not updated.",
+      "evidence": [
+        "project_state.json"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.62,
+  "confidence": 0.86,
   "changed_files": [
-    "frontend-file-summaries.txt",
-    "frontend/src/features/admin/CallawayChartEditor.tsx",
-    "frontend/src/lib/callaway/callawayChartPersistence.ts",
     "project_state.json"
   ]
 }

@@ -1,48 +1,36 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Callaway Chart Editor: persist saved edits as localStorage user-defaults",
+  "title": "Promote draft Callaway Chart Editor grid values to shipped code defaults",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Persist “Save Changes” from the Callaway Chart Editor as the new localStorage user-default grid charts so reloads and “Reset to Defaults” use the latest saved defaults.",
+      "summary": "Update shipped code-based default 9- and 18-hole Callaway grid charts to exactly match the edited draft Callaway Chart Editor values so fresh loads and resets use the new defaults.",
       "acceptanceCriteria": [
-        "After clicking “Save Changes” in the Callaway Chart Editor for 9 holes, reloading the page shows the saved 9-hole chart values without requiring any additional action.",
-        "After clicking “Save Changes” in the Callaway Chart Editor for 18 holes, reloading the page shows the saved 18-hole chart values without requiring any additional action.",
-        "Clicking “Reset to Defaults” restores the chart to the latest saved defaults (from localStorage), not necessarily the original hard-coded defaults.",
-        "If the app is opened in a browser where no chart defaults exist in localStorage yet, the app initializes the localStorage defaults from the current hard-coded defaults and behaves the same as today (no user-visible regression)."
+        "`frontend/src/lib/callaway/callawayChartPersistence.ts` functions `getDefault18GridChart()` and `getDefault9GridChart()` are updated so their `grid` and `columnAdjustments` values exactly match the edited values from the draft Callaway Chart Editor.",
+        "With a fresh browser profile (no existing localStorage keys for Callaway charts), the app loads using the updated default grid chart values for both 9-hole and 18-hole.",
+        "After clearing localStorage keys `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default` (and any active grid keys), using “Reset to Defaults” results in the updated code-based defaults being used/initialized."
       ],
       "file_operations": [
         {
           "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
           "operation": "modify",
-          "description": "Introduce a distinct persistence concept for grid charts: (1) user-default grid charts (stored in new localStorage keys) and (2) active/edited grid charts (stored in the existing grid keys). Add safe initialization that seeds the user-default keys from the hard-coded defaults when missing; ensure invalid JSON is ignored and cleared consistent with existing validation behavior."
-        },
-        {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
-          "operation": "modify",
-          "description": "Update Save/Reset behaviors: on “Save Changes”, persist the current 9/18 grid chart as both the active/edited chart and the user-default chart so future loads use it by default; on “Reset to Defaults”, restore the editor state from the latest user-default chart (and update/clear the active/edited storage accordingly). Continue using existing shadcn-ui components (e.g., Button, Tabs, Alert) for the UI; verify the component's usage instructions before implementing."
+          "description": "Replace the hard-coded return values in `getDefault18GridChart()` and `getDefault9GridChart()` so the `grid` cell values and `columnAdjustments` exactly match the draft Callaway Chart Editor’s edited charts (copy the finalized draft values verbatim into these functions). Ensure no new localStorage keys or persistence mechanisms are introduced, and keep existing resolution order (active/edited → user-default → hard-coded default) intact."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Separate localStorage keys for user-default vs active/edited grid charts and update chart resolution order to prefer active → user-default → hard-coded defaults, clearing invalid stored JSON.",
+      "summary": "Update default-values documentation to reflect the new shipped defaults and explain how existing localStorage can hide code-default changes.",
       "acceptanceCriteria": [
-        "A new pair of localStorage entries exists for storing the user-default grid charts for both 9 and 18 holes (distinct from the existing active/edited grid chart keys).",
-        "`getActiveGridChart(9|18)` resolves charts in this order: active/edited grid chart (if present and valid) → user-default grid chart (if present and valid) → hard-coded default grid chart.",
-        "If any stored chart JSON is invalid, it is ignored and cleared (preserving the current validation behavior)."
+        "`frontend/docs/callaway-chart-defaults.md` references the updated defaults and clearly states that existing localStorage user-default charts must be cleared to see code-default changes take effect.",
+        "All user-facing documentation text is in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "path": "frontend/docs/callaway-chart-defaults.md",
           "operation": "modify",
-          "description": "Add new localStorage keys for user-default grid charts (9 and 18) and refactor functions to explicitly load/save/clear both active and user-default grid charts. Update `getActiveGridChart(9|18)` (and any dependent chart selection logic for display/calculation) to resolve in order: active/edited → user-default → hard-coded, and to clear invalid stored JSON for both key types."
-        },
-        {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
-          "operation": "modify",
-          "description": "Wire the editor’s runtime selection to the updated persistence layer: ensure initial state uses the updated `getActiveGridChart`, and ensure reset behavior matches the new resolution/fallback rules (restoring from user-defaults rather than always hard-coded). Continue using existing shadcn-ui components already in this view; verify the component's usage instructions before implementing."
+          "description": "Revise the documentation to state that the shipped (code-based) defaults now match the draft Callaway Chart Editor’s edited chart values, and add/strengthen guidance that existing localStorage values (including user-default keys like `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default`, plus any active grid keys) can mask code-default updates until cleared. Ensure all user-facing text remains in English."
         }
       ]
     }

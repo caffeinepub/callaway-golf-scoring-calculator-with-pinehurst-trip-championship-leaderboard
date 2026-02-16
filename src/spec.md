@@ -1,13 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Persist Callaway Chart Editor “Save Changes” as the new localStorage defaults for 9-hole and 18-hole grid charts, so reloads and “Reset to Defaults” use the latest saved values.
+**Goal:** Promote the edited draft Callaway Chart Editor values into the code-based shipped default 9-hole and 18-hole grid charts, and update documentation accordingly.
 
 **Planned changes:**
-- Add separate localStorage keys for user-default grid charts (9 and 18 holes), distinct from the existing active/edited chart storage.
-- Update “Save Changes” in the Callaway Chart Editor to write the saved chart to the user-default localStorage key (for the relevant hole count).
-- Update chart-loading logic so `getActiveGridChart(9|18)` resolves in order: active/edited chart → user-default chart → hard-coded defaults.
-- On first run (no user-defaults in localStorage), initialize user-default keys from the current hard-coded defaults.
-- Preserve existing validation behavior: if stored chart JSON is invalid, ignore it and clear it.
+- Update `getDefault18GridChart()` and `getDefault9GridChart()` in `frontend/src/lib/callaway/callawayChartPersistence.ts` so their `grid` and `columnAdjustments` exactly match the draft Callaway Chart Editor’s edited values.
+- Update `frontend/docs/callaway-chart-defaults.md` to reflect the new shipped defaults and note that existing localStorage user-default keys can mask code-default changes until cleared.
 
-**User-visible outcome:** After saving a 9-hole or 18-hole chart, reloading the page shows the saved chart automatically, and “Reset to Defaults” resets to the latest saved defaults stored in localStorage (not the original hard-coded defaults).
+**User-visible outcome:** On a fresh profile (or after clearing the relevant localStorage keys / using “Reset to Defaults”), the app initializes and uses the updated default Callaway grid chart values for both 9-hole and 18-hole charts.

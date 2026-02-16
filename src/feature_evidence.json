@@ -1,43 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-when-a-user-saves-changes-in-the-callaway-chart-editor-persist-the-saved-9-hole-and-18-hole-grid-charts-as-the-new-default-chart-values-in-localstorage-so-that-future-loads-and-reset-to-defaults-use-those-saved-values-instead-of-the-hard-coded-code-defaults",
-      "featureTitle": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
-      "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-callaway-chart-persistence-layer-to-support-separate-localstorage-keys-for-a-user-default-grid-charts-and-b-the-currently-active-edited-grid-charts-and-update-the-runtime-chart-selection-logic-to-fall-back-to-the-localstorage-defaults-before-falling-back-to-hard-coded-defaults",
-      "featureTitle": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
-      "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

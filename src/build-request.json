@@ -1,57 +1,67 @@
 {
   "kind": "build_request",
-  "title": "Persist Callaway Chart Editor edits as the localStorage defaults",
+  "title": "Promote draft Callaway Chart Editor values to code-based default grid charts",
   "projectName": "Callaway Scoring",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
+      "text": "Update the code-based default Callaway grid chart values so they match the edited values currently in the Callaway Chart Editor draft, and use those values as the new shipped defaults.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-6"
         ],
         "quotes": [
-          "take the edits I made in the Calloway Chart Editor and make them the default values stored localstorage"
+          "copy the edited values from the Callaway Chart Editor in the draft  into the default table  and use those for the new default values"
         ]
       },
       "acceptanceCriteria": [
-        "After clicking “Save Changes” in the Callaway Chart Editor for 9 holes, reloading the page shows the saved 9-hole chart values without requiring any additional action.",
-        "After clicking “Save Changes” in the Callaway Chart Editor for 18 holes, reloading the page shows the saved 18-hole chart values without requiring any additional action.",
-        "Clicking “Reset to Defaults” restores the chart to the latest saved defaults (from localStorage), not necessarily the original hard-coded defaults.",
-        "If the app is opened in a browser where no chart defaults exist in localStorage yet, the app initializes the localStorage defaults from the current hard-coded defaults and behaves the same as today (no user-visible regression)."
+        "`frontend/src/lib/callaway/callawayChartPersistence.ts` functions `getDefault18GridChart()` and `getDefault9GridChart()` are updated so their `grid` and `columnAdjustments` values exactly match the edited values from the draft Callaway Chart Editor.",
+        "With a fresh browser profile (no existing localStorage keys for Callaway charts), the app loads using the updated default grid chart values for both 9-hole and 18-hole.",
+        "After clearing localStorage keys `callaway-grid-chart-18-user-default` and `callaway-grid-chart-9-user-default` (and any active grid keys), using “Reset to Defaults” results in the updated code-based defaults being used/initialized."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
+      "text": "Update the default-values documentation to reflect that the shipped defaults now match the draft editor’s edited chart values, and remind how localStorage can mask code default changes.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-6"
         ],
         "quotes": [
-          "make them the default values stored localstorage"
+          "copy the edited values from the Callaway Chart Editor in the draft  into the default table  and use those for the new default values"
         ]
       },
       "acceptanceCriteria": [
-        "A new pair of localStorage entries exists for storing the user-default grid charts for both 9 and 18 holes (distinct from the existing active/edited grid chart keys).",
-        "`getActiveGridChart(9|18)` resolves charts in this order: active/edited grid chart (if present and valid) → user-default grid chart (if present and valid) → hard-coded default grid chart.",
-        "If any stored chart JSON is invalid, it is ignored and cleared (preserving the current validation behavior)."
+        "`frontend/docs/callaway-chart-defaults.md` references the updated defaults and clearly states that existing localStorage user-default charts must be cleared to see code-default changes take effect.",
+        "All user-facing documentation text is in English."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutablePaths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui."
+    "Do not edit any files under `frontend/src/components/ui` (read-only UI components).",
+    "Do not modify immutable hook/bootstrap files: `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`.",
+    "Keep changes limited to updating shipped default chart values and related documentation; do not introduce new persistence keys or storage mechanisms."
   ],
   "nonGoals": [
-    "Do not change the Motoko backend canister logic or its stored data model.",
-    "Do not introduce third-party storage or any server-side persistence for the Callaway chart defaults (localStorage only).",
-    "Do not redesign the Callaway Chart Editor UI beyond what is necessary to support the new default-persistence behavior."
+    "Do not add new admin features or new UI flows in the Callaway Chart Editor.",
+    "Do not change backend Motoko state, schemas, or scoring algorithms beyond using the updated default chart values.",
+    "Do not add third-party integrations or authentication changes."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
