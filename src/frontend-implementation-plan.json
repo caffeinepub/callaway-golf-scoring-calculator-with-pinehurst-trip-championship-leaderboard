@@ -1,64 +1,62 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update 18-hole Callaway shipped grid defaults and localStorage migration",
+  "title": "Callaway 18-hole chart default grid correction + localStorage migration + placeholder rendering",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Replace shipped 18-hole 13x5 grid defaults with the user-provided 13-row table so fresh installs load the updated chart.",
+      "summary": "Update shipped 18-hole Callaway grid defaults to exactly match the provided 13×11 (row + five gross/deduction pairs) dataset while preserving the 13×5 grid + column adjustments model.",
       "acceptanceCriteria": [
-        "With empty browser localStorage, the 18-hole chart displayed in the app matches the provided 13-row table values.",
-        "The default 18-hole grid remains exactly 13 rows x 5 columns and passes existing grid validation (numeric values; worstHoles in 0.5 increments; non-negative)."
+        "On a fresh install (no localStorage chart data), the 18-hole chart grid renders the exact gross/deduction values listed above (with placeholders where the user supplied zeros).",
+        "All worst-holes/deduction values support 0.5 increments and are stored without rounding.",
+        "No extra rows/columns are added or removed (13 rows, 5 chart columns, with row-number plus 10 value columns in the UI table)."
       ],
       "file_operations": [
         {
           "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
           "operation": "modify",
-          "description": "Update getDefault18GridChart() to encode the new shipped 18-hole grid values exactly matching the provided 13-row table (row number + five (grossScore, worstHoles) pairs), while keeping the grid shape 13x5 and the existing validation expectations."
+          "description": "Ensure getDefault18GridChart() exactly matches the user-provided 13-row table values (including placeholder (0,0) cells and 0.5 increments) and continues to ship a 13×5 grid with 5 columnAdjustments."
         },
         {
           "path": "frontend/docs/callaway-chart-defaults.md",
           "operation": "modify",
-          "description": "Update the developer guide to reflect that the shipped 18-hole defaults now match the new 13-row table and that defaults are sourced from getDefault18GridChart() when localStorage has no applicable stored chart."
+          "description": "Update the developer documentation to reflect the corrected 18-hole shipped defaults dataset and how placeholder (0,0) cells are represented in the grid."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Adjust localStorage migration so previously shipped 18-hole defaults cached in localStorage are cleared and replaced by the updated shipped defaults, while preserving user-edited charts.",
+      "summary": "Automatically migrate existing localStorage charts that exactly equal the prior shipped 18-hole defaults so users receive the corrected shipped defaults without overwriting user-edited charts.",
       "acceptanceCriteria": [
-        "If localStorage contains the previous shipped 18-hole grid defaults, the app clears that stored shipped-default data and loads the updated shipped 18-hole defaults.",
-        "If localStorage contains a user-edited 18-hole chart (non-shipped-default), the app preserves it and does not overwrite it with shipped defaults."
+        "If localStorage contains the prior shipped 18-hole grid defaults, reloading the app results in the new shipped 18-hole defaults being used (without the user needing to manually reset).",
+        "If localStorage contains a user-edited chart that does NOT equal the prior shipped defaults, the app does not overwrite it."
       ],
       "file_operations": [
         {
           "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
           "operation": "modify",
-          "description": "Enhance migrateOldShippedDefaults(18) to detect the previous shipped 18-hole grid (by exact match to a frozen copy of the old shipped default grid values) and remove it from both the active and user-default localStorage keys, without removing non-matching (user-edited) charts; ensure this migration runs before reading charts in getActiveGridChart()."
-        },
-        {
-          "path": "frontend/docs/callaway-chart-defaults.md",
-          "operation": "modify",
-          "description": "Document the migration behavior: old shipped-default 18-hole localStorage values are cleared so updated shipped defaults take effect, while user-edited charts are preserved."
+          "description": "Harden the 18-hole localStorage migration logic to reliably detect when the stored active grid chart and/or stored user-default grid chart matches the prior shipped 18-hole defaults and remove only those entries so the new shipped defaults apply, without touching non-matching user edits."
         }
       ]
     },
     {
-      "id": "REQ-4",
-      "summary": "Ensure all user-facing UI strings touched by these changes remain English in chart editing, validation, and save/reset messaging.",
+      "id": "REQ-3",
+      "summary": "Render placeholder chart cells (grossScore=0 and worstHoles=0) as visually blank in chart grid UI while keeping persisted values as (0,0) and maintaining scoring behavior that ignores placeholders.",
       "acceptanceCriteria": [
-        "No new non-English user-facing strings are introduced in the modified areas (including admin chart editor success/error/reset confirmations)."
+        "In the Callaway chart editor and any chart display table, cells whose grossScore and worstHoles are both 0 render as empty rather than showing “0”.",
+        "Saving the chart preserves placeholder cells as (0,0) values in persisted chart data.",
+        "Chart calculations continue to ignore placeholder grossScore=0 cells (i.e., placeholders do not affect scoring)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
-          "operation": "modify",
-          "description": "Audit and, if needed, adjust any chart save/reset/validation strings impacted by the defaults/migration update to ensure they remain English-only and consistent with existing messaging."
+          "path": "frontend/src/lib/callaway/gridPlaceholders.ts",
+          "operation": "create",
+          "description": "Add a small helper (e.g., isPlaceholderCell / displayValueForCell) to centralize the rule that only (grossScore=0 && worstHoles=0) should render as an empty UI value while the underlying stored values remain numeric zeros."
         },
         {
-          "path": "frontend/src/features/admin/AdminView.tsx",
+          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
           "operation": "modify",
-          "description": "Verify that any referenced guidance text related to chart defaults/persistence remains English after documentation and defaults updates, and adjust wording only if required to keep messaging accurate and English-only."
+          "description": "Update the chart grid inputs to display empty values for placeholder cells (grossScore=0 and worstHoles=0) while ensuring clearing an input sets the underlying value back to 0 and saving persists placeholders as (0,0)."
         }
       ]
     }

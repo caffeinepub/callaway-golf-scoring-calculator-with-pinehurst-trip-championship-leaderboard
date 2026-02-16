@@ -21,9 +21,41 @@ export interface EventResult {
   'coursePar' : bigint,
 }
 export type GolferId = Principal;
+export type GrossToDeduction = [bigint, bigint, number, bigint];
+export interface RawEvent {
+  'par' : bigint,
+  'scores' : Array<[GolferId, Array<bigint>]>,
+}
+export interface SharedChartEntry {
+  'adjustment' : bigint,
+  'deduction' : number,
+  'grossScoreFrom' : bigint,
+  'grossScoreTo' : bigint,
+}
 export interface _SERVICE {
+  /**
+   * / Get backend chart in shared format
+   */
+  'getCallawayChart' : ActorMethod<[], Array<SharedChartEntry>>,
+  'getEventsForPrincipal' : ActorMethod<
+    [Principal],
+    Array<[GolferId, RawEvent]>
+  >,
+  /**
+   * / Returns the entire gross to deduction conversion data.
+   */
+  'getGrossToDeductionTable' : ActorMethod<[], Array<GrossToDeduction>>,
+  /**
+   * / Get latest results
+   */
   'getLatestResult' : ActorMethod<[], [] | [EventResult]>,
+  /**
+   * / Submit new event (scores)
+   */
   'submitEvent' : ActorMethod<[GolferId, bigint, Array<bigint>], undefined>,
+  /**
+   * / Update previously submitted event by golferId
+   */
   'updateEvent' : ActorMethod<[GolferId, Array<bigint>], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

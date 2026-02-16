@@ -1,64 +1,86 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getChart } from '../../lib/callaway/callawayChartPersistence';
-import { BookOpen } from 'lucide-react';
+import { isPlaceholderCell, displayValueForCell } from '../../lib/callaway/gridPlaceholders';
+import { getActiveGridChart } from '../../lib/callaway/callawayChartPersistence';
 
 interface CallawayChartSectionProps {
   holeCount: 9 | 18;
 }
 
 export function CallawayChartSection({ holeCount }: CallawayChartSectionProps) {
+  const gridChart = getActiveGridChart(holeCount);
   const chart = getChart(holeCount);
 
   return (
     <Card>
-      <CardHeader className="bg-muted/50">
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" />
-          Callaway Scoring Chart ({holeCount} Holes)
-        </CardTitle>
+      <CardHeader>
+        <CardTitle>Callaway Scoring Chart ({holeCount} Holes)</CardTitle>
+        <CardDescription>
+          This chart determines how many worst holes are deducted based on your gross score.
+          The system automatically selects your worst-scoring holes and subtracts them to calculate your net score.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Gross Score Range</TableHead>
-                <TableHead className="text-center">Worst Holes Deducted</TableHead>
-                <TableHead className="text-center">Adjustment</TableHead>
+                <TableHead className="text-center">Row</TableHead>
+                {[1, 2, 3, 4, 5].map((col) => (
+                  <TableHead key={col} className="text-center" colSpan={2}>
+                    Col {col} (Adj: {gridChart.columnAdjustments[col - 1] >= 0 ? '+' : ''}{gridChart.columnAdjustments[col - 1]})
+                  </TableHead>
+                ))}
+              </TableRow>
+              <TableRow>
+                <TableHead className="text-center">#</TableHead>
+                {[1, 2, 3, 4, 5].map((col) => (
+                  <>
+                    <TableHead key={`${col}-gross`} className="text-center text-xs">
+                      Gross
+                    </TableHead>
+                    <TableHead key={`${col}-deduct`} className="text-center text-xs">
+                      Deduct
+                    </TableHead>
+                  </>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {chart.map((entry, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{entry.grossRange}</TableCell>
-                  <TableCell className="text-center">
-                    {entry.worstHoles % 1 === 0 ? entry.worstHoles : entry.worstHoles.toFixed(1)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {entry.adjustment === 0 ? '0' : entry.adjustment}
-                  </TableCell>
+              {gridChart.grid.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  <TableCell className="text-center font-medium">{rowIndex + 1}</TableCell>
+                  {row.map((cell, colIndex) => {
+                    const isPlaceholder = isPlaceholderCell(cell);
+                    return (
+                      <>
+                        <TableCell key={`${rowIndex}-${colIndex}-gross`} className="text-center">
+                          {displayValueForCell(cell.grossScore, isPlaceholder)}
+                        </TableCell>
+                        <TableCell key={`${rowIndex}-${colIndex}-deduct`} className="text-center">
+                          {displayValueForCell(cell.worstHoles, isPlaceholder)}
+                        </TableCell>
+                      </>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
-        <div className="p-4 bg-muted/30 text-sm text-muted-foreground">
-          <p className="font-medium mb-2">How Callaway Scoring Works:</p>
-          <ul className="space-y-1 list-disc list-inside">
-            <li>Your gross score determines which chart row applies</li>
-            <li>The worst holes (highest scores) are summed for the deduction</li>
-            <li>Fractional worst holes (e.g., 2.5) deduct the worst 2 holes plus half of the 3rd worst hole</li>
-            <li>The chart adjustment is applied (typically 0 or negative)</li>
-            <li>Net Score = Gross - Deduction + Adjustment</li>
-          </ul>
+
+        <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+          <p>
+            <strong>How it works:</strong> Find your gross score in the table. The corresponding "Deduct" value shows
+            how many of your worst holes will be subtracted from your score. The column adjustment is then applied to
+            calculate your final net score.
+          </p>
+          <p>
+            <strong>Example:</strong> If you shoot 95 with a par of 72, the chart shows you deduct 2.5 worst holes
+            with a column adjustment. Your worst 2 full holes plus half of your 3rd worst hole are subtracted, then
+            the adjustment is applied to get your net score.
+          </p>
         </div>
       </CardContent>
     </Card>

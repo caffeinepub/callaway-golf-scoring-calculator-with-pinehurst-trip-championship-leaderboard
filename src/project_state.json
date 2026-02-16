@@ -1,28 +1,28 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project involves building/deploying an app that uses an 18-hole chart/grid of values provided by the user; current focus is recovering from a deployment failure and rebuilding with a clean 18-hole grid.",
+  "summary": "Project involves a scoring/adjustment data table and chart; user reports the data table is incorrect and has specified the intended 13x11 table schema (row # plus 5 gross-score/deduction pairs).",
   "architectural_notes": [
-    "App build process should accept an 18-hole grid input (rows keyed by hole number with numeric values, including decimals) as configuration/data for the build."
+    "Expected table format: 13 rows x 11 columns = [Row #] + 5 pairs of [Gross Score, Holes to Deduct] representing adjustment columns."
   ],
   "known_issues": [
-    "Deployment/build failed during last publish; system recovery/retry needed."
+    "Data table is still not correct; needs to be rebuilt to match the user-provided 13x11 schema and values."
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-update-the-shipped-18-hole-callaway-grid-defaults-to-match-the-user-provided-13-row-table-row-number-followed-by-five-grossscore-worstholes-pairs-store-these-values-in-frontend-src-lib-callaway-callawaychartpersistence-ts-within-getdefault18gridchart-so-a-fresh-install-no-localstorage-uses-the-new-grid",
-      "title": "Update the shipped 18-hole Callaway grid defaults to match the user-provided 13-row table (row number followed by five (grossScore, worstHoles) pairs). Store these values in frontend/src/lib/callaway/callawayChartPersistence.ts within getDefault18GridChart() so a fresh install (no localStorage) uses the new grid.",
+      "id": "feature-update-the-shipped-18-hole-callaway-grid-defaults-so-the-chart-data-matches-the-user-provided-13-rows-11-columns-table-column-1-row-number-remaining-columns-five-grossscore-holestodeduct-pairs-for-columns-1-5-the-exact-values-must-match-the-dataset-provided-by-the-user-row-1-0-0-0-0-72-0-0-0-0-0-row-2-73-0-5-74-0-5-75-0-5-0-0-0-0-row-3-76-1-77-1-78-1-79-1-80-1-row-4-81-1-5-82-1-5-83-1-5-84-1-5-85-1-5-row-5-86-2-87-2-88-2-89-2-90-2-row-6-91-3-92-2-5-93-2-5-94-2-5-95-2-5-row-7-96-3-5-97-3-98-3-5-99-3-100-3-row-8-101-4-102-3-5-103-3-5-104-3-5-105-3-5-row-9-106-4-5-107-4-108-4-109-4-110-4-row-10-111-5-112-4-5-113-4-5-114-4-5-115-4-5-row-11-116-5-5-117-5-118-5-119-5-120-5-row-12-121-6-122-5-5-123-5-5-124-5-5-125-5-5-row-13-126-5-5-127-6-128-6-129-6-130-6-preserve-the-existing-concept-of-5-chart-columns-each-with-its-own-adjustment-and-13-rows",
+      "title": "Update the shipped 18-hole Callaway grid defaults so the chart data matches the user-provided 13 rows × 11 columns table (Column 1 = row number; remaining columns = five (grossScore, holesToDeduct) pairs for Columns 1–5). The exact values must match the dataset provided by the user:\nRow 1: (0,0) (0,0) (72,0) (0,0) (0,0)\nRow 2: (73,0.5) (74,0.5) (75,0.5) (0,0) (0,0)\nRow 3: (76,1) (77,1) (78,1) (79,1) (80,1)\nRow 4: (81,1.5) (82,1.5) (83,1.5) (84,1.5) (85,1.5)\nRow 5: (86,2) (87,2) (88,2) (89,2) (90,2)\nRow 6: (91,3) (92,2.5) (93,2.5) (94,2.5) (95,2.5)\nRow 7: (96,3.5) (97,3) (98,3.5) (99,3) (100,3)\nRow 8: (101,4) (102,3.5) (103,3.5) (104,3.5) (105,3.5)\nRow 9: (106,4.5) (107,4) (108,4) (109,4) (110,4)\nRow 10: (111,5) (112,4.5) (113,4.5) (114,4.5) (115,4.5)\nRow 11: (116,5.5) (117,5) (118,5) (119,5) (120,5)\nRow 12: (121,6) (122,5.5) (123,5.5) (124,5.5) (125,5.5)\nRow 13: (126,5.5) (127,6) (128,6) (129,6) (130,6)\nPreserve the existing concept of 5 chart columns (each with its own adjustment) and 13 rows.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-existing-localstorage-migration-reset-behavior-correctly-picks-up-the-new-shipped-18-hole-defaults-for-users-who-still-have-older-shipped-defaults-cached-in-localstorage-i-e-remove-old-shipped-defaults-so-the-updated-shipped-defaults-are-used-when-appropriate",
-      "title": "Ensure existing localStorage migration/reset behavior correctly picks up the new shipped 18-hole defaults for users who still have older shipped defaults cached in localStorage (i.e., remove old shipped defaults so the updated shipped defaults are used when appropriate).",
+      "id": "feature-fix-the-chart-table-ui-so-placeholder-cells-grossscore-0-and-worstholes-0-are-displayed-as-blank-empty-cells-not-literal-zeros-wherever-the-chart-grid-is-shown-edited-while-keeping-the-underlying-stored-value-as-0-for-those-placeholders",
+      "title": "Fix the chart table UI so placeholder cells (grossScore = 0 and worstHoles = 0) are displayed as blank/empty cells (not literal zeros) wherever the chart grid is shown/edited, while keeping the underlying stored value as 0 for those placeholders.",
       "reqIds": [
-        "REQ-2"
+        "REQ-3"
       ],
       "version": 1
     }
@@ -30,21 +30,21 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Support entering/ingesting a clean 18-hole grid (chart values) provided by the user for rebuilding the app",
+      "summary": "Fix the scoring data table to match the provided schema: 13 rows x 11 columns; Col 1 is row number; remaining columns are gross score and holes-to-deduct pairs for adjustments (Col 1 adjustment through Col 5 adjustment).",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-4",
-      "summary": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
+      "id": "AR-3",
+      "summary": "Ensure users who already have older shipped 18-hole defaults cached in localStorage automatically receive the updated shipped 18-hole defaults when appropriate. Specifically: if the stored active grid chart and/or stored user-default grid chart exactly matches the previously shipped 18-hole defaults, clear those localStorage entries so the new shipped defaults are used.",
       "reqIds": [
-        "REQ-3"
+        "REQ-2"
       ],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Use English for all user-facing UI strings involved in chart editing, validation, save/reset messaging, and any new messaging introduced by these changes.",
+      "summary": "Align backend Callaway chart logic with the updated 18-hole chart behavior used by the frontend, using the same gross-to-deduction mapping (including 0.5 deductions) so backend net score outputs match frontend results for the same hole scores and course par.",
       "reqIds": [
         "REQ-4"
       ],

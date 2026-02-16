@@ -1,42 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T20:57:10.099Z",
-  "summary": "REQ-1 and REQ-2 appear to be addressed in the frontend persistence layer (new default 18-hole grid plus an OLD_SHIPPED_18_GRID constant intended for migration detection), but the diff is truncated so the full 13x5 table and the actual migration logic cannot be fully verified. Backend scoring logic was changed, but there is insufficient evidence that it was aligned to the updated frontend 18-hole grid defaults as required. A new backend/migration.mo module was added without clear evidence it was required by a stable-state upgrade.",
+  "generatedAt": "2026-02-16T21:12:42.436Z",
+  "summary": "Frontend changes add placeholder-cell rendering/parsing utilities and apply them to the chart display/editor, plus documentation and (per summary) updated 18-hole shipped defaults and localStorage migration logic. Backend/main.mo shows structural updates to support Float (0.5) deductions and exposes a getCallawayChart query, but the actual gross→deduction mapping update cannot be fully verified from the truncated diff.",
   "missing_requirements": [
     {
-      "id": "REQ-3",
-      "requirement": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
-      "reason": "The backend uses a hard-coded threshold-based chart ([ChartEntry] with lowerBound/deductionHoles/adjustment). The diff provides no evidence that this chart corresponds to the updated 13-row x 5-column frontend grid defaults (which are grid-based and include 0.5 increments). With truncation, alignment cannot be confirmed, and the shown backend chart values appear to follow a different structure than the grid defaults.",
+      "id": "REQ-4",
+      "requirement": "Align backend Callaway chart logic with the updated 18-hole chart behavior used by the frontend, using the same gross-to-deduction mapping (including 0.5 deductions) so backend net score outputs match frontend results for the same hole scores and course par.",
+      "reason": "backend/main.mo is truncated before the chart mapping (e.g., getBackendChart/findChartEntry tables/ranges) is shown, so it cannot be verified that gross scores 72–130 map to the exact deduction values from the provided 13×11 table. While Float deduction support appears added, the exact mapping alignment is not evidenced.",
       "evidence": [
-        "backend/main.mo (getCallawayChart() hard-coded lowerBound/deductionHoles/adjustment; truncated)",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts (getDefault18GridChart() grid-based defaults; truncated)"
+        "backend/main.mo (truncated; mapping not visible)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Added a backend migration module and wired it into backend/main.mo without clear evidence that a stable-state upgrade/migration was required by the request.",
-      "reason": "The BuildRequest allows adding backend/migration.mo only if an upgrade of stable state is required. The diff shows backend/migration.mo added as a no-op and imported/used in backend/main.mo, but the diff summary does not show any stable variable schema change or upgrade logic necessitating it.",
+      "description": "Added backend API to expose Callaway chart entries via getCallawayChart() returning SharedChartEntry ranges.",
+      "reason": "BuildRequest does not ask for a new backend query/API surface; it only requires backend computation alignment.",
       "evidence": [
-        "backend/migration.mo (new file; no-op run(old : {}) : {} )",
-        "backend/main.mo (imports Migration \"migration\" and uses Migration.run)"
+        "backend/main.mo (public query func getCallawayChart)"
       ]
     },
     {
-      "description": "Project metadata/state tracking updates not requested (project_state.json).",
-      "reason": "The BuildRequest focuses on Callaway grid defaults, localStorage migration behavior, backend scoring alignment, and English UI strings. Updating project_state.json is not part of those requirements.",
+      "description": "Added developer documentation for updating chart defaults.",
+      "reason": "BuildRequest does not request new documentation files.",
       "evidence": [
-        "project_state.json"
+        "frontend/docs/callaway-chart-defaults.md"
       ]
     }
   ],
-  "confidence": 0.66,
+  "confidence": 0.62,
   "changed_files": [
     "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/lib/callaway/callawayChartPersistence.ts",
+    "frontend/docs/callaway-chart-defaults.md",
+    "frontend/src/features/admin/CallawayChartEditor.tsx",
+    "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+    "frontend/src/lib/callaway/gridPlaceholders.ts",
     "project_state.json"
   ]
 }

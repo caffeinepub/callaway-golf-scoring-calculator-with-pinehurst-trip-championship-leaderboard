@@ -1,89 +1,109 @@
 {
   "kind": "build_request",
-  "title": "Apply user-provided 18-hole Callaway grid defaults and align scoring logic",
+  "title": "Fix Callaway chart data table to match provided 13x11 grid (row + 5 gross/deduction pairs)",
   "projectName": "Callaway Scoring",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the shipped 18-hole Callaway grid defaults to match the user-provided 13-row table (row number followed by five (grossScore, worstHoles) pairs). Store these values in frontend/src/lib/callaway/callawayChartPersistence.ts within getDefault18GridChart() so a fresh install (no localStorage) uses the new grid.",
+      "text": "Update the shipped 18-hole Callaway grid defaults so the chart data matches the user-provided 13 rows × 11 columns table (Column 1 = row number; remaining columns = five (grossScore, holesToDeduct) pairs for Columns 1–5). The exact values must match the dataset provided by the user:\nRow 1: (0,0) (0,0) (72,0) (0,0) (0,0)\nRow 2: (73,0.5) (74,0.5) (75,0.5) (0,0) (0,0)\nRow 3: (76,1) (77,1) (78,1) (79,1) (80,1)\nRow 4: (81,1.5) (82,1.5) (83,1.5) (84,1.5) (85,1.5)\nRow 5: (86,2) (87,2) (88,2) (89,2) (90,2)\nRow 6: (91,3) (92,2.5) (93,2.5) (94,2.5) (95,2.5)\nRow 7: (96,3.5) (97,3) (98,3.5) (99,3) (100,3)\nRow 8: (101,4) (102,3.5) (103,3.5) (104,3.5) (105,3.5)\nRow 9: (106,4.5) (107,4) (108,4) (109,4) (110,4)\nRow 10: (111,5) (112,4.5) (113,4.5) (114,4.5) (115,4.5)\nRow 11: (116,5.5) (117,5) (118,5) (119,5) (120,5)\nRow 12: (121,6) (122,5.5) (123,5.5) (124,5.5) (125,5.5)\nRow 13: (126,5.5) (127,6) (128,6) (129,6) (130,6)\nPreserve the existing concept of 5 chart columns (each with its own adjustment) and 13 rows.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
+          "It will have 13 rows with 11 columns, the first column is the row number the next two columns are gross score and how many holes to deduct respectively, corresponding to Col 1 adjustment and so on for the next 8 columns",
           "1\t0\t0\t0\t0\t72\t0\t0\t0\t0\t0\n2\t73\t0.5\t74\t0.5\t75\t0.5\t0\t0\t0\t0\n3\t76\t1\t77\t1\t78\t1\t79\t1\t80\t1\n4\t81\t1.5\t82\t1.5\t83\t1.5\t84\t1.5\t85\t1.5\n5\t86\t2\t87\t2\t88\t2\t89\t2\t90\t2\n6\t91\t3\t92\t2.5\t93\t2.5\t94\t2.5\t95\t2.5\n7\t96\t3.5\t97\t3\t98\t3.5\t99\t3\t100\t3\n8\t101\t4\t102\t3.5\t103\t3.5\t104\t3.5\t105\t3.5\n9\t106\t4.5\t107\t4\t108\t4\t109\t4\t110\t4\n10\t111\t5\t112\t4.5\t113\t4.5\t114\t4.5\t115\t4.5\n11\t116\t5.5\t117\t5\t118\t5\t119\t5\t120\t5\n12\t121\t6\t122\t5.5\t123\t5.5\t124\t5.5\t125\t5.5\n13\t126\t5.5\t127\t6\t128\t6\t129\t6\t130\t6"
         ]
       },
       "acceptanceCriteria": [
-        "With empty browser localStorage, the 18-hole chart displayed in the app matches the provided 13-row table values.",
-        "The default 18-hole grid remains exactly 13 rows x 5 columns and passes existing grid validation (numeric values; worstHoles in 0.5 increments; non-negative)."
+        "On a fresh install (no localStorage chart data), the 18-hole chart grid renders the exact gross/deduction values listed above (with placeholders where the user supplied zeros).",
+        "All worst-holes/deduction values support 0.5 increments and are stored without rounding.",
+        "No extra rows/columns are added or removed (13 rows, 5 chart columns, with row-number plus 10 value columns in the UI table)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure existing localStorage migration/reset behavior correctly picks up the new shipped 18-hole defaults for users who still have older shipped defaults cached in localStorage (i.e., remove old shipped defaults so the updated shipped defaults are used when appropriate).",
+      "text": "Ensure users who already have older shipped 18-hole defaults cached in localStorage automatically receive the updated shipped 18-hole defaults when appropriate. Specifically: if the stored active grid chart and/or stored user-default grid chart exactly matches the previously shipped 18-hole defaults, clear those localStorage entries so the new shipped defaults are used.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Use English for any user-facing text in the build request."
+          "the data table is still not correct."
         ]
       },
       "acceptanceCriteria": [
-        "If localStorage contains the previous shipped 18-hole grid defaults, the app clears that stored shipped-default data and loads the updated shipped 18-hole defaults.",
-        "If localStorage contains a user-edited 18-hole chart (non-shipped-default), the app preserves it and does not overwrite it with shipped defaults."
+        "If localStorage contains the prior shipped 18-hole grid defaults, reloading the app results in the new shipped 18-hole defaults being used (without the user needing to manually reset).",
+        "If localStorage contains a user-edited chart that does NOT equal the prior shipped defaults, the app does not overwrite it."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Align backend Callaway chart logic with the updated 18-hole chart behavior so backend calculations (backend/main.mo) are consistent with the 18-hole grid defaults used by the frontend for scoring.",
-      "target": "backend",
+      "text": "Fix the chart table UI so placeholder cells (grossScore = 0 and worstHoles = 0) are displayed as blank/empty cells (not literal zeros) wherever the chart grid is shown/edited, while keeping the underlying stored value as 0 for those placeholders.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "I will enter a clean grid for 18 holes in my next post"
+          "the data table is still not correct.",
+          "1\t0\t0\t0\t0\t72\t0\t0\t0\t0\t0"
         ]
       },
       "acceptanceCriteria": [
-        "Backend Callaway chart thresholds/deductions/adjustments produce results consistent with the updated 18-hole chart behavior used in the frontend for representative gross scores across the chart (including cases that use 0.5 worst-hole deductions and non-zero adjustments if applicable).",
-        "Backend continues to trap on non-18-length score submissions as it does currently."
+        "In the Callaway chart editor and any chart display table, cells whose grossScore and worstHoles are both 0 render as empty rather than showing “0”.",
+        "Saving the chart preserves placeholder cells as (0,0) values in persisted chart data.",
+        "Chart calculations continue to ignore placeholder grossScore=0 cells (i.e., placeholders do not affect scoring)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Use English for all user-facing UI strings involved in chart editing, validation, save/reset messaging, and any new messaging introduced by these changes.",
-      "target": "frontend",
+      "text": "Align backend Callaway chart logic with the updated 18-hole chart behavior used by the frontend, using the same gross-to-deduction mapping (including 0.5 deductions) so backend net score outputs match frontend results for the same hole scores and course par.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "Use English for any user-facing text in the build request."
+          "the data table is still not correct.",
+          "It will have 13 rows with 11 columns... gross score and how many holes to deduct"
         ]
       },
       "acceptanceCriteria": [
-        "No new non-English user-facing strings are introduced in the modified areas (including admin chart editor success/error/reset confirmations)."
+        "For any gross score present in the provided table (72 through 130), the backend selects the same deduction holes value as the frontend chart mapping.",
+        "Backend supports 0.5 deduction holes (e.g., 0.5, 1.5, 2.5, etc.) consistently with frontend behavior.",
+        "Given identical input scores + par, backend net score equals frontend net score (for 18-hole events)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if an upgrade of stable state is required.",
-    "Do not modify files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
-    "Do not introduce third-party authentication beyond Internet Identity."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Keep all Motoko logic in the single actor at backend/main.mo; only add backend/migration.mo changes if state upgrade is required.",
+    "Use English for any user-facing UI strings introduced or modified by these changes."
   ],
   "nonGoals": [
-    "Adding 9-hole grid values (not provided in this request).",
-    "Adding new external storage/database for chart persistence beyond the existing localStorage approach.",
-    "Implementing real-time features or multi-user synchronization for chart edits."
+    "Do not add new authentication providers beyond Internet Identity.",
+    "Do not introduce new chart formats beyond the existing 13x5 grid + column adjustments model.",
+    "Do not change the 9-hole chart defaults unless required for this 18-hole table fix."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

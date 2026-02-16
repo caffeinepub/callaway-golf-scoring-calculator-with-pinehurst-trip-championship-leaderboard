@@ -8,7 +8,23 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const SharedChartEntry = IDL.Record({
+  'adjustment' : IDL.Int,
+  'deduction' : IDL.Float64,
+  'grossScoreFrom' : IDL.Int,
+  'grossScoreTo' : IDL.Int,
+});
 export const GolferId = IDL.Principal;
+export const RawEvent = IDL.Record({
+  'par' : IDL.Nat,
+  'scores' : IDL.Vec(IDL.Tuple(GolferId, IDL.Vec(IDL.Nat))),
+});
+export const GrossToDeduction = IDL.Tuple(
+  IDL.Int,
+  IDL.Int,
+  IDL.Float64,
+  IDL.Int,
+);
 export const CallawayResult = IDL.Record({
   'net' : IDL.Int,
   'adjustment' : IDL.Int,
@@ -21,6 +37,17 @@ export const EventResult = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  'getCallawayChart' : IDL.Func([], [IDL.Vec(SharedChartEntry)], ['query']),
+  'getEventsForPrincipal' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(IDL.Tuple(GolferId, RawEvent))],
+      ['query'],
+    ),
+  'getGrossToDeductionTable' : IDL.Func(
+      [],
+      [IDL.Vec(GrossToDeduction)],
+      ['query'],
+    ),
   'getLatestResult' : IDL.Func([], [IDL.Opt(EventResult)], ['query']),
   'submitEvent' : IDL.Func([GolferId, IDL.Nat, IDL.Vec(IDL.Nat)], [], []),
   'updateEvent' : IDL.Func([GolferId, IDL.Vec(IDL.Nat)], [], []),
@@ -29,7 +56,18 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const SharedChartEntry = IDL.Record({
+    'adjustment' : IDL.Int,
+    'deduction' : IDL.Float64,
+    'grossScoreFrom' : IDL.Int,
+    'grossScoreTo' : IDL.Int,
+  });
   const GolferId = IDL.Principal;
+  const RawEvent = IDL.Record({
+    'par' : IDL.Nat,
+    'scores' : IDL.Vec(IDL.Tuple(GolferId, IDL.Vec(IDL.Nat))),
+  });
+  const GrossToDeduction = IDL.Tuple(IDL.Int, IDL.Int, IDL.Float64, IDL.Int);
   const CallawayResult = IDL.Record({
     'net' : IDL.Int,
     'adjustment' : IDL.Int,
@@ -42,6 +80,17 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
+    'getCallawayChart' : IDL.Func([], [IDL.Vec(SharedChartEntry)], ['query']),
+    'getEventsForPrincipal' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(IDL.Tuple(GolferId, RawEvent))],
+        ['query'],
+      ),
+    'getGrossToDeductionTable' : IDL.Func(
+        [],
+        [IDL.Vec(GrossToDeduction)],
+        ['query'],
+      ),
     'getLatestResult' : IDL.Func([], [IDL.Opt(EventResult)], ['query']),
     'submitEvent' : IDL.Func([GolferId, IDL.Nat, IDL.Vec(IDL.Nat)], [], []),
     'updateEvent' : IDL.Func([GolferId, IDL.Vec(IDL.Nat)], [], []),

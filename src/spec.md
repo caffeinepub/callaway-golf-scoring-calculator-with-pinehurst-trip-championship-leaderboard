@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Update the shipped 18-hole Callaway grid defaults to the user-provided 13-row table, ensure localStorage behavior picks up the new shipped defaults appropriately, and align backend scoring logic with the updated chart behavior.
+**Goal:** Fix the 18-hole Callaway chart defaults, persistence/migration behavior, UI placeholder display, and backend deduction mapping so the app matches the provided 13×11 dataset and produces consistent net scores.
 
 **Planned changes:**
-- Replace `getDefault18GridChart()` defaults in `frontend/src/lib/callaway/callawayChartPersistence.ts` with the provided 13-row × 5-column (grossScore, worstHoles) pairs so fresh installs load the new grid.
-- Update frontend localStorage migration/reset logic to clear previously cached *shipped-default* 18-hole data so the new shipped defaults load, while preserving user-edited (non-shipped-default) 18-hole charts.
-- Align backend Callaway chart/scoring logic in `backend/main.mo` so calculations are consistent with the updated 18-hole chart behavior used by the frontend (including 0.5 worst-hole increments and any applicable adjustments).
-- Ensure all user-facing UI strings touched by these changes (chart editing/validation/save/reset messaging) remain in English.
+- Update the shipped 18-hole Callaway chart default grid to exactly match the provided 13 rows × 5 (grossScore, holesToDeduct) pairs dataset, preserving the existing 13-row / 5-column model and supporting 0.5 deduction increments.
+- Add a localStorage compatibility check: if stored active and/or user-default chart data exactly equals the previously shipped 18-hole defaults, clear those entries so the updated shipped defaults load; otherwise, preserve user-edited charts.
+- Adjust chart table rendering so placeholder pairs (grossScore=0 and holesToDeduct=0) display as empty cells in all chart grid views/editors while still persisting underlying (0,0) values and keeping calculations unaffected by placeholders.
+- Align backend Callaway chart logic with the updated 18-hole frontend mapping (including 0.5 deductions) so backend net score results match frontend results for the same inputs.
 
-**User-visible outcome:** On a fresh install, the app shows the updated 18-hole Callaway grid by default; users with older cached shipped defaults are automatically moved to the new shipped defaults without losing any user-edited charts; scoring results match between frontend and backend for 18-hole submissions.
+**User-visible outcome:** On fresh installs and for users still using the old shipped 18-hole defaults, the chart grid shows the corrected 13×11 values (with placeholders displayed as blank), and both frontend and backend compute matching net scores using the same gross-to-deduction rules.
