@@ -1,42 +1,106 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T21:12:42.436Z",
-  "summary": "Frontend changes add placeholder-cell rendering/parsing utilities and apply them to the chart display/editor, plus documentation and (per summary) updated 18-hole shipped defaults and localStorage migration logic. Backend/main.mo shows structural updates to support Float (0.5) deductions and exposes a getCallawayChart query, but the actual gross→deduction mapping update cannot be fully verified from the truncated diff.",
+  "generatedAt": "2026-02-16T21:24:04.714Z",
+  "summary": "The diff does not demonstrate that the backend Callaway chart was replaced with the requested 13×11 dataset or that backend chart exposure/lookup endpoints were updated to match that dataset. The only visible backend change is a new in-actor `chart` array that still starts at gross 69 and contains range groupings/placeholder ranges that conflict with the BuildRequest’s example mappings (e.g., 73 and 92). The diff also includes substantial frontend UI/feature work (admin/settings/chart display, router flow, PDF export, styling, localStorage persistence) that was not requested and exceeds the stated focus on backend source-of-truth alignment.",
   "missing_requirements": [
     {
-      "id": "REQ-4",
-      "requirement": "Align backend Callaway chart logic with the updated 18-hole chart behavior used by the frontend, using the same gross-to-deduction mapping (including 0.5 deductions) so backend net score outputs match frontend results for the same hole scores and course par.",
-      "reason": "backend/main.mo is truncated before the chart mapping (e.g., getBackendChart/findChartEntry tables/ranges) is shown, so it cannot be verified that gross scores 72–130 map to the exact deduction values from the provided 13×11 table. While Float deduction support appears added, the exact mapping alignment is not evidenced.",
+      "id": "REQ-1",
+      "requirement": "Replace the hard-coded backend Callaway chart in `backend/main.mo` (returned by `getBackendChart()`) with the user-provided 13-row dataset so grossScore→holesToDeduct pairs (including 0.5 increments and placeholder cells) match exactly.",
+      "reason": "The shown backend `chart` still begins at grossScoreFrom=69 and uses broad ranges that do not match the provided dataset examples (e.g., the request cites 73→0.5 and 92→2.5, but the displayed ranges imply 73 is in 72–75 with deduction 1.0 and 92 is in 91–93 with deduction 4.5). Also, the diff snippet does not show `getBackendChart()` being updated or replaced.",
       "evidence": [
-        "backend/main.mo (truncated; mapping not visible)"
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Update backend chart exposure and lookup so `getCallawayChart()` returns correct ranges/values for the updated chart and scoring uses the same updated semantics (not fabricated via `lowerBound + 4` where inaccurate).",
+      "reason": "The diff does not show the implementation of `getCallawayChart()` or any updated lookup logic. The only visible chart data uses fixed ranges that conflict with requested representative score mappings (e.g., 92, 116, 126) and includes placeholder ranges (126–129, 130–133, 134–137) rather than the requested explicit dataset-driven behavior.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Align or remove `getGrossToDeductionTable()` so it is consistent with the updated backend chart used by scoring.",
+      "reason": "The diff summary does not show any changes to `getGrossToDeductionTable()` (or its removal). With the backend chart not clearly updated to the provided dataset, there is also no evidence the table output was aligned to avoid stale/conflicting ranges.",
+      "evidence": [
+        "backend/main.mo"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Added backend API to expose Callaway chart entries via getCallawayChart() returning SharedChartEntry ranges.",
-      "reason": "BuildRequest does not ask for a new backend query/API surface; it only requires backend computation alignment.",
+      "description": "Frontend redesign/flow changes with TanStack Router-based multi-step scoring flow, new Settings/Admin routes, and revised App layout.",
+      "reason": "BuildRequest is backend-focused and explicitly states ‘Do not redesign the frontend UI; focus only on making production chart values match the provided dataset by fixing the backend source of truth.’ These routing/flow/UI changes were not requested.",
       "evidence": [
-        "backend/main.mo (public query func getCallawayChart)"
+        "frontend/src/App.tsx"
       ]
     },
     {
-      "description": "Added developer documentation for updating chart defaults.",
-      "reason": "BuildRequest does not request new documentation files.",
+      "description": "Admin access gating/toggle behavior and disabled-admin UI messaging.",
+      "reason": "Not requested; BuildRequest non-goals include not adding new auth methods, but no admin feature work was requested at all. This adds new product behavior beyond chart correction.",
       "evidence": [
-        "frontend/docs/callaway-chart-defaults.md"
+        "frontend/src/features/admin/AdminView.tsx",
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Frontend Callaway chart display section (read-only table) and detailed breakdown panel additions/changes.",
+      "reason": "Not requested; requirement was to fix backend chart source of truth, not to add new chart visualization UI.",
+      "evidence": [
+        "frontend/src/features/leaderboard/CallawayChartSection.tsx",
+        "frontend/src/features/leaderboard/BreakdownPanel.tsx"
+      ]
+    },
+    {
+      "description": "PDF export feature for standings.",
+      "reason": "Not requested and unrelated to backend chart dataset alignment.",
+      "evidence": [
+        "frontend/src/features/leaderboard/LeaderboardView.tsx"
+      ]
+    },
+    {
+      "description": "Client-side Callaway calculation engine updated to use backend chart and compute fractional-hole deductions (including rounding to 0.1), plus special rule for gross <= par.",
+      "reason": "BuildRequest focuses on backend chart/lookup correctness. This adds new/changed client scoring semantics; also introduces rounding behavior not specified by the request.",
+      "evidence": [
+        "frontend/src/lib/callaway/callaway.ts"
+      ]
+    },
+    {
+      "description": "React Query hooks added/changed for fetching `getCallawayChart()` and `getLatestResult()`.",
+      "reason": "Not requested; backend change request did not ask for frontend data-fetching refactors.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "LocalStorage-based admin access state management and chart persistence/migration utilities (including legacy constants and migration logic).",
+      "reason": "Not requested and conflicts with the stated intent to make the backend the source of truth for chart values (this introduces/keeps client-side chart persistence behavior).",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Global styling/theme changes (OKLCH golf-themed palette, fonts) and Tailwind config changes.",
+      "reason": "Not requested and constitutes UI redesign work.",
+      "evidence": [
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.78,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/docs/callaway-chart-defaults.md",
-    "frontend/src/features/admin/CallawayChartEditor.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/features/admin/AdminView.tsx",
+    "frontend/src/features/leaderboard/BreakdownPanel.tsx",
     "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-    "frontend/src/lib/callaway/gridPlaceholders.ts",
+    "frontend/src/features/leaderboard/LeaderboardView.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/callaway/callaway.ts",
     "project_state.json"
   ]
 }

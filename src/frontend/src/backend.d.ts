@@ -36,7 +36,7 @@ export interface backendInterface {
     getCallawayChart(): Promise<Array<SharedChartEntry>>;
     getEventsForPrincipal(_principal: Principal): Promise<Array<[GolferId, RawEvent]>>;
     /**
-     * / Returns the entire gross to deduction conversion data.
+     * / Returns the entire gross to deduction conversion data from the chart.
      */
     getGrossToDeductionTable(): Promise<Array<GrossToDeduction>>;
     /**

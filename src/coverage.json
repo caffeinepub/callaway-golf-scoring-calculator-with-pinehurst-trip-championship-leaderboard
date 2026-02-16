@@ -1,52 +1,32 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T21:12:42.438Z",
+  "generatedAt": "2026-02-16T21:24:04.717Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 2,
+    "total": 3,
+    "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the shipped 18-hole Callaway grid defaults so the chart data matches the user-provided 13 rows × 11 columns table (Column 1 = row number; remaining columns = five (grossScore, holesToDeduct) pairs for Columns 1–5). The exact values must match the dataset provided by the user:\nRow 1: (0,0) (0,0) (72,0) (0,0) (0,0)\nRow 2: (73,0.5) (74,0.5) (75,0.5) (0,0) (0,0)\nRow 3: (76,1) (77,1) (78,1) (79,1) (80,1)\nRow 4: (81,1.5) (82,1.5) (83,1.5) (84,1.5) (85,1.5)\nRow 5: (86,2) (87,2) (88,2) (89,2) (90,2)\nRow 6: (91,3) (92,2.5) (93,2.5) (94,2.5) (95,2.5)\nRow 7: (96,3.5) (97,3) (98,3.5) (99,3) (100,3)\nRow 8: (101,4) (102,3.5) (103,3.5) (104,3.5) (105,3.5)\nRow 9: (106,4.5) (107,4) (108,4) (109,4) (110,4)\nRow 10: (111,5) (112,4.5) (113,4.5) (114,4.5) (115,4.5)\nRow 11: (116,5.5) (117,5) (118,5) (119,5) (120,5)\nRow 12: (121,6) (122,5.5) (123,5.5) (124,5.5) (125,5.5)\nRow 13: (126,5.5) (127,6) (128,6) (129,6) (130,6)\nPreserve the existing concept of 5 chart columns (each with its own adjustment) and 13 rows.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "frontend/docs/callaway-chart-defaults.md"
-        ],
-        "matchedFiles": [
-          "frontend/docs/callaway-chart-defaults.md"
-        ]
+        "summary": "Replace the hard-coded backend Callaway chart in `backend/main.mo` (currently returned by `getBackendChart()`) with the user-provided 13-row dataset so that production calculations and chart values match the exact provided grossScore→holesToDeduct pairs (including 0.5 increments and placeholder cells with grossScore=0 / worstHoles=0).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Ensure users who already have older shipped 18-hole defaults cached in localStorage automatically receive the updated shipped 18-hole defaults when appropriate. Specifically: if the stored active grid chart and/or stored user-default grid chart exactly matches the previously shipped 18-hole defaults, clear those localStorage entries so the new shipped defaults are used.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/lib/callaway/callawayChartPersistence.ts"
-        ],
+        "summary": "Update backend chart exposure and lookup so that `getCallawayChart()` returns correct ranges and values for the updated chart, and scoring uses the same updated chart semantics (i.e., range-based matching rather than the current `grossScoreTo = lowerBound + 4` heuristic if it does not reflect the real chart groups).",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-3",
-        "summary": "Fix the chart table UI so placeholder cells (grossScore = 0 and worstHoles = 0) are displayed as blank/empty cells (not literal zeros) wherever the chart grid is shown/edited, while keeping the underlying stored value as 0 for those placeholders.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/lib/callaway/gridPlaceholders.ts",
-          "frontend/src/features/admin/CallawayChartEditor.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/lib/callaway/gridPlaceholders.ts",
-          "frontend/src/features/admin/CallawayChartEditor.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Align backend Callaway chart logic with the updated 18-hole chart behavior used by the frontend, using the same gross-to-deduction mapping (including 0.5 deductions) so backend net score outputs match frontend results for the same hole scores and course par.",
+        "summary": "Align or remove the backend `getGrossToDeductionTable()` output so it is consistent with the updated backend chart data (no stale ranges/values that contradict the chart used by `calculateCallaway`).",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -59,14 +39,16 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/docs/callaway-chart-defaults.md",
+    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/features/admin/CallawayChartEditor.tsx",
+    "frontend/src/features/admin/AdminView.tsx",
+    "frontend/src/features/leaderboard/BreakdownPanel.tsx",
     "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-    "frontend/src/lib/callaway/gridPlaceholders.ts",
+    "frontend/src/features/leaderboard/LeaderboardView.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/callaway/callaway.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

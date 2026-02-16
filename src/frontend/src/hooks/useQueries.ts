@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import type { SharedChartEntry } from '../backend';
 
-// This file is reserved for React Query hooks that interact with the backend.
-// Currently, the app operates entirely in the frontend without backend persistence.
-// Future enhancements could add backend storage for events and results.
+// React Query hooks for backend interactions
 
+/**
+ * Fetch the latest event result from the backend
+ */
 export function useGetLatestResult() {
   const { actor, isFetching } = useActor();
 
@@ -15,5 +17,23 @@ export function useGetLatestResult() {
       return actor.getLatestResult();
     },
     enabled: !!actor && !isFetching,
+  });
+}
+
+/**
+ * Fetch the Callaway scoring chart from the backend
+ * This is the source of truth for all scoring calculations
+ */
+export function useGetCallawayChart() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<SharedChartEntry[]>({
+    queryKey: ['callawayChart'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getCallawayChart();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: Infinity, // Chart data rarely changes
   });
 }

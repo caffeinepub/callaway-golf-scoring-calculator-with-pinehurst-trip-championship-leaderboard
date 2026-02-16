@@ -1,4 +1,4 @@
-import { findChartEntry, formatChartRowLabel } from './callawayChartPersistence';
+import type { SharedChartEntry } from '../../backend';
 
 export interface CallawayResult {
   gross: number;
@@ -10,43 +10,73 @@ export interface CallawayResult {
 }
 
 /**
+ * Find the appropriate chart entry for a given gross score
+ */
+function findChartEntryFromBackend(gross: number, chart: SharedChartEntry[]): SharedChartEntry | null {
+  for (const entry of chart) {
+    const from = Number(entry.grossScoreFrom);
+    const to = Number(entry.grossScoreTo);
+    if (gross >= from && gross <= to) {
+      return entry;
+    }
+  }
+  return null;
+}
+
+/**
+ * Format chart row label (e.g., "70-75", "136+")
+ */
+function formatChartRowLabel(from: bigint, to: bigint): string {
+  const fromNum = Number(from);
+  const toNum = Number(to);
+  
+  if (fromNum === toNum) {
+    return `${fromNum}`;
+  }
+  return `${fromNum}-${toNum}`;
+}
+
+/**
  * Calculate Callaway handicap and net score based on gross scores.
  * 
- * The Callaway System uses an official chart based on gross score ranges
- * to determine how many worst holes to deduct and any adjustment.
- * 
- * IMPORTANT: This calculation uses the active persisted chart data (edited or default).
- * Chart edits made via the Admin Chart Editor are immediately reflected in all calculations,
- * regardless of whether the scoring chart display is visible in the UI.
+ * The Callaway System uses the backend chart to determine how many 
+ * worst holes to deduct and any adjustment.
  * 
  * RULE: When gross score is equal to or less than course par, net score equals gross score.
  */
 export function calculateCallaway(
   holeScores: number[],
   coursePar: number,
-  holeCount: 9 | 18
+  backendChart: SharedChartEntry[]
 ): CallawayResult {
-  if (holeCount !== 9 && holeCount !== 18) {
+  if (holeScores.length !== 18 && holeScores.length !== 9) {
     throw new Error('Callaway scoring only supports 9 or 18 hole rounds');
-  }
-
-  if (holeScores.length !== holeCount) {
-    throw new Error(`Expected ${holeCount} hole scores, got ${holeScores.length}`);
   }
 
   // Calculate gross total
   const gross = holeScores.reduce((sum, score) => sum + score, 0);
 
   // Find the appropriate chart entry based on gross score
-  // NOTE: findChartEntry retrieves the active chart (edited or default) from persistence
-  const chartEntry = findChartEntry(gross, holeCount);
+  const chartEntry = findChartEntryFromBackend(gross, backendChart);
+
+  // If no chart entry found, return gross score as net
+  if (!chartEntry) {
+    return {
+      gross,
+      deduction: 0,
+      adjustment: 0,
+      net: gross,
+      chartRowLabel: 'N/A',
+      worstHolesUsed: 0,
+    };
+  }
 
   // Sort scores descending to find worst holes (highest scores)
   const sortedScores = [...holeScores].sort((a, b) => b - a);
 
   // Calculate deduction: sum of the worst holes (supporting fractional holes)
   let deduction = 0;
-  const worstHolesCount = chartEntry.worstHoles;
+  const worstHolesCount = chartEntry.deduction;
   const fullHoles = Math.floor(worstHolesCount);
   const fractionalPart = worstHolesCount - fullHoles;
 
@@ -61,7 +91,7 @@ export function calculateCallaway(
   }
 
   // Apply adjustment from chart (note: adjustment is typically negative or zero)
-  const adjustment = chartEntry.adjustment;
+  const adjustment = Number(chartEntry.adjustment);
 
   // Calculate net score with special rule:
   // If gross <= par, net equals gross (no deduction or adjustment applied)
@@ -78,7 +108,7 @@ export function calculateCallaway(
     deduction: Math.round(deduction * 10) / 10,
     adjustment,
     net,
-    chartRowLabel: formatChartRowLabel(chartEntry.lowerBound, chartEntry.upperBound),
+    chartRowLabel: formatChartRowLabel(chartEntry.grossScoreFrom, chartEntry.grossScoreTo),
     worstHolesUsed: worstHolesCount,
   };
 }

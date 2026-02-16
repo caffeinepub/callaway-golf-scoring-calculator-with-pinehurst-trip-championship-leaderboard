@@ -42,7 +42,7 @@ export interface _SERVICE {
     Array<[GolferId, RawEvent]>
   >,
   /**
-   * / Returns the entire gross to deduction conversion data.
+   * / Returns the entire gross to deduction conversion data from the chart.
    */
   'getGrossToDeductionTable' : ActorMethod<[], Array<GrossToDeduction>>,
   /**

@@ -9,7 +9,6 @@ import { AdminView } from './features/admin/AdminView';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { validateGolferData } from './features/scoreEntry/validation';
-import { calculateCallaway } from './lib/callaway/callaway';
 import type { EventSetup, GolferData, CallawayResultData } from './state/eventTypes';
 
 const queryClient = new QueryClient();
@@ -70,24 +69,7 @@ function ScoringFlow() {
       }
     }
 
-    // Calculate results for each golfer
-    const calculatedResults: CallawayResultData[] = golfers.map((golfer) => {
-      const holeScores = golfer.holeScores.map((score) => parseInt(score, 10));
-      const callawayResult = calculateCallaway(holeScores, eventSetup.coursePar, eventSetup.holeCount);
-      
-      return {
-        id: golfer.id,
-        name: golfer.name,
-        gross: callawayResult.gross,
-        deduction: callawayResult.deduction,
-        adjustment: callawayResult.adjustment,
-        net: callawayResult.net,
-        chartRowLabel: callawayResult.chartRowLabel,
-        worstHolesUsed: callawayResult.worstHolesUsed,
-      };
-    });
-
-    setResults(calculatedResults);
+    // Move to results view - calculation will happen in LeaderboardView using backend chart
     setCurrentStep(3);
   };
 
@@ -130,11 +112,8 @@ function ScoringFlow() {
         )}
         {currentStep === 3 && (
           <LeaderboardView
-            title={eventSetup.title}
-            courseName={eventSetup.courseName}
-            results={results}
-            coursePar={eventSetup.coursePar}
-            holeCount={eventSetup.holeCount}
+            eventSetup={eventSetup}
+            golfers={golfers}
           />
         )}
       </main>
@@ -162,21 +141,11 @@ function SettingsRoute() {
 
 // Admin route wrapper
 function AdminRoute() {
-  const navigate = useNavigate();
-  
-  const handleBack = () => {
-    navigate({ to: '/' });
-  };
-
-  const handleOpenSettings = () => {
-    navigate({ to: '/settings' });
-  };
-
   return (
     <>
       <Header title="Callaway Scoring System" currentStep={0} onStartOver={() => {}} />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <AdminView onBack={handleBack} onOpenSettings={handleOpenSettings} />
+        <AdminView />
       </main>
     </>
   );

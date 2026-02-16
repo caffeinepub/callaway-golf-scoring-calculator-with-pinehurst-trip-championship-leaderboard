@@ -1,64 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Callaway 18-hole chart default grid correction + localStorage migration + placeholder rendering",
-  "requirements": [
-    {
-      "id": "REQ-1",
-      "summary": "Update shipped 18-hole Callaway grid defaults to exactly match the provided 13×11 (row + five gross/deduction pairs) dataset while preserving the 13×5 grid + column adjustments model.",
-      "acceptanceCriteria": [
-        "On a fresh install (no localStorage chart data), the 18-hole chart grid renders the exact gross/deduction values listed above (with placeholders where the user supplied zeros).",
-        "All worst-holes/deduction values support 0.5 increments and are stored without rounding.",
-        "No extra rows/columns are added or removed (13 rows, 5 chart columns, with row-number plus 10 value columns in the UI table)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "operation": "modify",
-          "description": "Ensure getDefault18GridChart() exactly matches the user-provided 13-row table values (including placeholder (0,0) cells and 0.5 increments) and continues to ship a 13×5 grid with 5 columnAdjustments."
-        },
-        {
-          "path": "frontend/docs/callaway-chart-defaults.md",
-          "operation": "modify",
-          "description": "Update the developer documentation to reflect the corrected 18-hole shipped defaults dataset and how placeholder (0,0) cells are represented in the grid."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Automatically migrate existing localStorage charts that exactly equal the prior shipped 18-hole defaults so users receive the corrected shipped defaults without overwriting user-edited charts.",
-      "acceptanceCriteria": [
-        "If localStorage contains the prior shipped 18-hole grid defaults, reloading the app results in the new shipped 18-hole defaults being used (without the user needing to manually reset).",
-        "If localStorage contains a user-edited chart that does NOT equal the prior shipped defaults, the app does not overwrite it."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
-          "operation": "modify",
-          "description": "Harden the 18-hole localStorage migration logic to reliably detect when the stored active grid chart and/or stored user-default grid chart matches the prior shipped 18-hole defaults and remove only those entries so the new shipped defaults apply, without touching non-matching user edits."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Render placeholder chart cells (grossScore=0 and worstHoles=0) as visually blank in chart grid UI while keeping persisted values as (0,0) and maintaining scoring behavior that ignores placeholders.",
-      "acceptanceCriteria": [
-        "In the Callaway chart editor and any chart display table, cells whose grossScore and worstHoles are both 0 render as empty rather than showing “0”.",
-        "Saving the chart preserves placeholder cells as (0,0) values in persisted chart data.",
-        "Chart calculations continue to ignore placeholder grossScore=0 cells (i.e., placeholders do not affect scoring)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/callaway/gridPlaceholders.ts",
-          "operation": "create",
-          "description": "Add a small helper (e.g., isPlaceholderCell / displayValueForCell) to centralize the rule that only (grossScore=0 && worstHoles=0) should render as an empty UI value while the underlying stored values remain numeric zeros."
-        },
-        {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
-          "operation": "modify",
-          "description": "Update the chart grid inputs to display empty values for placeholder cells (grossScore=0 and worstHoles=0) while ensuring clearing an input sets the underlying value back to 0 and saving persists placeholders as (0,0)."
-        }
-      ]
-    }
-  ]
+  "title": "Callaway Scoring — Frontend plan (no changes required for backend-only chart update)",
+  "requirements": []
 }

@@ -1,77 +1,69 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { type CallawayResultData } from '../../state/eventTypes';
-import { User } from 'lucide-react';
+import type { CallawayResult } from '../../lib/callaway/callaway';
 
 interface BreakdownPanelProps {
-  result: CallawayResultData;
+  golferName: string;
+  holeScores: number[];
+  callawayResult: CallawayResult;
   coursePar: number;
 }
 
-export function BreakdownPanel({ result, coursePar }: BreakdownPanelProps) {
-  const formatNumber = (num: number) => {
-    return num % 1 === 0 ? num.toString() : num.toFixed(1);
-  };
-
-  const formatWorstHoles = (num: number) => {
-    if (num % 1 === 0) return num.toString();
-    return num.toFixed(1);
-  };
-
-  // Determine if the gross score is at or below par
-  const isAtOrBelowPar = result.gross <= coursePar;
-
-  // Display adjustment: show 0 when gross is at or below par
-  const displayAdjustment = isAtOrBelowPar ? '0' : (result.adjustment === 0 ? '0' : result.adjustment);
+export function BreakdownPanel({ golferName, holeScores, callawayResult, coursePar }: BreakdownPanelProps) {
+  const isAtOrBelowPar = callawayResult.gross <= coursePar;
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <User className="h-5 w-5" />
-            {result.name}
-          </CardTitle>
-          <Badge variant="outline" className="font-mono">
-            Chart Row: {result.chartRowLabel}
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>{golferName}</span>
+          <Badge variant="outline" className="text-sm">
+            Chart Row: {callawayResult.chartRowLabel}
           </Badge>
-        </div>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Gross Total</p>
-            <p className="text-2xl font-bold">{result.gross}</p>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Gross Score</p>
+            <p className="text-2xl font-bold">{callawayResult.gross}</p>
           </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Worst Holes</p>
-            <p className="text-2xl font-bold text-primary">{formatWorstHoles(result.worstHolesUsed)}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Deduction</p>
-            <p className="text-2xl font-bold text-primary">-{formatNumber(result.deduction)}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Adjustment</p>
-            <p className="text-2xl font-bold text-primary">
-              {displayAdjustment}
+          <div>
+            <p className="text-sm text-muted-foreground">Deduction</p>
+            <p className="text-2xl font-bold text-destructive">-{callawayResult.deduction}</p>
+            <p className="text-xs text-muted-foreground">
+              ({callawayResult.worstHolesUsed} worst {callawayResult.worstHolesUsed === 1 ? 'hole' : 'holes'})
             </p>
           </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">Net Score</p>
-            <p className="text-2xl font-bold text-foreground">{formatNumber(result.net)}</p>
+          <div>
+            <p className="text-sm text-muted-foreground">Adjustment</p>
+            <p className="text-2xl font-bold">
+              {isAtOrBelowPar ? '0' : callawayResult.adjustment >= 0 ? `+${callawayResult.adjustment}` : callawayResult.adjustment}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Net Score</p>
+            <p className="text-2xl font-bold text-primary">{callawayResult.net}</p>
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t border-border">
-          {isAtOrBelowPar ? (
-            <p className="text-xs text-muted-foreground">
-              Calculation: Gross score of {result.gross} is at or below par ({coursePar}), so <span className="font-semibold text-foreground">net score equals gross score = {formatNumber(result.net)}</span>
-            </p>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              Calculation: {result.gross} (gross) - {formatNumber(result.deduction)} (deduction from {formatWorstHoles(result.worstHolesUsed)} worst holes) {result.adjustment !== 0 ? `+ ${result.adjustment} (adjustment)` : ''} = <span className="font-semibold text-foreground">{formatNumber(result.net)}</span>
-            </p>
-          )}
+
+        {isAtOrBelowPar && (
+          <div className="rounded-lg border border-muted bg-muted/30 p-3 text-sm text-muted-foreground">
+            <strong>Note:</strong> Gross score is at or below par ({coursePar}). Net score equals gross score
+            (no deduction or adjustment applied).
+          </div>
+        )}
+
+        <div>
+          <p className="mb-2 text-sm font-medium text-muted-foreground">Hole-by-Hole Scores</p>
+          <div className="grid grid-cols-9 gap-1 text-center text-sm">
+            {holeScores.map((score, index) => (
+              <div key={index} className="rounded border border-border bg-muted/50 p-2">
+                <div className="text-xs text-muted-foreground">H{index + 1}</div>
+                <div className="font-semibold">{score}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>
