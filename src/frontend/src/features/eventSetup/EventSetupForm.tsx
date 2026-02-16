@@ -10,10 +10,12 @@ interface EventSetupFormProps {
 }
 
 export function EventSetupForm({ onComplete }: EventSetupFormProps) {
-  const [title, setTitle] = useState('Pinehurst Trip Championship');
+  const [title, setTitle] = useState('');
+  const [courseName, setCourseName] = useState('');
   const [golferCount, setGolferCount] = useState('4');
   const [holeCount, setHoleCount] = useState<'9' | '18'>('18');
   const [coursePar, setCoursePar] = useState('72');
+  const [golferCountError, setGolferCountError] = useState('');
 
   const handleHoleCountChange = (value: string) => {
     const holes = value as '9' | '18';
@@ -22,12 +24,25 @@ export function EventSetupForm({ onComplete }: EventSetupFormProps) {
     setCoursePar(holes === '18' ? '72' : '36');
   };
 
+  const handleGolferCountChange = (value: string) => {
+    setGolferCount(value);
+    setGolferCountError('');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate golfer count
+    const count = parseInt(golferCount, 10);
+    if (isNaN(count) || count < 1 || count > 64) {
+      setGolferCountError('Number of golfers must be between 1 and 64');
+      return;
+    }
+
     const setup: EventSetup = {
-      title: title.trim() || 'Pinehurst Trip Championship',
-      golferCount: parseInt(golferCount, 10),
+      title: title.trim(),
+      courseName: courseName.trim(),
+      golferCount: count,
       holeCount: parseInt(holeCount, 10) as 9 | 18,
       coursePar: parseInt(coursePar, 10),
     };
@@ -52,7 +67,19 @@ export function EventSetupForm({ onComplete }: EventSetupFormProps) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Pinehurst Trip Championship"
+            placeholder="Enter tournament title (optional)"
+            className="font-medium"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="courseName">Course Name</Label>
+          <Input
+            id="courseName"
+            type="text"
+            value={courseName}
+            onChange={(e) => setCourseName(e.target.value)}
+            placeholder="e.g., Pebble Beach Golf Links"
             className="font-medium"
           />
         </div>
@@ -60,18 +87,21 @@ export function EventSetupForm({ onComplete }: EventSetupFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="golferCount">Number of Golfers</Label>
-            <Select value={golferCount} onValueChange={setGolferCount}>
-              <SelectTrigger id="golferCount">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-                  <SelectItem key={num} value={num.toString()}>
-                    {num} {num === 1 ? 'Golfer' : 'Golfers'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              id="golferCount"
+              type="number"
+              min="1"
+              max="64"
+              step="1"
+              value={golferCount}
+              onChange={(e) => handleGolferCountChange(e.target.value)}
+              className="font-medium"
+              required
+            />
+            {golferCountError && (
+              <p className="text-sm text-destructive">{golferCountError}</p>
+            )}
+            <p className="text-xs text-muted-foreground">Enter a number between 1 and 64</p>
           </div>
 
           <div className="space-y-2">

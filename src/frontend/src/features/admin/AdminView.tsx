@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ShieldAlert, Settings as SettingsIcon } from 'lucide-react';
+import { ShieldAlert, Settings as SettingsIcon, Info } from 'lucide-react';
 import { isAdminAccessEnabled } from '../../state/adminAccess';
 import { CallawayChartEditor } from './CallawayChartEditor';
 
@@ -68,6 +68,13 @@ export function AdminView({ onBack, onOpenSettings }: AdminViewProps) {
           Back
         </Button>
       </div>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          Chart edits made here affect all score calculations immediately, even though the scoring chart display is hidden from the leaderboard view.
+        </AlertDescription>
+      </Alert>
 
       <CallawayChartEditor />
     </div>

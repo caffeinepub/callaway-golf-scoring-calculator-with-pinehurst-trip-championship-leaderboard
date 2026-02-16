@@ -5,9 +5,10 @@ import { User } from 'lucide-react';
 
 interface BreakdownPanelProps {
   result: CallawayResultData;
+  coursePar: number;
 }
 
-export function BreakdownPanel({ result }: BreakdownPanelProps) {
+export function BreakdownPanel({ result, coursePar }: BreakdownPanelProps) {
   const formatNumber = (num: number) => {
     return num % 1 === 0 ? num.toString() : num.toFixed(1);
   };
@@ -16,6 +17,12 @@ export function BreakdownPanel({ result }: BreakdownPanelProps) {
     if (num % 1 === 0) return num.toString();
     return num.toFixed(1);
   };
+
+  // Determine if the gross score is at or below par
+  const isAtOrBelowPar = result.gross <= coursePar;
+
+  // Display adjustment: show 0 when gross is at or below par
+  const displayAdjustment = isAtOrBelowPar ? '0' : (result.adjustment === 0 ? '0' : result.adjustment);
 
   return (
     <Card>
@@ -47,7 +54,7 @@ export function BreakdownPanel({ result }: BreakdownPanelProps) {
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Adjustment</p>
             <p className="text-2xl font-bold text-primary">
-              {result.adjustment === 0 ? '0' : result.adjustment}
+              {displayAdjustment}
             </p>
           </div>
           <div className="space-y-1">
@@ -56,9 +63,15 @@ export function BreakdownPanel({ result }: BreakdownPanelProps) {
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">
-            Calculation: {result.gross} (gross) - {formatNumber(result.deduction)} (deduction from {formatWorstHoles(result.worstHolesUsed)} worst holes) {result.adjustment !== 0 ? `+ ${result.adjustment} (adjustment)` : ''} = <span className="font-semibold text-foreground">{formatNumber(result.net)}</span>
-          </p>
+          {isAtOrBelowPar ? (
+            <p className="text-xs text-muted-foreground">
+              Calculation: Gross score of {result.gross} is at or below par ({coursePar}), so <span className="font-semibold text-foreground">net score equals gross score = {formatNumber(result.net)}</span>
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Calculation: {result.gross} (gross) - {formatNumber(result.deduction)} (deduction from {formatWorstHoles(result.worstHolesUsed)} worst holes) {result.adjustment !== 0 ? `+ ${result.adjustment} (adjustment)` : ''} = <span className="font-semibold text-foreground">{formatNumber(result.net)}</span>
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

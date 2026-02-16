@@ -1,38 +1,38 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Admin chart editor formatting updates for gross scores and scoring inputs.",
+  "summary": "Golf tournament scoring app: add gross score totals per golfer, replace golfer-count dropdown with manual numeric entry (1–64), and keep Tournament Title blank.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-admin-callaway-chart-editor-ui-to-use-a-fixed-grid-layout-of-13-rows-by-5-columns-for-gross-score-chart-entry-replacing-the-current-variable-length-row-list-table",
-      "title": "Update the Admin Callaway chart editor UI to use a fixed grid layout of 13 rows by 5 columns for gross-score chart entry, replacing the current variable-length row list table.",
+      "id": "feature-in-the-score-entry-step-display-a-per-golfer-gross-total-sum-of-entered-hole-scores-after-that-golfer-s-scores-are-entered",
+      "title": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-for-each-of-the-5-gross-score-columns-in-the-chart-editor-grid-add-an-adjustment-input-row-that-applies-to-all-gross-score-cells-in-that-same-column-and-ensure-this-per-column-adjustment-is-saved-loaded-alongside-the-chart-data",
-      "title": "For each of the 5 gross-score columns in the chart editor grid, add an 'Adjustment' input row that applies to all gross-score cells in that same column, and ensure this per-column adjustment is saved/loaded alongside the chart data.",
+      "id": "feature-replace-the-number-of-golfers-dropdown-in-the-event-setup-form-with-a-manual-numeric-input-constrained-to-an-integer-between-1-and-64-inclusive",
+      "title": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-allow-worst-holes-values-in-the-chart-editor-to-be-entered-and-persisted-in-increments-of-0-5-and-update-callaway-calculation-logic-to-correctly-handle-half-hole-deductions",
-      "title": "Allow 'worst holes' values in the chart editor to be entered and persisted in increments of 0.5, and update Callaway calculation logic to correctly handle half-hole deductions.",
+      "id": "feature-default-the-tournament-title-field-to-be-blank-and-do-not-auto-fill-a-fallback-title-when-the-user-leaves-it-empty",
+      "title": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-chart-persistence-and-loading-to-be-backward-compatible-with-any-previously-saved-row-based-edited-charts-in-localstorage-so-the-app-can-still-load-without-errors-after-this-chart-format-change",
-      "title": "Update chart persistence and loading to be backward compatible with any previously saved row-based edited charts in localStorage, so the app can still load without errors after this chart format change.",
+      "id": "feature-when-the-event-title-is-blank-ensure-the-leaderboard-and-pdf-export-do-not-render-an-empty-title-line-omit-the-title-heading-print-title-or-substitute-a-non-title-safe-fallback-only-for-document-metadata",
+      "title": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
       "reqIds": [
         "REQ-4"
       ],
@@ -42,24 +42,24 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Format the admin chart editor to have 13 rows and 5 columns for gross scores.",
+      "summary": "Display a gross score total after each golfer's scores are entered.",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add a per-column adjustments row that applies to all scores in the corresponding gross score column.",
+      "summary": "Change number of golfers input from a dropdown to a manual numeric entry constrained to 1–64.",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Allow 'worst holes' to be entered in increments of 0.5.",
+      "summary": "Leave the Tournament Title blank (no prefilled/default title).",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Restructure Callaway chart editor into a 13x5 gross-score grid with per-column adjustments and 0.5 worst-hole increments",
+  "projectName": "Callaway Scoring Draft",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

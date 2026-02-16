@@ -3,11 +3,10 @@ import Int "mo:core/Int";
 import Float "mo:core/Float";
 import Array "mo:core/Array";
 import Map "mo:core/Map";
+import Iter "mo:core/Iter";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   type GolferId = Principal;
 
@@ -99,7 +98,10 @@ actor {
     let entry = findChartEntry(gross.toInt(), chart);
 
     let deduction = calculateDeduction(scores, entry.deductionHoles);
-    let net = gross.toInt() - deduction.toInt() + entry.adjustment;
+    let net = switch (Int.compare(gross, par)) {
+      case (#less or #equal) { gross.toInt() };
+      case (#greater) { gross.toInt() - deduction.toInt() + entry.adjustment };
+    };
 
     {
       gross;

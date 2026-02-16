@@ -1,105 +1,93 @@
 {
   "kind": "build_request",
-  "title": "Restructure Callaway chart editor into a 13x5 gross-score grid with per-column adjustments and 0.5 worst-hole increments",
+  "title": "Add per-golfer gross totals, manual golfer count (1–64), and blank tournament title by default",
+  "projectName": "Callaway Scoring Draft",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the Admin Callaway chart editor UI to use a fixed grid layout of 13 rows by 5 columns for gross-score chart entry, replacing the current variable-length row list table.",
+      "text": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-3"
         ],
         "quotes": [
-          "format the chart editor to have 13 rows and 5 columns for gross scores"
+          "add a gross score total after each golfer's scores are entered."
         ]
       },
       "acceptanceCriteria": [
-        "In the Admin Panel > Callaway Chart Editor, the chart editing surface is a 13 (rows) x 5 (columns) grid for gross-score chart editing.",
-        "The previous row-based table UI (Row / Lower Bound / Upper Bound / Worst Holes / Adjustment) is no longer the primary editing format for gross scores.",
-        "The grid is rendered for both 18-hole and 9-hole tabs (even if their underlying defaults differ)."
+        "When a golfer has all hole scores filled with valid numbers, a gross total is shown within that golfer’s score entry card.",
+        "The gross total updates immediately when any hole score for that golfer changes.",
+        "If one or more hole scores are missing/blank, do not show an incorrect total (either hide the total or show a clear placeholder such as \"Gross Total: —\")."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "For each of the 5 gross-score columns in the chart editor grid, add an 'Adjustment' input row that applies to all gross-score cells in that same column, and ensure this per-column adjustment is saved/loaded alongside the chart data.",
-      "target": "both",
+      "text": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-3"
         ],
         "quotes": [
-          "for each column have a row for adjustments that apply to all scores in their corresponding column"
+          "change the number of golfers from a dropdown to a manual entry number between 1  and 64."
         ]
       },
       "acceptanceCriteria": [
-        "Each of the 5 columns has a clearly labeled Adjustment input that is visually associated with that column (one adjustment value per column).",
-        "Changing a column’s adjustment affects the calculated adjustment used for any gross score that maps to that column.",
-        "Saving and reloading the chart preserves the per-column adjustments.",
-        "Reset-to-defaults restores the default per-column adjustments."
+        "The event setup form uses a numeric input for golfer count (not a dropdown/select).",
+        "The input prevents or blocks submission with values outside 1–64 (including empty, 0, negatives, or >64).",
+        "On successful submission, the score entry step initializes exactly the specified number of golfer entry cards."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Allow 'worst holes' values in the chart editor to be entered and persisted in increments of 0.5, and update Callaway calculation logic to correctly handle half-hole deductions.",
-      "target": "both",
+      "text": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-3"
         ],
         "quotes": [
-          "Allow for worst holes to be entered in increments of 0.5"
+          "Leave the Tournament Title blank"
         ]
       },
       "acceptanceCriteria": [
-        "The worst-holes input(s) in the chart editor accept values like 3, 3.5, 4, 4.5 (step 0.5) and reject values not on a 0.5 increment.",
-        "Chart validation allows non-negative worst-holes values in 0.5 increments.",
-        "Callaway deduction calculation correctly handles X.5 worst holes by deducting the sum of the worst X holes plus half of the next-worst hole (based on sorted worst hole scores).",
-        "All screens that display calculation results (leaderboard and breakdown) continue to work with fractional worst-hole deductions without crashing or showing NaN.",
-        "Backend Callaway calculation (backend/main.mo) is updated to match the same half-hole deduction behavior if backend results are used for ranking/output."
+        "On initial load of the event setup form, the Tournament Title input value is an empty string (no prefilled title).",
+        "Submitting the setup form with an empty Tournament Title preserves it as empty (no automatic replacement with a default title).",
+        "The app header continues to display a reasonable fallback label when the title is empty (e.g., the existing behavior showing a default app name), but the stored event title remains blank."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Update chart persistence and loading to be backward compatible with any previously saved row-based edited charts in localStorage, so the app can still load without errors after this chart format change.",
+      "text": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-3"
         ],
         "quotes": [
-          "format the chart editor to have 13 rows and 5 columns..."
+          "Leave the Tournament Title blank"
         ]
       },
       "acceptanceCriteria": [
-        "If old edited chart data exists in localStorage (saved by the previous row-based format), the app does not crash on Admin screen load.",
-        "The persistence layer either (a) migrates old stored data into the new 13x5 + per-column adjustments representation, or (b) safely ignores invalid/legacy data and falls back to defaults.",
-        "Save and Reset actions continue to work after the change."
+        "If the event title is blank, the leaderboard title section does not show an empty large heading.",
+        "PDF export still works when the event title is blank (no empty/awkward header line in the printed output)."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui (compose existing UI components instead).",
-    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if state upgrade is strictly required."
+    "Do not edit files under frontend/src/components/ui (Shadcn UI components are read-only).",
+    "Do not edit immutable hook/bootstrap files listed in SYSTEM_CONTEXT (e.g., frontend/src/main.tsx, frontend/src/hooks/useActor.ts, frontend/src/hooks/useInternetIdentity.ts).",
+    "Backend remains single-actor in backend/main.mo; no backend changes are required for these UI-only updates."
   ],
   "nonGoals": [
-    "Do not add new authentication providers (only existing Internet Identity flow).",
-    "Do not add real-time sync or multi-user collaboration for chart editing.",
-    "Do not introduce external databases or non-local persistence for the chart editor."
+    "Do not change Callaway calculation logic or leaderboard ranking/tie-break rules.",
+    "Do not add new authentication methods or external integrations.",
+    "Do not introduce real-time/multiplayer scoring or persistence beyond existing behavior."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

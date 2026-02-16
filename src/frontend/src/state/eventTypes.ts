@@ -3,6 +3,7 @@ export interface EventSetup {
   golferCount: number;
   holeCount: 9 | 18;
   coursePar: number;
+  courseName: string;
 }
 
 export interface GolferData {

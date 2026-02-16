@@ -116,6 +116,9 @@ function App() {
     setStep(eventSetup ? 'leaderboard' : 'setup');
   };
 
+  // Display title with fallback for header
+  const displayTitle = eventSetup?.title || 'Callaway Golf Scoring';
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -126,7 +129,7 @@ function App() {
               <Trophy className="h-8 w-8 text-primary" />
               <div>
                 <h1 className="text-2xl font-serif font-bold text-foreground">
-                  {eventSetup?.title || 'Callaway Golf Scoring'}
+                  {displayTitle}
                 </h1>
                 <p className="text-sm text-muted-foreground">Professional Tournament Scoring System</p>
               </div>
@@ -203,6 +206,7 @@ function App() {
         {step === 'leaderboard' && eventSetup && (
           <LeaderboardView
             title={eventSetup.title}
+            courseName={eventSetup.courseName}
             results={results}
             coursePar={eventSetup.coursePar}
             holeCount={eventSetup.holeCount}

@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-admin-callaway-chart-editor-ui-to-use-a-fixed-grid-layout-of-13-rows-by-5-columns-for-gross-score-chart-entry-replacing-the-current-variable-length-row-list-table",
-      "featureTitle": "Update the Admin Callaway chart editor UI to use a fixed grid layout of 13 rows by 5 columns for gross-score chart entry, replacing the current variable-length row list table.",
+      "featureId": "feature-in-the-score-entry-step-display-a-per-golfer-gross-total-sum-of-entered-hole-scores-after-that-golfer-s-scores-are-entered",
+      "featureTitle": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
       "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-        "frontend/src/lib/callaway/callawayChart.ts"
+        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -22,13 +20,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-for-each-of-the-5-gross-score-columns-in-the-chart-editor-grid-add-an-adjustment-input-row-that-applies-to-all-gross-score-cells-in-that-same-column-and-ensure-this-per-column-adjustment-is-saved-loaded-alongside-the-chart-data",
-      "featureTitle": "For each of the 5 gross-score columns in the chart editor grid, add an 'Adjustment' input row that applies to all gross-score cells in that same column, and ensure this per-column adjustment is saved/loaded alongside the chart data.",
+      "featureId": "feature-replace-the-number-of-golfers-dropdown-in-the-event-setup-form-with-a-manual-numeric-input-constrained-to-an-integer-between-1-and-64-inclusive",
+      "featureTitle": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
       "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/lib/callaway/callaway.ts",
-        "frontend/src/lib/callaway/callawayChart.ts",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/features/eventSetup/EventSetupForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -43,14 +39,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-allow-worst-holes-values-in-the-chart-editor-to-be-entered-and-persisted-in-increments-of-0-5-and-update-callaway-calculation-logic-to-correctly-handle-half-hole-deductions",
-      "featureTitle": "Allow 'worst holes' values in the chart editor to be entered and persisted in increments of 0.5, and update Callaway calculation logic to correctly handle half-hole deductions.",
+      "featureId": "feature-default-the-tournament-title-field-to-be-blank-and-do-not-auto-fill-a-fallback-title-when-the-user-leaves-it-empty",
+      "featureTitle": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
       "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/features/leaderboard/BreakdownPanel.tsx",
-        "frontend/src/features/leaderboard/LeaderboardTable.tsx",
-        "frontend/src/lib/callaway/callaway.ts",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/features/eventSetup/EventSetupForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -65,12 +58,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-chart-persistence-and-loading-to-be-backward-compatible-with-any-previously-saved-row-based-edited-charts-in-localstorage-so-the-app-can-still-load-without-errors-after-this-chart-format-change",
-      "featureTitle": "Update chart persistence and loading to be backward compatible with any previously saved row-based edited charts in localStorage, so the app can still load without errors after this chart format change.",
+      "featureId": "feature-when-the-event-title-is-blank-ensure-the-leaderboard-and-pdf-export-do-not-render-an-empty-title-line-omit-the-title-heading-print-title-or-substitute-a-non-title-safe-fallback-only-for-document-metadata",
+      "featureTitle": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
       "files": [
-        "frontend/src/features/admin/CallawayChartEditor.tsx",
-        "frontend/src/lib/callaway/callawayChart.ts",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
+        "frontend/src/features/leaderboard/LeaderboardView.tsx",
+        "frontend/src/features/leaderboard/exportStandingsPdf.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",

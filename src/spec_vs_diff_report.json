@@ -1,31 +1,26 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T03:19:16.891Z",
-  "summary": "Most requested changes appear implemented: new 13x5 grid-based chart editor UI with per-column adjustments, localStorage persistence for grid charts, and frontend Callaway calculation updated to support fractional worst-holes deductions. One potentially unrequested backend change (adding a migration module) is present, and some backend/lookup details are truncated so cannot be fully verified from the diff summary alone.",
+  "generatedAt": "2026-02-16T18:48:15.898Z",
+  "summary": "REQ-1–REQ-3 appear to be implemented (gross totals per golfer, manual golfer-count numeric input with 1–64 validation, and blank-by-default tournament title with no forced fallback on submit). REQ-4 is partially evidenced (leaderboard omits empty title heading; PDF export introduces a metadata fallback title), but the diff excerpt for the PDF HTML is truncated so conditional omission of an on-page empty title line cannot be fully verified. The diff also appears to introduce a Callaway scoring logic change, which is explicitly a non-goal.",
   "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Added backend state migration module even though a state upgrade necessity is not evidenced in the diff summary (constraint said to add only if strictly required).",
-      "reason": "BuildRequest allows adding backend/migration.mo only if strictly required for state upgrade, but the diff shows a placeholder migration returning empty state with no demonstrated need.",
+      "description": "Modified Callaway calculation rule: when gross score is at or below course par, net score equals gross score (no deduction/adjustment).",
+      "reason": "BuildRequest explicitly lists Callaway calculation logic as a non-goal (must not change). Diff summary indicates this logic was changed.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo (imports Migration \"migration\" and uses \"with migration = Migration.run\")"
+        "frontend-file-summaries.txt (entry for frontend/src/lib/callaway/callaway.ts)"
       ]
     }
   ],
-  "confidence": 0.63,
+  "confidence": 0.66,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/features/admin/CallawayChartEditor.tsx",
-    "frontend/src/features/leaderboard/BreakdownPanel.tsx",
-    "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-    "frontend/src/features/leaderboard/LeaderboardTable.tsx",
-    "frontend/src/lib/callaway/callaway.ts",
-    "frontend/src/lib/callaway/callawayChart.ts",
-    "frontend/src/lib/callaway/callawayChartPersistence.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/features/eventSetup/EventSetupForm.tsx",
+    "frontend/src/features/leaderboard/LeaderboardView.tsx",
+    "frontend/src/features/leaderboard/exportStandingsPdf.ts",
+    "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
     "project_state.json"
   ]
 }

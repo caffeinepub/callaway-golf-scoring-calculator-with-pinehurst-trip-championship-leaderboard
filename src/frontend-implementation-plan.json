@@ -1,132 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Callaway chart editor grid (13x5) with column adjustments and 0.5 worst-hole increments",
+  "title": "Callaway Scoring Draft — Gross totals, golfer count input (1–64), and blank tournament titles",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Replace the Admin Callaway chart editor’s row-based table with a fixed 13x5 gross-score editing grid for both 18-hole and 9-hole charts.",
+      "summary": "Show a per-golfer gross total in the score entry card that updates as hole scores change and avoids incorrect totals when incomplete.",
       "acceptanceCriteria": [
-        "In the Admin Panel > Callaway Chart Editor, the chart editing surface is a 13 (rows) x 5 (columns) grid for gross-score chart editing.",
-        "The previous row-based table UI (Row / Lower Bound / Upper Bound / Worst Holes / Adjustment) is no longer the primary editing format for gross scores.",
-        "The grid is rendered for both 18-hole and 9-hole tabs (even if their underlying defaults differ)."
+        "When a golfer has all hole scores filled with valid numbers, a gross total is shown within that golfer’s score entry card.",
+        "The gross total updates immediately when any hole score for that golfer changes.",
+        "If one or more hole scores are missing/blank, do not show an incorrect total (either hide the total or show a clear placeholder such as \"Gross Total: —\")."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "path": "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
           "operation": "modify",
-          "description": "Refactor the chart editing UI to render a fixed 13x5 grid of gross-score cells (for both 18-hole and 9-hole tabs), replacing the current variable-length row table as the primary editor. Use existing shadcn-ui components (e.g., Tabs, Input, Label, Card, Button, Alert) to compose the grid and section headers; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callawayChart.ts",
-          "operation": "modify",
-          "description": "Introduce/adjust chart data utilities so the app can represent and consume the new fixed 13x5 grid chart shape for gross-score mapping (for both 9- and 18-hole modes), while still supporting read-only display and calculation lookups."
-        },
-        {
-          "path": "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-          "operation": "modify",
-          "description": "Update the chart display section to render correctly with the new underlying chart representation (grid-derived values), ensuring the leaderboard view can still show the active chart without relying on the legacy row-list structure. Use existing shadcn-ui Table/Card components; verify the component's usage instructions before implementing."
+          "description": "Compute a derived per-golfer gross total from holeScores and render it inside each golfer card; only show a numeric total when all hole scores are present and parse to valid numbers, otherwise render a clear placeholder (e.g., \"Gross Total: —\")."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add per-column Adjustment inputs (one per grid column) and persist/load them with the edited chart, including reset-to-default support.",
+      "summary": "Replace the golfer count dropdown with a constrained numeric input (1–64) and block continuing when invalid.",
       "acceptanceCriteria": [
-        "Each of the 5 columns has a clearly labeled Adjustment input that is visually associated with that column (one adjustment value per column).",
-        "Changing a column’s adjustment affects the calculated adjustment used for any gross score that maps to that column.",
-        "Saving and reloading the chart preserves the per-column adjustments.",
-        "Reset-to-defaults restores the default per-column adjustments."
+        "The event setup form uses a numeric input for golfer count (not a dropdown/select).",
+        "The input prevents or blocks submission with values outside 1–64 (including empty, 0, negatives, or >64).",
+        "On successful submission, the score entry step initializes exactly the specified number of golfer entry cards."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "path": "frontend/src/features/eventSetup/EventSetupForm.tsx",
           "operation": "modify",
-          "description": "Add an Adjustment input row (or header controls) for each of the 5 columns and wire these values into the editor state so they apply to all gross-score cells in the same column. Use existing shadcn-ui Input/Label and layout utilities to keep each adjustment visually associated with its column; verify the component's usage instructions before implementing."
+          "description": "Replace the \"Number of Golfers\" Select with an Input type=\"number\" constrained to integers 1–64 (min/max/step plus submit-time validation). Block form submission when the value is missing or out of range and keep the submitted golferCount consistent with the validated integer."
         },
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Extend localStorage persistence to save/load the new chart representation including the 5 per-column adjustment values, and ensure reset-to-defaults restores default column adjustments along with default grid contents."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callawayChart.ts",
-          "operation": "modify",
-          "description": "Update chart lookup helpers so the effective adjustment for a gross score is computed as the per-column adjustment associated with the mapped column (and used consistently by calculation and display)."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callaway.ts",
-          "operation": "modify",
-          "description": "Update Callaway calculation to use the new chart lookup output, ensuring the adjustment applied for a player is derived from the correct column adjustment for their gross score mapping."
+          "description": "Ensure setup completion handling remains compatible with validated golferCount from the setup form so score entry initializes exactly setup.golferCount golfer cards (no additional UI changes beyond wiring/compatibility if needed)."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Support worst-holes values in 0.5 increments in the editor and calculation, and ensure all result displays remain stable with fractional deductions.",
+      "summary": "Make Tournament Title blank by default and preserve blank titles on submit without auto-filling a fallback.",
       "acceptanceCriteria": [
-        "The worst-holes input(s) in the chart editor accept values like 3, 3.5, 4, 4.5 (step 0.5) and reject values not on a 0.5 increment.",
-        "Chart validation allows non-negative worst-holes values in 0.5 increments.",
-        "Callaway deduction calculation correctly handles X.5 worst holes by deducting the sum of the worst X holes plus half of the next-worst hole (based on sorted worst hole scores).",
-        "All screens that display calculation results (leaderboard and breakdown) continue to work with fractional worst-hole deductions without crashing or showing NaN.",
-        "Backend Callaway calculation (backend/main.mo) is updated to match the same half-hole deduction behavior if backend results are used for ranking/output."
+        "On initial load of the event setup form, the Tournament Title input value is an empty string (no prefilled title).",
+        "Submitting the setup form with an empty Tournament Title preserves it as empty (no automatic replacement with a default title).",
+        "The app header continues to display a reasonable fallback label when the title is empty (e.g., the existing behavior showing a default app name), but the stored event title remains blank."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "path": "frontend/src/features/eventSetup/EventSetupForm.tsx",
           "operation": "modify",
-          "description": "Change worst-holes editing inputs in the new grid to accept 0.5 steps (e.g., number input with step 0.5) and add UI-level validation feedback for values not aligned to 0.5 increments. Use existing shadcn-ui Input/Alert components; verify the component's usage instructions before implementing."
+          "description": "Change the Tournament Title state default to an empty string and remove any submit-time fallback that overwrites empty titles; ensure the EventSetup passed to onComplete stores title as the trimmed user input (possibly empty)."
         },
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update chart validation logic to allow non-negative worst-holes values in 0.5 increments (and reject values not on a 0.5 boundary) for the persisted chart format."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callaway.ts",
-          "operation": "modify",
-          "description": "Update deduction logic to correctly handle fractional worst holes: for X.5, deduct sum of worst floor(X) holes plus half of the next-worst hole score, preventing NaN and ensuring numeric stability."
-        },
-        {
-          "path": "frontend/src/state/eventTypes.ts",
-          "operation": "modify",
-          "description": "Adjust types used in UI result data (e.g., deduction and worstHolesUsed) as needed to safely represent fractional worst-hole usage/deductions without breaking rendering or ranking logic."
-        },
-        {
-          "path": "frontend/src/features/leaderboard/LeaderboardTable.tsx",
-          "operation": "modify",
-          "description": "Ensure leaderboard rendering formats fractional deduction/adjustment values safely (no NaN), and continues to rank by net score correctly when decimals are possible. Use existing shadcn-ui Table components; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/leaderboard/BreakdownPanel.tsx",
-          "operation": "modify",
-          "description": "Ensure the breakdown panel displays fractional worst-holes usage and deductions consistently and safely in the calculation explanation line. Use existing shadcn-ui Card/Badge components; verify the component's usage instructions before implementing."
+          "description": "Confirm the header continues to display a non-empty fallback label when eventSetup.title is empty, without mutating the stored event title."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Make localStorage chart loading backward compatible with legacy row-based saved charts by migrating or safely falling back to defaults.",
+      "summary": "When event title is blank, omit the title heading in the leaderboard and PDF export while keeping PDF export functional.",
       "acceptanceCriteria": [
-        "If old edited chart data exists in localStorage (saved by the previous row-based format), the app does not crash on Admin screen load.",
-        "The persistence layer either (a) migrates old stored data into the new 13x5 + per-column adjustments representation, or (b) safely ignores invalid/legacy data and falls back to defaults.",
-        "Save and Reset actions continue to work after the change."
+        "If the event title is blank, the leaderboard title section does not show an empty large heading.",
+        "PDF export still works when the event title is blank (no empty/awkward header line in the printed output)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
           "operation": "modify",
-          "description": "Implement backward-compatible loading for legacy localStorage data (previous row-based array format) by detecting legacy shapes and either migrating them into the new 13x5 grid + per-column adjustments representation or clearing them and falling back to defaults, ensuring Admin load never crashes."
+          "description": "Conditionally render the leaderboard title heading only when the provided title is non-empty after trimming; when blank, omit the large heading area (or replace it with non-title UI that does not render an empty heading line)."
         },
         {
-          "path": "frontend/src/features/admin/CallawayChartEditor.tsx",
+          "path": "frontend/src/features/leaderboard/exportStandingsPdf.ts",
           "operation": "modify",
-          "description": "Update editor initialization and Save/Reset flows to use the updated persistence API and to handle migrated/fallback data paths cleanly, preserving existing Save and Reset behaviors. Use existing shadcn-ui Button/Alert components; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/callaway/callawayChart.ts",
-          "operation": "modify",
-          "description": "Add/adjust helpers needed for migration (e.g., mapping from legacy row-based ranges to the new fixed gross-score grid values and deriving per-column adjustments), keeping runtime lookups robust even when legacy data is encountered."
+          "description": "Adjust PDF HTML generation so that when eventTitle is blank/whitespace, the printed header does not include an empty title line (omit the <h1>), while the document metadata (HTML <title>) uses a safe fallback string to keep export functional."
         }
       ]
     }
