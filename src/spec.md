@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Improve event setup and score entry UX by adding per-golfer gross totals, allowing manual golfer count entry (1–64), and supporting blank tournament titles without awkward rendering.
+**Goal:** Persist Callaway Chart Editor “Save Changes” as the new localStorage defaults for 9-hole and 18-hole grid charts, so reloads and “Reset to Defaults” use the latest saved values.
 
 **Planned changes:**
-- In score entry, compute and display a per-golfer gross total once all hole scores for that golfer are filled with valid numbers; update the total immediately on score changes and avoid showing an incorrect total when scores are missing.
-- Replace the event setup “Number of Golfers” dropdown with a numeric input constrained to an integer from 1 to 64, blocking invalid or empty submissions and initializing the correct number of golfer score cards.
-- Default Tournament Title to blank and preserve blank titles on submission (no auto-filled fallback), while keeping a reasonable fallback label in the app header when title is empty.
-- When the title is blank, avoid rendering an empty title heading on the leaderboard and ensure PDF export does not output an empty/awkward title line.
+- Add separate localStorage keys for user-default grid charts (9 and 18 holes), distinct from the existing active/edited chart storage.
+- Update “Save Changes” in the Callaway Chart Editor to write the saved chart to the user-default localStorage key (for the relevant hole count).
+- Update chart-loading logic so `getActiveGridChart(9|18)` resolves in order: active/edited chart → user-default chart → hard-coded defaults.
+- On first run (no user-defaults in localStorage), initialize user-default keys from the current hard-coded defaults.
+- Preserve existing validation behavior: if stored chart JSON is invalid, ignore it and clear it.
 
-**User-visible outcome:** Users can manually enter 1–64 golfers, see a live gross total per golfer once their hole scores are complete, and leave the tournament title blank without empty headings appearing on the leaderboard or PDF export.
+**User-visible outcome:** After saving a 9-hole or 18-hole chart, reloading the page shows the saved chart automatically, and “Reset to Defaults” resets to the latest saved defaults stored in localStorage (not the original hard-coded defaults).

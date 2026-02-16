@@ -1,40 +1,26 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Golf tournament scoring app: add gross score totals per golfer, replace golfer-count dropdown with manual numeric entry (1–64), and keep Tournament Title blank.",
-  "architectural_notes": [],
+  "summary": "Callaway scoring app: persist Calloway Chart Editor edits as the default values in browser localStorage.",
+  "architectural_notes": [
+    "Persist Callaway Chart Editor configuration to browser localStorage and load it as the default on app start."
+  ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-in-the-score-entry-step-display-a-per-golfer-gross-total-sum-of-entered-hole-scores-after-that-golfer-s-scores-are-entered",
-      "title": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
+      "id": "feature-when-a-user-saves-changes-in-the-callaway-chart-editor-persist-the-saved-9-hole-and-18-hole-grid-charts-as-the-new-default-chart-values-in-localstorage-so-that-future-loads-and-reset-to-defaults-use-those-saved-values-instead-of-the-hard-coded-code-defaults",
+      "title": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-replace-the-number-of-golfers-dropdown-in-the-event-setup-form-with-a-manual-numeric-input-constrained-to-an-integer-between-1-and-64-inclusive",
-      "title": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
+      "id": "feature-update-the-callaway-chart-persistence-layer-to-support-separate-localstorage-keys-for-a-user-default-grid-charts-and-b-the-currently-active-edited-grid-charts-and-update-the-runtime-chart-selection-logic-to-fall-back-to-the-localstorage-defaults-before-falling-back-to-hard-coded-defaults",
+      "title": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-default-the-tournament-title-field-to-be-blank-and-do-not-auto-fill-a-fallback-title-when-the-user-leaves-it-empty",
-      "title": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-when-the-event-title-is-blank-ensure-the-leaderboard-and-pdf-export-do-not-render-an-empty-title-line-omit-the-title-heading-print-title-or-substitute-a-non-title-safe-fallback-only-for-document-metadata",
-      "title": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
-      "reqIds": [
-        "REQ-4"
       ],
       "version": 1
     }
@@ -42,24 +28,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Display a gross score total after each golfer's scores are entered.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Change number of golfers input from a dropdown to a manual numeric entry constrained to 1–64.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Leave the Tournament Title blank (no prefilled/default title).",
+      "summary": "Make edits from the Callaway Chart Editor become the default values stored in localStorage (persist and load as defaults).",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Callaway Scoring Draft",
+  "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

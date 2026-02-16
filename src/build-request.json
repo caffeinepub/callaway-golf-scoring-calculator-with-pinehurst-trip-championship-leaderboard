@@ -1,90 +1,54 @@
 {
   "kind": "build_request",
-  "title": "Add per-golfer gross totals, manual golfer count (1–64), and blank tournament title by default",
-  "projectName": "Callaway Scoring Draft",
+  "title": "Persist Callaway Chart Editor edits as the localStorage defaults",
+  "projectName": "Callaway Scoring",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
+      "text": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-3"
         ],
         "quotes": [
-          "add a gross score total after each golfer's scores are entered."
+          "take the edits I made in the Calloway Chart Editor and make them the default values stored localstorage"
         ]
       },
       "acceptanceCriteria": [
-        "When a golfer has all hole scores filled with valid numbers, a gross total is shown within that golfer’s score entry card.",
-        "The gross total updates immediately when any hole score for that golfer changes.",
-        "If one or more hole scores are missing/blank, do not show an incorrect total (either hide the total or show a clear placeholder such as \"Gross Total: —\")."
+        "After clicking “Save Changes” in the Callaway Chart Editor for 9 holes, reloading the page shows the saved 9-hole chart values without requiring any additional action.",
+        "After clicking “Save Changes” in the Callaway Chart Editor for 18 holes, reloading the page shows the saved 18-hole chart values without requiring any additional action.",
+        "Clicking “Reset to Defaults” restores the chart to the latest saved defaults (from localStorage), not necessarily the original hard-coded defaults.",
+        "If the app is opened in a browser where no chart defaults exist in localStorage yet, the app initializes the localStorage defaults from the current hard-coded defaults and behaves the same as today (no user-visible regression)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
+      "text": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-3"
         ],
         "quotes": [
-          "change the number of golfers from a dropdown to a manual entry number between 1  and 64."
+          "make them the default values stored localstorage"
         ]
       },
       "acceptanceCriteria": [
-        "The event setup form uses a numeric input for golfer count (not a dropdown/select).",
-        "The input prevents or blocks submission with values outside 1–64 (including empty, 0, negatives, or >64).",
-        "On successful submission, the score entry step initializes exactly the specified number of golfer entry cards."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Leave the Tournament Title blank"
-        ]
-      },
-      "acceptanceCriteria": [
-        "On initial load of the event setup form, the Tournament Title input value is an empty string (no prefilled title).",
-        "Submitting the setup form with an empty Tournament Title preserves it as empty (no automatic replacement with a default title).",
-        "The app header continues to display a reasonable fallback label when the title is empty (e.g., the existing behavior showing a default app name), but the stored event title remains blank."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Leave the Tournament Title blank"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If the event title is blank, the leaderboard title section does not show an empty large heading.",
-        "PDF export still works when the event title is blank (no empty/awkward header line in the printed output)."
+        "A new pair of localStorage entries exists for storing the user-default grid charts for both 9 and 18 holes (distinct from the existing active/edited grid chart keys).",
+        "`getActiveGridChart(9|18)` resolves charts in this order: active/edited grid chart (if present and valid) → user-default grid chart (if present and valid) → hard-coded default grid chart.",
+        "If any stored chart JSON is invalid, it is ignored and cleared (preserving the current validation behavior)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (Shadcn UI components are read-only).",
-    "Do not edit immutable hook/bootstrap files listed in SYSTEM_CONTEXT (e.g., frontend/src/main.tsx, frontend/src/hooks/useActor.ts, frontend/src/hooks/useInternetIdentity.ts).",
-    "Backend remains single-actor in backend/main.mo; no backend changes are required for these UI-only updates."
+    "Frontend immutablePaths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui."
   ],
   "nonGoals": [
-    "Do not change Callaway calculation logic or leaderboard ranking/tie-break rules.",
-    "Do not add new authentication methods or external integrations.",
-    "Do not introduce real-time/multiplayer scoring or persistence beyond existing behavior."
+    "Do not change the Motoko backend canister logic or its stored data model.",
+    "Do not introduce third-party storage or any server-side persistence for the Callaway chart defaults (localStorage only).",
+    "Do not redesign the Callaway Chart Editor UI beyond what is necessary to support the new default-persistence behavior."
   ],
   "imageRequirements": {
     "required": [],

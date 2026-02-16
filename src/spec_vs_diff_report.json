@@ -1,26 +1,24 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T18:48:15.898Z",
-  "summary": "REQ-1–REQ-3 appear to be implemented (gross totals per golfer, manual golfer-count numeric input with 1–64 validation, and blank-by-default tournament title with no forced fallback on submit). REQ-4 is partially evidenced (leaderboard omits empty title heading; PDF export introduces a metadata fallback title), but the diff excerpt for the PDF HTML is truncated so conditional omission of an on-page empty title line cannot be fully verified. The diff also appears to introduce a Callaway scoring logic change, which is explicitly a non-goal.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-16T19:08:42.530Z",
+  "summary": "The persistence layer changes clearly introduce separate localStorage keys for user-default vs active/edited Callaway grid charts and describe the required fallback/initialization behavior. However, the CallawayChartEditor save/reset wiring is truncated in the diff, so it’s not fully evidenced that “Save Changes” updates user-defaults and that “Reset to Defaults” restores from those user-defaults.",
+  "missing_requirements": [
     {
-      "description": "Modified Callaway calculation rule: when gross score is at or below course par, net score equals gross score (no deduction/adjustment).",
-      "reason": "BuildRequest explicitly lists Callaway calculation logic as a non-goal (must not change). Diff summary indicates this logic was changed.",
+      "id": "REQ-1",
+      "requirement": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new default chart values in localStorage so future loads and “Reset to Defaults” use those saved values (and initialize defaults from hard-coded when missing).",
+      "reason": "The editor file shows new imports for `saveGridChartAsDefault` and `resetGridChartToUserDefaults`, but the actual `handleSave` / reset implementation is truncated, so the diff summary does not provide explicit evidence that clicking “Save Changes” writes the saved chart into the new user-default localStorage keys for both 9 and 18, nor that “Reset to Defaults” loads from those user-defaults.",
       "evidence": [
-        "frontend-file-summaries.txt (entry for frontend/src/lib/callaway/callaway.ts)"
+        "frontend/src/features/admin/CallawayChartEditor.tsx (truncated)"
       ]
     }
   ],
-  "confidence": 0.66,
+  "hallucinated_features": [],
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/features/eventSetup/EventSetupForm.tsx",
-    "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/features/leaderboard/exportStandingsPdf.ts",
-    "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
+    "frontend/src/features/admin/CallawayChartEditor.tsx",
+    "frontend/src/lib/callaway/callawayChartPersistence.ts",
     "project_state.json"
   ]
 }

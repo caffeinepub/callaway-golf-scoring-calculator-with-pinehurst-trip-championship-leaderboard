@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-in-the-score-entry-step-display-a-per-golfer-gross-total-sum-of-entered-hole-scores-after-that-golfer-s-scores-are-entered",
-      "featureTitle": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
+      "featureId": "feature-when-a-user-saves-changes-in-the-callaway-chart-editor-persist-the-saved-9-hole-and-18-hole-grid-charts-as-the-new-default-chart-values-in-localstorage-so-that-future-loads-and-reset-to-defaults-use-those-saved-values-instead-of-the-hard-coded-code-defaults",
+      "featureTitle": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
       "files": [
-        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+        "frontend/src/features/admin/CallawayChartEditor.tsx",
+        "frontend/src/lib/callaway/callawayChartPersistence.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,11 +21,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-replace-the-number-of-golfers-dropdown-in-the-event-setup-form-with-a-manual-numeric-input-constrained-to-an-integer-between-1-and-64-inclusive",
-      "featureTitle": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
+      "featureId": "feature-update-the-callaway-chart-persistence-layer-to-support-separate-localstorage-keys-for-a-user-default-grid-charts-and-b-the-currently-active-edited-grid-charts-and-update-the-runtime-chart-selection-logic-to-fall-back-to-the-localstorage-defaults-before-falling-back-to-hard-coded-defaults",
+      "featureTitle": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/features/eventSetup/EventSetupForm.tsx"
+        "frontend/src/features/admin/CallawayChartEditor.tsx",
+        "frontend/src/lib/callaway/callawayChartPersistence.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,44 +36,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-default-the-tournament-title-field-to-be-blank-and-do-not-auto-fill-a-fallback-title-when-the-user-leaves-it-empty",
-      "featureTitle": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/features/eventSetup/EventSetupForm.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-when-the-event-title-is-blank-ensure-the-leaderboard-and-pdf-export-do-not-render-an-empty-title-line-omit-the-title-heading-print-title-or-substitute-a-non-title-safe-fallback-only-for-document-metadata",
-      "featureTitle": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
-      "files": [
-        "frontend/src/features/leaderboard/LeaderboardView.tsx",
-        "frontend/src/features/leaderboard/exportStandingsPdf.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

@@ -1,14 +1,20 @@
 /**
  * Persistence layer for edited Callaway charts using localStorage.
  * Provides safe load/save/reset operations with validation.
+ * Supports both user-default charts (persisted defaults) and active/edited charts.
  */
 
 import { type CallawayChartEntry, CALLAWAY_CHART_18, CALLAWAY_CHART_9, type GridChartData, type GridCell } from './callawayChart';
 
+// Active/edited chart keys (current session edits)
 const CHART_18_KEY = 'callaway-chart-18-edited';
 const CHART_9_KEY = 'callaway-chart-9-edited';
 const GRID_CHART_18_KEY = 'callaway-grid-chart-18';
 const GRID_CHART_9_KEY = 'callaway-grid-chart-9';
+
+// User-default chart keys (persisted defaults after save)
+const USER_DEFAULT_GRID_CHART_18_KEY = 'callaway-grid-chart-18-user-default';
+const USER_DEFAULT_GRID_CHART_9_KEY = 'callaway-grid-chart-9-user-default';
 
 /**
  * Default grid chart data for 18-hole (13 rows x 5 columns)
@@ -156,7 +162,79 @@ export function gridToLegacyChart(gridData: GridChartData): CallawayChartEntry[]
 }
 
 /**
- * Load grid chart from localStorage
+ * Initialize user-default charts from hard-coded defaults if they don't exist
+ */
+function ensureUserDefaultsInitialized(): void {
+  // Initialize 18-hole user defaults if missing
+  const userDefault18Key = USER_DEFAULT_GRID_CHART_18_KEY;
+  try {
+    const stored18 = localStorage.getItem(userDefault18Key);
+    if (!stored18) {
+      const defaultChart = getDefault18GridChart();
+      localStorage.setItem(userDefault18Key, JSON.stringify(defaultChart));
+    }
+  } catch (error) {
+    console.error('Failed to initialize 18-hole user defaults:', error);
+  }
+
+  // Initialize 9-hole user defaults if missing
+  const userDefault9Key = USER_DEFAULT_GRID_CHART_9_KEY;
+  try {
+    const stored9 = localStorage.getItem(userDefault9Key);
+    if (!stored9) {
+      const defaultChart = getDefault9GridChart();
+      localStorage.setItem(userDefault9Key, JSON.stringify(defaultChart));
+    }
+  } catch (error) {
+    console.error('Failed to initialize 9-hole user defaults:', error);
+  }
+}
+
+/**
+ * Load user-default grid chart from localStorage
+ */
+export function loadUserDefaultGridChart(holeCount: 9 | 18): GridChartData | null {
+  ensureUserDefaultsInitialized();
+  
+  const key = holeCount === 18 ? USER_DEFAULT_GRID_CHART_18_KEY : USER_DEFAULT_GRID_CHART_9_KEY;
+
+  try {
+    const stored = localStorage.getItem(key);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    if (validateGridChart(parsed)) {
+      return parsed;
+    }
+
+    localStorage.removeItem(key);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save user-default grid chart to localStorage
+ */
+export function saveUserDefaultGridChart(holeCount: 9 | 18, data: GridChartData): boolean {
+  if (!validateGridChart(data)) {
+    return false;
+  }
+
+  const key = holeCount === 18 ? USER_DEFAULT_GRID_CHART_18_KEY : USER_DEFAULT_GRID_CHART_9_KEY;
+
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.error('Failed to save user-default grid chart:', error);
+    return false;
+  }
+}
+
+/**
+ * Load active/edited grid chart from localStorage
  */
 export function loadGridChart(holeCount: 9 | 18): GridChartData | null {
   const key = holeCount === 18 ? GRID_CHART_18_KEY : GRID_CHART_9_KEY;
@@ -178,7 +256,7 @@ export function loadGridChart(holeCount: 9 | 18): GridChartData | null {
 }
 
 /**
- * Save grid chart to localStorage
+ * Save active/edited grid chart to localStorage
  */
 export function saveGridChart(holeCount: 9 | 18, data: GridChartData): boolean {
   if (!validateGridChart(data)) {
@@ -197,7 +275,46 @@ export function saveGridChart(holeCount: 9 | 18, data: GridChartData): boolean {
 }
 
 /**
- * Reset grid chart to defaults
+ * Save chart as both active and user-default (called on "Save Changes")
+ */
+export function saveGridChartAsDefault(holeCount: 9 | 18, data: GridChartData): boolean {
+  if (!validateGridChart(data)) {
+    return false;
+  }
+
+  // Save as active/edited chart
+  const activeSuccess = saveGridChart(holeCount, data);
+  
+  // Save as user-default chart
+  const defaultSuccess = saveUserDefaultGridChart(holeCount, data);
+
+  return activeSuccess && defaultSuccess;
+}
+
+/**
+ * Reset grid chart to user-defaults (called on "Reset to Defaults")
+ */
+export function resetGridChartToUserDefaults(holeCount: 9 | 18): GridChartData {
+  // Clear active/edited chart
+  const activeKey = holeCount === 18 ? GRID_CHART_18_KEY : GRID_CHART_9_KEY;
+  try {
+    localStorage.removeItem(activeKey);
+  } catch (error) {
+    console.error('Failed to clear active grid chart:', error);
+  }
+
+  // Load user-default chart (will initialize from hard-coded defaults if missing)
+  const userDefault = loadUserDefaultGridChart(holeCount);
+  if (userDefault) {
+    return userDefault;
+  }
+
+  // Fallback to hard-coded defaults
+  return holeCount === 18 ? getDefault18GridChart() : getDefault9GridChart();
+}
+
+/**
+ * Reset grid chart to defaults (legacy - clears active chart)
  */
 export function resetGridChartToDefaults(holeCount: 9 | 18): void {
   const key = holeCount === 18 ? GRID_CHART_18_KEY : GRID_CHART_9_KEY;
@@ -209,12 +326,19 @@ export function resetGridChartToDefaults(holeCount: 9 | 18): void {
 }
 
 /**
- * Get active grid chart (edited or default)
+ * Get active grid chart (edited or user-default or hard-coded default)
+ * Resolution order: active/edited → user-default → hard-coded default
  */
 export function getActiveGridChart(holeCount: 9 | 18): GridChartData {
+  // Try active/edited chart first
   const edited = loadGridChart(holeCount);
   if (edited) return edited;
 
+  // Try user-default chart
+  const userDefault = loadUserDefaultGridChart(holeCount);
+  if (userDefault) return userDefault;
+
+  // Fall back to hard-coded defaults
   return holeCount === 18 ? getDefault18GridChart() : getDefault9GridChart();
 }
 

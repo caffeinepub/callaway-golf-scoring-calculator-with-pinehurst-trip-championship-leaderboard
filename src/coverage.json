@@ -1,63 +1,39 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T18:48:15.900Z",
+  "generatedAt": "2026-02-16T19:08:42.532Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In the score entry step, display a per-golfer gross total (sum of entered hole scores) after that golfer’s scores are entered.",
+        "summary": "When a user saves changes in the Callaway Chart Editor, persist the saved 9-hole and 18-hole grid charts as the new *default* chart values in localStorage, so that future loads and “Reset to Defaults” use those saved values instead of the hard-coded code defaults.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/src/features/admin/CallawayChartEditor.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/src/features/admin/CallawayChartEditor.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Replace the \"Number of Golfers\" dropdown in the event setup form with a manual numeric input constrained to an integer between 1 and 64 inclusive.",
+        "summary": "Update the Callaway chart persistence layer to support separate localStorage keys for (a) user-default grid charts and (b) the currently-active/edited grid charts, and update the runtime chart selection logic to fall back to the localStorage defaults before falling back to hard-coded defaults.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/eventSetup/EventSetupForm.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/src/features/admin/CallawayChartEditor.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/eventSetup/EventSetupForm.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Default the Tournament Title field to be blank and do not auto-fill a fallback title when the user leaves it empty.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/eventSetup/EventSetupForm.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/eventSetup/EventSetupForm.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "When the event title is blank, ensure the leaderboard and PDF export do not render an empty title line (omit the title heading/print title or substitute a non-title-safe fallback only for document metadata).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/leaderboard/LeaderboardView.tsx",
-          "frontend/src/features/leaderboard/exportStandingsPdf.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/leaderboard/LeaderboardView.tsx",
-          "frontend/src/features/leaderboard/exportStandingsPdf.ts"
+          "frontend/src/lib/callaway/callawayChartPersistence.ts",
+          "frontend/src/features/admin/CallawayChartEditor.tsx"
         ]
       }
     ]
@@ -67,11 +43,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/features/eventSetup/EventSetupForm.tsx",
-    "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/features/leaderboard/exportStandingsPdf.ts",
-    "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
+    "frontend/src/features/admin/CallawayChartEditor.tsx",
+    "frontend/src/lib/callaway/callawayChartPersistence.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

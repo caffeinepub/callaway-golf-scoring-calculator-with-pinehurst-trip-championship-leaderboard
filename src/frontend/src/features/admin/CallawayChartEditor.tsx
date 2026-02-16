@@ -8,10 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Edit3, Save, RotateCcw, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   getActiveGridChart,
-  saveGridChart,
-  resetGridChartToDefaults,
-  getDefault18GridChart,
-  getDefault9GridChart,
+  saveGridChartAsDefault,
+  resetGridChartToUserDefaults,
 } from '../../lib/callaway/callawayChartPersistence';
 import { type GridChartData } from '../../lib/callaway/callawayChart';
 
@@ -112,9 +110,9 @@ export function CallawayChartEditor() {
       return;
     }
 
-    const success = saveGridChart(holeCount, currentChart);
+    const success = saveGridChartAsDefault(holeCount, currentChart);
     if (success) {
-      setSuccessMessage(`${holeCount}-hole chart saved successfully!`);
+      setSuccessMessage(`${holeCount}-hole chart saved successfully! These values are now your defaults.`);
       setValidationError('');
     } else {
       setValidationError('Failed to save chart. Please try again.');
@@ -123,11 +121,10 @@ export function CallawayChartEditor() {
   };
 
   const handleReset = () => {
-    if (confirm(`Reset ${holeCount}-hole chart to default values?`)) {
-      resetGridChartToDefaults(holeCount);
-      const defaultChart = holeCount === 18 ? getDefault18GridChart() : getDefault9GridChart();
-      setCurrentChart(defaultChart);
-      setSuccessMessage(`${holeCount}-hole chart reset to defaults`);
+    if (confirm(`Reset ${holeCount}-hole chart to your saved defaults?`)) {
+      const userDefaultChart = resetGridChartToUserDefaults(holeCount);
+      setCurrentChart(userDefaultChart);
+      setSuccessMessage(`${holeCount}-hole chart reset to your saved defaults`);
       setValidationError('');
     }
   };
@@ -202,6 +199,8 @@ export function CallawayChartEditor() {
             <li>Each column has an adjustment value that applies to all scores in that column</li>
             <li>Adjustments are typically 0 or negative (e.g., -1, -2)</li>
             <li>The grid is 13 rows by 5 columns for both 9-hole and 18-hole charts</li>
+            <li><strong>Saving changes</strong> will make these values your new defaults</li>
+            <li><strong>Reset to Defaults</strong> will restore your last saved defaults</li>
           </ul>
         </div>
       </CardContent>
