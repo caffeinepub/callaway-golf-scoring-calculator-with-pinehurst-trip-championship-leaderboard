@@ -1,32 +1,24 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Golf scorecard application with front nine/back nine subtotals and PDF leaderboard generation",
+  "summary": "New project",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-display-a-subtotal-for-holes-1-9-front-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-1-through-9",
-      "title": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
+      "id": "feature-implement-tie-breaking-logic-for-leaderboard-rankings-when-two-or-more-golfers-have-the-same-net-score-rank-the-golfer-with-the-lower-gross-score-higher",
+      "title": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-a-subtotal-for-holes-10-18-back-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-10-through-18",
-      "title": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+      "id": "feature-add-footer-text-designed-by-dancing-skeleton-llc-to-the-application-footer",
+      "title": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-pdf-generation-feature-to-the-leaderboard-view-that-exports-the-calculated-standings-to-pdf-format",
-      "title": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
-      "reqIds": [
-        "REQ-3"
       ],
       "version": 1
     }
@@ -34,24 +26,18 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add subtotal for holes 1-9 (front nine) for each player",
+      "summary": "Add tie-breaking logic: lower gross score wins when net scores are tied",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add subtotal for holes 10-18 (back nine) for each player",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Generate PDF of the leaderboard once calculated",
+      "summary": "Add footer credit: 'designed by Dancing Skeleton, LLC'",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Callaway Scoring",
+  "projectName": "Add tie-breaking logic and footer credit",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

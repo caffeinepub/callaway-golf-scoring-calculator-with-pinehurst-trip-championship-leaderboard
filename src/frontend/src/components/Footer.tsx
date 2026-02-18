@@ -22,6 +22,7 @@ export function Footer() {
               caffeine.ai
             </a>
           </p>
+          <p className="text-xs">Designed by Dancing Skeleton, LLC</p>
           <p className="text-xs">© {currentYear} Callaway Scoring System</p>
         </div>
       </div>

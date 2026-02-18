@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Add front nine and back nine subtotals to score entry cards and enable PDF export of the leaderboard.
+**Goal:** Add tie-breaking logic for leaderboard rankings and include Dancing Skeleton, LLC credit in footer.
 
 **Planned changes:**
-- Display a front nine subtotal (holes 1-9) in each player's score entry card
-- Display a back nine subtotal (holes 10-18) in each player's score entry card
-- Add a PDF export button to the leaderboard view that generates a print-ready PDF with all standings and tournament details
+- Implement tie-breaking logic: when golfers have the same net score, rank by lower gross score
+- Add "designed by Dancing Skeleton, LLC" text to application footer
 
-**User-visible outcome:** Users can see subtotals for the front and back nine as they enter scores, and can export the final leaderboard to PDF format for printing or sharing.
+**User-visible outcome:** Leaderboard rankings now handle ties consistently by favoring lower gross scores, and the footer displays credit to Dancing Skeleton, LLC.

@@ -1,61 +1,46 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T21:28:51.807Z",
+  "generatedAt": "2026-02-18T21:40:28.831Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
+        "summary": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+          "frontend/src/features/leaderboard/LeaderboardView.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+          "frontend/src/features/leaderboard/LeaderboardView.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+        "summary": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+          "frontend/src/components/Footer.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/leaderboard/exportLeaderboardPdf.ts",
-          "frontend/src/features/leaderboard/LeaderboardView.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/leaderboard/exportLeaderboardPdf.ts",
-          "frontend/src/features/leaderboard/LeaderboardView.tsx"
+          "frontend/src/components/Footer.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/components/Footer.tsx",
     "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/features/leaderboard/exportLeaderboardPdf.ts",
-    "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -41,7 +41,14 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
       };
     });
 
-    return calculatedResults.sort((a, b) => a.net - b.net);
+    // Sort by net score first, then by gross score (lower is better) for tie-breaking
+    return calculatedResults.sort((a, b) => {
+      if (a.net !== b.net) {
+        return a.net - b.net;
+      }
+      // When net scores are equal, sort by gross score (ascending)
+      return a.gross - b.gross;
+    });
   }, [golfers, eventSetup.coursePar, eventSetup.holeCount]);
 
   const handleExportStandingsPdf = () => {

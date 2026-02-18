@@ -1,24 +1,15 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T21:28:51.804Z",
-  "summary": "The implementation successfully addresses all three requirements. Front nine and back nine subtotals have been added to the score entry cards with proper labels and automatic calculation. A PDF generation feature has been added to the leaderboard view with a 'Generate PDF' button. The implementation is complete and matches the BuildRequest specifications.",
+  "generatedAt": "2026-02-18T21:40:28.828Z",
+  "summary": "Both requirements have been successfully implemented. REQ-1 adds tie-breaking logic that sorts golfers by net score first, then by gross score (ascending) when net scores are equal. REQ-2 adds the footer credit 'Designed by Dancing Skeleton, LLC' to the Footer component. No missing requirements or hallucinated features detected.",
   "missing_requirements": [],
-  "hallucinated_features": [
-    {
-      "description": "Added an 'Export PDF' button in addition to the 'Generate PDF' button for PDF export functionality",
-      "reason": "The BuildRequest specified a single PDF generation feature for the leaderboard view (REQ-3), but the implementation includes two separate PDF export buttons: 'Generate PDF' (handleExportLeaderboardPdf) and 'Export PDF' (handleExportStandingsPdf)",
-      "evidence": [
-        "frontend/src/features/leaderboard/LeaderboardView.tsx"
-      ]
-    }
-  ],
+  "hallucinated_features": [],
   "confidence": 0.95,
   "changed_files": [
     "frontend-file-summaries.txt",
+    "frontend/src/components/Footer.tsx",
     "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/features/leaderboard/exportLeaderboardPdf.ts",
-    "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
     "project_state.json"
   ]
 }

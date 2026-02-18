@@ -1,61 +1,37 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add front/back nine subtotals and PDF leaderboard export",
+  "title": "Add tie-breaking logic and footer credit",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card",
+      "summary": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
       "acceptanceCriteria": [
-        "Front nine subtotal appears in the golfer score entry card after hole 9",
-        "Subtotal updates automatically as scores are entered or modified",
-        "Subtotal is clearly labeled as 'Front 9' or 'Holes 1-9'"
+        "Golfers with identical net scores are sorted by gross score in ascending order",
+        "The golfer with the lower gross score appears higher in the leaderboard rankings",
+        "Tie-breaking logic applies consistently across all leaderboard displays"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
+          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
           "operation": "modify",
-          "description": "Add front nine subtotal calculation and display within each golfer's score entry card. Calculate the sum of holes 1-9 and render it in a clearly labeled section after hole 9's input field. Ensure the subtotal updates reactively as scores are entered or modified. Position the subtotal to visually separate the front nine from holes 10-18 when applicable."
+          "description": "Update the sorting logic in the leaderboard calculation to implement tie-breaking: when net scores are equal, sort by gross score in ascending order. Modify the sort comparator that currently sorts by net score only to add a secondary sort condition on gross score."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card",
+      "summary": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
       "acceptanceCriteria": [
-        "Back nine subtotal appears in the golfer score entry card after hole 18",
-        "Subtotal updates automatically as scores are entered or modified",
-        "Subtotal is clearly labeled as 'Back 9' or 'Holes 10-18'",
-        "Back nine subtotal only displays when the event is configured for 18 holes"
+        "Footer displays 'designed by Dancing Skeleton, LLC' text",
+        "Text is visible on all pages of the application",
+        "Footer maintains existing copyright and attribution information"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Add back nine subtotal calculation and display within each golfer's score entry card. Calculate the sum of holes 10-18 and render it in a clearly labeled section after hole 18's input field. Ensure the subtotal only displays when the event is configured for 18 holes. The subtotal must update reactively as scores are entered or modified. Position it after the last hole input to complete the score entry card."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
-      "acceptanceCriteria": [
-        "A 'Generate PDF' or 'Export PDF' button appears on the leaderboard view",
-        "Clicking the button generates a PDF containing the complete leaderboard with all player standings",
-        "PDF includes tournament details (title, course, date)",
-        "PDF shows rankings, player names, gross scores, net scores, and Callaway adjustments",
-        "PDF formatting is clean and print-ready"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/leaderboard/exportLeaderboardPdf.ts",
-          "operation": "create",
-          "description": "Create a new PDF export utility function that generates a print-optimized HTML view of the leaderboard standings. Include tournament details (title, course, date), complete rankings with player names, gross scores, net scores, and Callaway adjustments. Format the output to be clean and print-ready. Follow the pattern established in exportStandingsPdf.ts but adapt it for the leaderboard format. Open the generated HTML in a new window to trigger the browser's native print-to-PDF functionality."
-        },
-        {
-          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
-          "operation": "modify",
-          "description": "Add a 'Generate PDF' or 'Export PDF' button to the leaderboard view interface. Wire the button to call the exportLeaderboardPdf utility function created in the previous step, passing the computed Callaway results and event configuration data. Position the button prominently near the leaderboard table for easy access. Ensure the button is only enabled when results are available."
+          "description": "Add the text 'designed by Dancing Skeleton, LLC' to the footer component. Preserve the existing copyright year and 'Built with caffeine.ai' attribution. Position the new text appropriately within the footer layout to maintain visual balance."
         }
       ]
     }

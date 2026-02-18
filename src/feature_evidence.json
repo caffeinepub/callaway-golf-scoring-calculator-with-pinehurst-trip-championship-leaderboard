@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-display-a-subtotal-for-holes-1-9-front-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-1-through-9",
-      "featureTitle": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
+      "featureId": "feature-implement-tie-breaking-logic-for-leaderboard-rankings-when-two-or-more-golfers-have-the-same-net-score-rank-the-golfer-with-the-lower-gross-score-higher",
+      "featureTitle": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
       "files": [
-        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+        "frontend/src/features/leaderboard/LeaderboardView.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,10 +20,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-a-subtotal-for-holes-10-18-back-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-10-through-18",
-      "featureTitle": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+      "featureId": "feature-add-footer-text-designed-by-dancing-skeleton-llc-to-the-application-footer",
+      "featureTitle": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
       "files": [
-        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+        "frontend/src/components/Footer.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -34,25 +34,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-pdf-generation-feature-to-the-leaderboard-view-that-exports-the-calculated-standings-to-pdf-format",
-      "featureTitle": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
-      "files": [
-        "frontend/src/features/leaderboard/LeaderboardView.tsx",
-        "frontend/src/features/leaderboard/exportLeaderboardPdf.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }
