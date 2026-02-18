@@ -73,6 +73,10 @@ function ScoringFlow() {
     setCurrentStep(3);
   };
 
+  const handleBackToScoreEntry = () => {
+    setCurrentStep(2);
+  };
+
   const handleStartOver = () => {
     setCurrentStep(1);
     setEventSetup({
@@ -114,6 +118,7 @@ function ScoringFlow() {
           <LeaderboardView
             eventSetup={eventSetup}
             golfers={golfers}
+            onBackToScoreEntry={handleBackToScoreEntry}
           />
         )}
       </main>

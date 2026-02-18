@@ -1,37 +1,58 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add tie-breaking logic and footer credit",
+  "title": "Add individual hole score editing with automatic recalculation",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
+      "summary": "Modify the GolferScoreEntryList component to allow editing of individual hole scores after initial entry",
       "acceptanceCriteria": [
-        "Golfers with identical net scores are sorted by gross score in ascending order",
-        "The golfer with the lower gross score appears higher in the leaderboard rankings",
-        "Tie-breaking logic applies consistently across all leaderboard displays"
+        "All hole score input fields remain editable throughout the score entry process",
+        "Users can modify any previously entered hole score at any time before final submission",
+        "Modified scores update the front nine, back nine, and gross total calculations immediately"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
+          "path": "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
           "operation": "modify",
-          "description": "Update the sorting logic in the leaderboard calculation to implement tie-breaking: when net scores are equal, sort by gross score in ascending order. Modify the sort comparator that currently sorts by net score only to add a secondary sort condition on gross score."
+          "description": "Remove any logic that disables hole score input fields after initial entry. Ensure all hole score inputs remain editable throughout the score entry process. Maintain existing validation rules (numeric input, 1-15 range) and automatic calculation of front nine, back nine, and gross totals whenever any hole score changes."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
+      "summary": "Implement automatic recalculation of front nine, back nine, and gross totals whenever any individual hole score is changed",
       "acceptanceCriteria": [
-        "Footer displays 'designed by Dancing Skeleton, LLC' text",
-        "Text is visible on all pages of the application",
-        "Footer maintains existing copyright and attribution information"
+        "Score subtotals (front nine, back nine, gross total) update in real-time as hole scores are edited",
+        "Recalculation occurs without requiring page refresh or navigation",
+        "All validation rules continue to apply to edited scores (numeric, 1-15 range)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/Footer.tsx",
+          "path": "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx",
           "operation": "modify",
-          "description": "Add the text 'designed by Dancing Skeleton, LLC' to the footer component. Preserve the existing copyright year and 'Built with caffeine.ai' attribution. Position the new text appropriately within the footer layout to maintain visual balance."
+          "description": "Ensure the existing calculation logic for front nine, back nine, and gross totals runs reactively whenever any hole score value changes. Verify that subtotals update immediately in real-time without requiring page refresh. Maintain all existing validation rules including numeric input and 1-15 range constraints."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Ensure the LeaderboardView recalculates Callaway results automatically when returning from score entry with modified scores",
+      "acceptanceCriteria": [
+        "Leaderboard standings reflect updated scores immediately upon navigation from score entry",
+        "Net scores, deductions, and adjustments are recalculated based on edited hole scores",
+        "Rankings update correctly with tie-breaking logic applied to modified results"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/leaderboard/LeaderboardView.tsx",
+          "operation": "modify",
+          "description": "Verify that the Callaway calculation logic runs on the latest golfer data whenever the LeaderboardView component mounts or when golfer data changes. Ensure net scores, deductions, adjustments, and rankings update correctly based on any modified hole scores. Maintain existing tie-breaking logic for ranking calculations."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Review the state management for golfer data to ensure that when users navigate from score entry back to the leaderboard, the latest modified scores are properly passed to LeaderboardView for recalculation. Verify that the three-step workflow correctly propagates updated scores."
         }
       ]
     }

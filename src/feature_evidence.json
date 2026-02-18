@@ -2,9 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-tie-breaking-logic-for-leaderboard-rankings-when-two-or-more-golfers-have-the-same-net-score-rank-the-golfer-with-the-lower-gross-score-higher",
-      "featureTitle": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
+      "featureId": "feature-ensure-the-leaderboardview-recalculates-callaway-results-automatically-when-returning-from-score-entry-with-modified-scores",
+      "featureTitle": "Ensure the LeaderboardView recalculates Callaway results automatically when returning from score entry with modified scores",
       "files": [
+        "frontend/src/App.tsx",
         "frontend/src/features/leaderboard/LeaderboardView.tsx"
       ],
       "components": [
@@ -15,25 +16,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-footer-text-designed-by-dancing-skeleton-llc-to-the-application-footer",
-      "featureTitle": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
-      "files": [
-        "frontend/src/components/Footer.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
+        "REQ-3"
       ],
       "confidence": "high"
     }

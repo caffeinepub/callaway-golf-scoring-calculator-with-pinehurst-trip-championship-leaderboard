@@ -1,10 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add tie-breaking logic for leaderboard rankings and include Dancing Skeleton, LLC credit in footer.
+**Goal:** Enable editing of individual hole scores with automatic recalculation of totals and leaderboard standings.
 
 **Planned changes:**
-- Implement tie-breaking logic: when golfers have the same net score, rank by lower gross score
-- Add "designed by Dancing Skeleton, LLC" text to application footer
+- Make all hole score input fields remain editable after initial entry in the GolferScoreEntryList component
+- Implement real-time recalculation of front nine, back nine, and gross totals when any hole score is modified
+- Ensure LeaderboardView automatically recalculates Callaway results when returning from score entry with updated scores
 
-**User-visible outcome:** Leaderboard rankings now handle ties consistently by favoring lower gross scores, and the footer displays credit to Dancing Skeleton, LLC.
+**User-visible outcome:** Users can edit any individual hole score at any time during score entry, with front nine, back nine, and gross totals updating immediately. The leaderboard automatically reflects all changes without requiring score re-entry from scratch.

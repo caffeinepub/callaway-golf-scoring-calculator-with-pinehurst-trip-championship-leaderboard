@@ -1,24 +1,16 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Golf scorecard application with editing capabilities",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-implement-tie-breaking-logic-for-leaderboard-rankings-when-two-or-more-golfers-have-the-same-net-score-rank-the-golfer-with-the-lower-gross-score-higher",
-      "title": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
+      "id": "feature-ensure-the-leaderboardview-recalculates-callaway-results-automatically-when-returning-from-score-entry-with-modified-scores",
+      "title": "Ensure the LeaderboardView recalculates Callaway results automatically when returning from score entry with modified scores",
       "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-footer-text-designed-by-dancing-skeleton-llc-to-the-application-footer",
-      "title": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
-      "reqIds": [
-        "REQ-2"
+        "REQ-3"
       ],
       "version": 1
     }
@@ -26,18 +18,28 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add tie-breaking logic: lower gross score wins when net scores are tied",
+      "summary": "Allow editing individual hole scores for each player and recalculate totals",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add footer credit: 'designed by Dancing Skeleton, LLC'",
-      "reqIds": [],
+      "summary": "Modify the GolferScoreEntryList component to allow editing of individual hole scores after initial entry, maintaining the current score card interface structure",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement automatic recalculation of front nine, back nine, and gross totals whenever any individual hole score is changed",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Add tie-breaking logic and footer credit",
+  "projectName": "Callaway Scoring System",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

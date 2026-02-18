@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Trophy, FileText } from 'lucide-react';
+import { Download, Trophy, FileText, Edit } from 'lucide-react';
 import { LeaderboardTable } from './LeaderboardTable';
 import { BreakdownPanel } from './BreakdownPanel';
 import { CallawayChartSection } from './CallawayChartSection';
@@ -14,9 +14,10 @@ import { getActiveGridChart } from '../../lib/callaway/callawayChartPersistence'
 interface LeaderboardViewProps {
   eventSetup: EventSetup;
   golfers: GolferData[];
+  onBackToScoreEntry: () => void;
 }
 
-export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
+export function LeaderboardView({ eventSetup, golfers, onBackToScoreEntry }: LeaderboardViewProps) {
   const results = useMemo(() => {
     // Load the locally editable chart for the event's hole count
     const localChart = getActiveGridChart(eventSetup.holeCount);
@@ -88,7 +89,11 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Tournament Standings</CardTitle>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={onBackToScoreEntry} variant="outline" size="sm" className="gap-2">
+              <Edit className="h-4 w-4" />
+              Edit Scores
+            </Button>
             <Button onClick={handleExportLeaderboardPdf} variant="default" size="sm" className="gap-2">
               <FileText className="h-4 w-4" />
               Generate PDF

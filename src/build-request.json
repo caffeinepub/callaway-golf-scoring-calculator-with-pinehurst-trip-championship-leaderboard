@@ -1,52 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Add tie-breaking logic and footer credit",
+  "title": "Add individual hole score editing with automatic recalculation",
+  "projectName": "Callaway Scoring System",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Implement tie-breaking logic for leaderboard rankings: when two or more golfers have the same net score, rank the golfer with the lower gross score higher",
+      "text": "Modify the GolferScoreEntryList component to allow editing of individual hole scores after initial entry, maintaining the current score card interface structure",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-latest"
         ],
         "quotes": [
-          "if there is a tie for net score, the lower gross score should break the tie"
+          "Allow for editing individual hole scores for each player"
         ]
       },
       "acceptanceCriteria": [
-        "Golfers with identical net scores are sorted by gross score in ascending order",
-        "The golfer with the lower gross score appears higher in the leaderboard rankings",
-        "Tie-breaking logic applies consistently across all leaderboard displays"
+        "All hole score input fields remain editable throughout the score entry process",
+        "Users can modify any previously entered hole score at any time before final submission",
+        "Modified scores update the front nine, back nine, and gross total calculations immediately"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add footer text 'designed by Dancing Skeleton, LLC' to the application footer",
+      "text": "Implement automatic recalculation of front nine, back nine, and gross totals whenever any individual hole score is changed",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-latest"
         ],
         "quotes": [
-          "in the footnote of the app include: designed by Dancing Skeleton, LLC"
+          "recalculating without having to start over"
         ]
       },
       "acceptanceCriteria": [
-        "Footer displays 'designed by Dancing Skeleton, LLC' text",
-        "Text is visible on all pages of the application",
-        "Footer maintains existing copyright and attribution information"
+        "Score subtotals (front nine, back nine, gross total) update in real-time as hole scores are edited",
+        "Recalculation occurs without requiring page refresh or navigation",
+        "All validation rules continue to apply to edited scores (numeric, 1-15 range)"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Ensure the LeaderboardView recalculates Callaway results automatically when returning from score entry with modified scores",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "recalculating without having to start over and reenter all scores"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Leaderboard standings reflect updated scores immediately upon navigation from score entry",
+        "Net scores, deductions, and adjustments are recalculated based on edited hole scores",
+        "Rankings update correctly with tie-breaking logic applied to modified results"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the backend schema or Callaway calculation logic",
-    "Preserve existing footer attribution for caffeine.ai"
+    "Do not modify the backend Callaway calculation logic in main.mo",
+    "Maintain the existing validation rules (scores between 1-15, numeric input only)",
+    "Preserve the current score card layout and visual design",
+    "Keep the existing three-step workflow (event setup, score entry, leaderboard)"
   ],
   "nonGoals": [
-    "Changing the visual design or styling of the footer beyond adding the new text",
-    "Modifying any backend tie-breaking logic"
+    "Adding undo/redo functionality for score edits",
+    "Implementing score edit history tracking",
+    "Adding confirmation dialogs before allowing score modifications",
+    "Creating a separate edit mode or edit button"
   ],
   "imageRequirements": {
     "required": [],
