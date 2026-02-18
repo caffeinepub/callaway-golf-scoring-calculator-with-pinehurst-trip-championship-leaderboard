@@ -43,10 +43,25 @@ export function GolferScoreEntryList({ golfers, holeCount, onUpdate }: GolferSco
     return total;
   };
 
+  const calculateSubtotal = (holeScores: string[], startIndex: number, endIndex: number): number | null => {
+    const rangeScores = holeScores.slice(startIndex, endIndex);
+    const allFilled = rangeScores.every((score) => score !== '');
+    if (!allFilled) return null;
+
+    const total = rangeScores.reduce((sum, score) => {
+      const num = parseInt(score, 10);
+      return isNaN(num) ? sum : sum + num;
+    }, 0);
+
+    return total;
+  };
+
   return (
     <div className="space-y-6">
       {golfers.map((golfer, golferIndex) => {
         const grossTotal = calculateGrossTotal(golfer.holeScores);
+        const frontNineSubtotal = calculateSubtotal(golfer.holeScores, 0, 9);
+        const backNineSubtotal = holeCount === 18 ? calculateSubtotal(golfer.holeScores, 9, 18) : null;
 
         return (
           <Card key={golfer.id} className="overflow-hidden">
@@ -77,29 +92,87 @@ export function GolferScoreEntryList({ golfers, holeCount, onUpdate }: GolferSco
 
                 <div className="space-y-3">
                   <Label>Hole Scores (Gross Strokes) *</Label>
-                  <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
-                    {golfer.holeScores.map((score, holeIndex) => (
-                      <div key={holeIndex} className="space-y-1">
-                        <Label
-                          htmlFor={`score-${golfer.id}-${holeIndex}`}
-                          className="text-xs text-muted-foreground text-center block"
-                        >
-                          {holeIndex + 1}
-                        </Label>
-                        <Input
-                          id={`score-${golfer.id}-${holeIndex}`}
-                          type="number"
-                          min="1"
-                          max="15"
-                          value={score}
-                          onChange={(e) => handleScoreChange(golferIndex, holeIndex, e.target.value)}
-                          className="text-center h-10 font-mono font-semibold"
-                          placeholder="–"
-                          required
-                        />
+                  
+                  {/* Front Nine (Holes 1-9) */}
+                  <div className="space-y-2">
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Front 9
+                    </div>
+                    <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
+                      {golfer.holeScores.slice(0, 9).map((score, holeIndex) => (
+                        <div key={holeIndex} className="space-y-1">
+                          <Label
+                            htmlFor={`score-${golfer.id}-${holeIndex}`}
+                            className="text-xs text-muted-foreground text-center block"
+                          >
+                            {holeIndex + 1}
+                          </Label>
+                          <Input
+                            id={`score-${golfer.id}-${holeIndex}`}
+                            type="number"
+                            min="1"
+                            max="15"
+                            value={score}
+                            onChange={(e) => handleScoreChange(golferIndex, holeIndex, e.target.value)}
+                            className="text-center h-10 font-mono font-semibold"
+                            placeholder="–"
+                            required
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Front Nine Subtotal */}
+                    <div className="flex items-center justify-between bg-muted/30 rounded-md px-3 py-2">
+                      <Label className="text-sm font-semibold">Front 9 Subtotal:</Label>
+                      <div className="text-lg font-mono font-bold text-primary">
+                        {frontNineSubtotal !== null ? frontNineSubtotal : '—'}
                       </div>
-                    ))}
+                    </div>
                   </div>
+
+                  {/* Back Nine (Holes 10-18) - Only for 18-hole events */}
+                  {holeCount === 18 && (
+                    <div className="space-y-2 pt-2">
+                      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Back 9
+                      </div>
+                      <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
+                        {golfer.holeScores.slice(9, 18).map((score, holeIndex) => {
+                          const actualHoleIndex = holeIndex + 9;
+                          return (
+                            <div key={actualHoleIndex} className="space-y-1">
+                              <Label
+                                htmlFor={`score-${golfer.id}-${actualHoleIndex}`}
+                                className="text-xs text-muted-foreground text-center block"
+                              >
+                                {actualHoleIndex + 1}
+                              </Label>
+                              <Input
+                                id={`score-${golfer.id}-${actualHoleIndex}`}
+                                type="number"
+                                min="1"
+                                max="15"
+                                value={score}
+                                onChange={(e) => handleScoreChange(golferIndex, actualHoleIndex, e.target.value)}
+                                className="text-center h-10 font-mono font-semibold"
+                                placeholder="–"
+                                required
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Back Nine Subtotal */}
+                      <div className="flex items-center justify-between bg-muted/30 rounded-md px-3 py-2">
+                        <Label className="text-sm font-semibold">Back 9 Subtotal:</Label>
+                        <div className="text-lg font-mono font-bold text-primary">
+                          {backNineSubtotal !== null ? backNineSubtotal : '—'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Gross Total Display */}

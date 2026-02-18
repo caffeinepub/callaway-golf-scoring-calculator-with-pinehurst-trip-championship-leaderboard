@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Trophy } from 'lucide-react';
+import { Download, Trophy, FileText } from 'lucide-react';
 import { LeaderboardTable } from './LeaderboardTable';
 import { BreakdownPanel } from './BreakdownPanel';
 import { CallawayChartSection } from './CallawayChartSection';
 import { exportStandingsToPdf } from './exportStandingsPdf';
+import { exportLeaderboardToPdf } from './exportLeaderboardPdf';
 import { calculateCallawayFromLocalChart } from '../../lib/callaway/callaway';
 import type { EventSetup, GolferData, CallawayResultData } from '../../state/eventTypes';
 import { getActiveGridChart } from '../../lib/callaway/callawayChartPersistence';
@@ -43,8 +44,17 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
     return calculatedResults.sort((a, b) => a.net - b.net);
   }, [golfers, eventSetup.coursePar, eventSetup.holeCount]);
 
-  const handleExportPdf = () => {
+  const handleExportStandingsPdf = () => {
     exportStandingsToPdf({
+      eventTitle: eventSetup.title,
+      courseName: eventSetup.courseName,
+      results,
+      coursePar: eventSetup.coursePar,
+    });
+  };
+
+  const handleExportLeaderboardPdf = () => {
+    exportLeaderboardToPdf({
       eventTitle: eventSetup.title,
       courseName: eventSetup.courseName,
       results,
@@ -71,10 +81,16 @@ export function LeaderboardView({ eventSetup, golfers }: LeaderboardViewProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Tournament Standings</CardTitle>
-          <Button onClick={handleExportPdf} variant="outline" size="sm" className="gap-2">
-            <Download className="h-4 w-4" />
-            Export PDF
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportLeaderboardPdf} variant="default" size="sm" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Generate PDF
+            </Button>
+            <Button onClick={handleExportStandingsPdf} variant="outline" size="sm" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <LeaderboardTable results={results} />

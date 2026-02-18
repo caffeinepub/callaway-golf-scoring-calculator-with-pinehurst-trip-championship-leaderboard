@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-callaway-chart-adjustment-header-row-columnadjustments-so-the-five-values-are-exactly-2-1-0-1-2-left-to-right-for-both-the-18-hole-and-9-hole-grid-charts-including-the-shipped-defaults-and-any-normalization-migration-logic-that-currently-forces-a-different-order",
-      "featureTitle": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
+      "featureId": "feature-display-a-subtotal-for-holes-1-9-front-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-1-through-9",
+      "featureTitle": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
       "files": [
-        "frontend/docs/callaway-chart-defaults.md",
-        "frontend/src/lib/callaway/callawayChartPersistence.ts"
+        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,6 +16,43 @@
       ],
       "testIds": [
         "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-a-subtotal-for-holes-10-18-back-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-10-through-18",
+      "featureTitle": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+      "files": [
+        "frontend/src/features/scoreEntry/GolferScoreEntryList.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-pdf-generation-feature-to-the-leaderboard-view-that-exports-the-calculated-standings-to-pdf-format",
+      "featureTitle": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
+      "files": [
+        "frontend/src/features/leaderboard/LeaderboardView.tsx",
+        "frontend/src/features/leaderboard/exportLeaderboardPdf.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
       ],
       "confidence": "high"
     }

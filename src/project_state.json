@@ -1,16 +1,32 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Golf scorecard application with front nine/back nine subtotals and PDF leaderboard generation",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-callaway-chart-adjustment-header-row-columnadjustments-so-the-five-values-are-exactly-2-1-0-1-2-left-to-right-for-both-the-18-hole-and-9-hole-grid-charts-including-the-shipped-defaults-and-any-normalization-migration-logic-that-currently-forces-a-different-order",
-      "title": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
+      "id": "feature-display-a-subtotal-for-holes-1-9-front-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-1-through-9",
+      "title": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
       "reqIds": [
         "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-subtotal-for-holes-10-18-back-nine-in-each-player-s-score-entry-card-calculating-the-sum-of-scores-entered-for-holes-10-through-18",
+      "title": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-pdf-generation-feature-to-the-leaderboard-view-that-exports-the-calculated-standings-to-pdf-format",
+      "title": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
+      "reqIds": [
+        "REQ-3"
       ],
       "version": 1
     }
@@ -18,7 +34,19 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Update the chart's adjustment row values to: 2, 1, 0, -1, -2",
+      "summary": "Add subtotal for holes 1-9 (front nine) for each player",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add subtotal for holes 10-18 (back nine) for each player",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Generate PDF of the leaderboard once calculated",
       "reqIds": [],
       "status": "pending"
     }

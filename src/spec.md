@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Reverse the Callaway chart “Adjustment” header row so it is ordered 2, 1, 0, -1, -2 for both 18-hole and 9-hole charts, including defaults and any normalization/migration behavior.
+**Goal:** Add front nine and back nine subtotals to score entry cards and enable PDF export of the leaderboard.
 
 **Planned changes:**
-- Update shipped default Callaway chart configuration so the Adjustment header row (columnAdjustments) is exactly 2, 1, 0, -1, -2 (left-to-right) for both 18-hole and 9-hole grids.
-- Adjust any existing normalization/migration logic so previously saved charts with columnAdjustments ordered -2, -1, 0, 1, 2 are normalized to 2, 1, 0, -1, -2.
-- Ensure Callaway scoring calculations use the updated columnAdjustments ordering without changing any grossScore/worstHoles grid cell values.
+- Display a front nine subtotal (holes 1-9) in each player's score entry card
+- Display a back nine subtotal (holes 10-18) in each player's score entry card
+- Add a PDF export button to the leaderboard view that generates a print-ready PDF with all standings and tournament details
 
-**User-visible outcome:** In the Admin Callaway Chart Editor, the Adjustment row displays 2, 1, 0, -1, -2 for default charts, and older saved charts are auto-corrected to this order with scoring reflecting the updated adjustment values.
+**User-visible outcome:** Users can see subtotals for the front and back nine as they enter scores, and can export the final leaderboard to PDF format for printing or sharing.

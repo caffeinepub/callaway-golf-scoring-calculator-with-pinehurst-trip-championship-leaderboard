@@ -1,35 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Reverse Callaway chart adjustment row to 2, 1, 0, -1, -2",
+  "title": "Add front/back nine subtotals and PDF leaderboard export",
   "projectName": "Callaway Scoring",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
+      "text": "Display a subtotal for holes 1-9 (front nine) in each player's score entry card, calculating the sum of scores entered for holes 1 through 9",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-9"
         ],
         "quotes": [
-          "update the adjustment row to: 2,1,0,-1,-2"
+          "please add a subtotal for holes 1-9"
         ]
       },
       "acceptanceCriteria": [
-        "In the Admin Callaway Chart Editor, the Adjustment row displays (left-to-right) 2, 1, 0, -1, -2 when charts are using shipped defaults.",
-        "When loading a previously-saved chart whose columnAdjustments are in the opposite order (-2, -1, 0, 1, 2), the app normalizes it to the new required order (2, 1, 0, -1, -2).",
-        "Callaway scoring calculations use the updated adjustment values (i.e., results change consistently with the new columnAdjustments order)."
+        "Front nine subtotal appears in the golfer score entry card after hole 9",
+        "Subtotal updates automatically as scores are entered or modified",
+        "Subtotal is clearly labeled as 'Front 9' or 'Holes 1-9'"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Display a subtotal for holes 10-18 (back nine) in each player's score entry card, calculating the sum of scores entered for holes 10 through 18",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-9"
+        ],
+        "quotes": [
+          "holes 10-18  for each players score input"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Back nine subtotal appears in the golfer score entry card after hole 18",
+        "Subtotal updates automatically as scores are entered or modified",
+        "Subtotal is clearly labeled as 'Back 9' or 'Holes 10-18'",
+        "Back nine subtotal only displays when the event is configured for 18 holes"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a PDF generation feature to the leaderboard view that exports the calculated standings to PDF format",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-9"
+        ],
+        "quotes": [
+          "generate a pdf of the leaderboard once it is calculated"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Generate PDF' or 'Export PDF' button appears on the leaderboard view",
+        "Clicking the button generates a PDF containing the complete leaderboard with all player standings",
+        "PDF includes tournament details (title, course, date)",
+        "PDF shows rankings, player names, gross scores, net scores, and Callaway adjustments",
+        "PDF formatting is clean and print-ready"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui (read-only).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx (immutable paths)."
+    "Do not modify the backend Callaway scoring logic or data models",
+    "Maintain existing gross total calculation behavior",
+    "Subtotals are display-only and do not affect Callaway score calculations"
   ],
   "nonGoals": [
-    "Do not change the grossScore/worstHoles grid cell values (only the adjustment row values/order).",
-    "No backend Callaway chart changes are included in this request."
+    "Modifying the Callaway chart or scoring algorithm",
+    "Adding subtotals to the leaderboard breakdown view",
+    "Changing the existing PDF export functionality for standings"
   ],
   "imageRequirements": {
     "required": [],
