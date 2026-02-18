@@ -1,17 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T21:53:49.373Z",
-  "summary": "Diff re-enables the Admin Callaway chart editor by rendering CallawayChartEditor when Admin Access is enabled, switches leaderboard calculations and chart display to use the locally editable (localStorage-backed) grid chart, and updates the leaderboard’s Callaway chart section to read from local persistence rather than backend-managed chart data. No clear unrequested features are evident from the provided diff summary.",
+  "generatedAt": "2026-02-18T04:08:37.853Z",
+  "summary": "Diff primarily updates the Callaway grid chart persistence layer to support the new columnAdjustments order and adds documentation/state metadata updates. Based on the diff summary, REQ-1 appears implemented via updated defaults and migration/normalization logic in the persistence layer, with no evidence of prohibited file modifications.",
   "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.72,
+  "hallucinated_features": [
+    {
+      "description": "Added/updated developer documentation describing Callaway chart defaults and placeholder cell behavior.",
+      "reason": "BuildRequest only asked to reverse/normalize the Adjustment (columnAdjustments) order; it did not request documentation updates.",
+      "evidence": [
+        "frontend/docs/callaway-chart-defaults.md"
+      ]
+    },
+    {
+      "description": "Updated internal project tracking metadata (new_feature_requests entries) unrelated to app runtime behavior.",
+      "reason": "BuildRequest did not request changes to project_state.json.",
+      "evidence": [
+        "project_state.json"
+      ]
+    }
+  ],
+  "confidence": 0.66,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/features/admin/AdminView.tsx",
-    "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-    "frontend/src/features/leaderboard/LeaderboardView.tsx",
-    "frontend/src/lib/callaway/callaway.ts",
+    "frontend/docs/callaway-chart-defaults.md",
+    "frontend/src/lib/callaway/callawayChartPersistence.ts",
     "project_state.json"
   ]
 }

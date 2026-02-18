@@ -3,37 +3,26 @@
   "projectStateVersion": 3,
   "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [
-    "Regression: chart editing not available/working in the latest version; user requests reverting to the last version where chart editing works."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-re-enable-the-admin-callaway-chart-editor-ui-so-that-when-admin-access-is-enabled-the-admin-page-shows-the-editable-chart-interface-instead-of-a-locked-backend-managed-chart-message",
-      "title": "Re-enable the Admin Callaway chart editor UI so that when Admin Access is enabled, the /admin page shows the editable chart interface instead of a locked “backend-managed chart” message.",
+      "id": "feature-update-the-callaway-chart-adjustment-header-row-columnadjustments-so-the-five-values-are-exactly-2-1-0-1-2-left-to-right-for-both-the-18-hole-and-9-hole-grid-charts-including-the-shipped-defaults-and-any-normalization-migration-logic-that-currently-forces-a-different-order",
+      "title": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
-    },
-    {
-      "id": "feature-restore-chart-editing-functionality-end-to-end-by-making-the-scoring-calculations-and-chart-display-use-the-locally-editable-callaway-chart-from-the-localstorage-backed-chart-persistence-layer-so-user-edits-affect-results",
-      "title": "Restore chart editing functionality end-to-end by making the scoring calculations and chart display use the locally editable Callaway chart (from the localStorage-backed chart persistence layer) so user edits affect results.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-app-no-longer-presents-the-callaway-chart-as-backend-locked-centrally-managed-and-remove-any-ui-copy-that-implies-chart-edits-require-contacting-a-system-administrator",
-      "title": "Ensure the app no longer presents the Callaway chart as backend-locked/centrally managed, and remove any UI copy that implies chart edits require contacting a system administrator.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
     }
   ],
-  "new_feature_requests": [],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Update the chart's adjustment row values to: 2, 1, 0, -1, -2",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
   "projectName": "Callaway Scoring",
   "clarification_mode": "instant",
   "clarification_rounds": 0

@@ -16,7 +16,7 @@ Each chart is a `GridChartData` object with:
 - `grid`: 13×5 array of cells, each containing:
   - `grossScore`: The gross score value (0 for placeholder cells)
   - `worstHoles`: Number of worst holes to deduct (supports 0.5 increments)
-- `columnAdjustments`: Array of 5 adjustment values applied to each column
+- `columnAdjustments`: Array of 5 adjustment values applied to each column (currently: `[2, 1, 0, -1, -2]`)
 
 ### Placeholder Cells
 
@@ -25,13 +25,6 @@ Cells with `grossScore=0` and `worstHoles=0` are treated as placeholders:
 - They are ignored in scoring calculations
 - They are preserved when saving/loading charts
 
-## How to Update Defaults
+## Current Column Adjustments
 
-### Step 1: Edit the Default Functions
-
-Open `frontend/src/lib/callaway/callawayChartPersistence.ts` and locate:
-- `getDefault18GridChart()` for 18-hole defaults
-- `getDefault9GridChart()` for 9-hole defaults
-
-Update the grid array with your new values. For example:
-
+The shipped defaults use the following column adjustment order (left to right):

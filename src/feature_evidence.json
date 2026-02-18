@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-re-enable-the-admin-callaway-chart-editor-ui-so-that-when-admin-access-is-enabled-the-admin-page-shows-the-editable-chart-interface-instead-of-a-locked-backend-managed-chart-message",
-      "featureTitle": "Re-enable the Admin Callaway chart editor UI so that when Admin Access is enabled, the /admin page shows the editable chart interface instead of a locked “backend-managed chart” message.",
+      "featureId": "feature-update-the-callaway-chart-adjustment-header-row-columnadjustments-so-the-five-values-are-exactly-2-1-0-1-2-left-to-right-for-both-the-18-hole-and-9-hole-grid-charts-including-the-shipped-defaults-and-any-normalization-migration-logic-that-currently-forces-a-different-order",
+      "featureTitle": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
       "files": [
-        "frontend/src/features/admin/AdminView.tsx"
+        "frontend/docs/callaway-chart-defaults.md",
+        "frontend/src/lib/callaway/callawayChartPersistence.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,44 +17,6 @@
       ],
       "testIds": [
         "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-restore-chart-editing-functionality-end-to-end-by-making-the-scoring-calculations-and-chart-display-use-the-locally-editable-callaway-chart-from-the-localstorage-backed-chart-persistence-layer-so-user-edits-affect-results",
-      "featureTitle": "Restore chart editing functionality end-to-end by making the scoring calculations and chart display use the locally editable Callaway chart (from the localStorage-backed chart persistence layer) so user edits affect results.",
-      "files": [
-        "frontend/src/features/leaderboard/CallawayChartSection.tsx",
-        "frontend/src/features/leaderboard/LeaderboardView.tsx",
-        "frontend/src/lib/callaway/callaway.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-the-app-no-longer-presents-the-callaway-chart-as-backend-locked-centrally-managed-and-remove-any-ui-copy-that-implies-chart-edits-require-contacting-a-system-administrator",
-      "featureTitle": "Ensure the app no longer presents the Callaway chart as backend-locked/centrally managed, and remove any UI copy that implies chart edits require contacting a system administrator.",
-      "files": [
-        "frontend/src/features/admin/AdminView.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }

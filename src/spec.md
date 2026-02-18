@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Restore the locally editable Callaway scoring chart experience so admins can edit the chart in the UI and those edits are used for scoring and chart display.
+**Goal:** Reverse the Callaway chart “Adjustment” header row so it is ordered 2, 1, 0, -1, -2 for both 18-hole and 9-hole charts, including defaults and any normalization/migration behavior.
 
 **Planned changes:**
-- Re-enable the Admin Callaway chart editor UI on `/admin` when Admin Access is enabled (18-hole/9-hole tabs, editable grid, Save Changes, Reset to Defaults).
-- Ensure scoring calculations and leaderboard chart display use the localStorage-backed, locally editable Callaway chart so saved edits affect results.
-- Remove any UI messaging that presents the chart as backend-locked/centrally managed or implies edits require contacting an administrator, while keeping Admin Access descriptions accurate and all `/admin` text in English.
+- Update shipped default Callaway chart configuration so the Adjustment header row (columnAdjustments) is exactly 2, 1, 0, -1, -2 (left-to-right) for both 18-hole and 9-hole grids.
+- Adjust any existing normalization/migration logic so previously saved charts with columnAdjustments ordered -2, -1, 0, 1, 2 are normalized to 2, 1, 0, -1, -2.
+- Ensure Callaway scoring calculations use the updated columnAdjustments ordering without changing any grossScore/worstHoles grid cell values.
 
-**User-visible outcome:** When Admin Access is enabled, admins can edit and save the Callaway chart on `/admin`, and the leaderboard both calculates results and displays the Callaway chart using those saved edits without showing backend-managed/locked messaging.
+**User-visible outcome:** In the Admin Callaway Chart Editor, the Adjustment row displays 2, 1, 0, -1, -2 for default charts, and older saved charts are auto-corrected to this order with scoring reflecting the updated adjustment values.

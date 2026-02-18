@@ -60,7 +60,7 @@ export function getDefault18GridChart(): GridChartData {
       [{ grossScore: 121, worstHoles: 6 }, { grossScore: 122, worstHoles: 5.5 }, { grossScore: 123, worstHoles: 5.5 }, { grossScore: 124, worstHoles: 5.5 }, { grossScore: 125, worstHoles: 5.5 }],
       [{ grossScore: 126, worstHoles: 5.5 }, { grossScore: 127, worstHoles: 6 }, { grossScore: 128, worstHoles: 6 }, { grossScore: 129, worstHoles: 6 }, { grossScore: 130, worstHoles: 6 }],
     ],
-    columnAdjustments: [-2, -1, 0, 1, 2],
+    columnAdjustments: [2, 1, 0, -1, -2],
   };
 }
 
@@ -85,7 +85,37 @@ export function getDefault9GridChart(): GridChartData {
       [{ grossScore: 84, worstHoles: 4 }, { grossScore: 87, worstHoles: 4 }, { grossScore: 90, worstHoles: 4 }, { grossScore: 93, worstHoles: 4 }, { grossScore: 96, worstHoles: 4 }],
       [{ grossScore: 94, worstHoles: 4 }, { grossScore: 97, worstHoles: 4 }, { grossScore: 100, worstHoles: 4 }, { grossScore: 103, worstHoles: 4 }, { grossScore: 106, worstHoles: 4 }],
     ],
-    columnAdjustments: [-2, -1, 0, 1, 2],
+    columnAdjustments: [2, 1, 0, -1, -2],
+  };
+}
+
+/**
+ * Normalize column adjustments to ensure correct order [2, 1, 0, -1, -2]
+ * Detects reversed or incorrect adjustment arrays and corrects them
+ */
+function normalizeColumnAdjustments(chart: GridChartData): GridChartData {
+  const correctAdjustments = [2, 1, 0, -1, -2];
+  
+  // Check if adjustments are already correct
+  if (JSON.stringify(chart.columnAdjustments) === JSON.stringify(correctAdjustments)) {
+    return chart;
+  }
+  
+  // Check if adjustments are in the old order [-2, -1, 0, 1, 2]
+  const oldOrder = [-2, -1, 0, 1, 2];
+  if (JSON.stringify(chart.columnAdjustments) === JSON.stringify(oldOrder)) {
+    // Return chart with corrected adjustments
+    return {
+      ...chart,
+      columnAdjustments: correctAdjustments,
+    };
+  }
+  
+  // For any other incorrect pattern, replace with correct adjustments
+  // This ensures shipped defaults are always applied correctly
+  return {
+    ...chart,
+    columnAdjustments: correctAdjustments,
   };
 }
 
@@ -246,6 +276,7 @@ export function gridToLegacyChart(gridData: GridChartData): CallawayChartEntry[]
 
 /**
  * Load active grid chart (with edits) or fall back to user defaults or shipped defaults
+ * Applies normalization to ensure column adjustments are always [2, 1, 0, -1, -2]
  */
 export function getActiveGridChart(holeCount: 9 | 18): GridChartData {
   // Run migration first
@@ -261,7 +292,7 @@ export function getActiveGridChart(holeCount: 9 | 18): GridChartData {
     if (activeData) {
       const parsed = JSON.parse(activeData);
       if (validateGridChart(parsed)) {
-        return parsed;
+        return normalizeColumnAdjustments(parsed);
       }
     }
 
@@ -270,7 +301,7 @@ export function getActiveGridChart(holeCount: 9 | 18): GridChartData {
     if (userDefaultData) {
       const parsed = JSON.parse(userDefaultData);
       if (validateGridChart(parsed)) {
-        return parsed;
+        return normalizeColumnAdjustments(parsed);
       }
     }
   } catch (e) {
@@ -317,9 +348,10 @@ export function resetGridChartToUserDefaults(holeCount: 9 | 18): GridChartData {
     if (userDefaultData) {
       const parsed = JSON.parse(userDefaultData);
       if (validateGridChart(parsed)) {
+        const normalized = normalizeColumnAdjustments(parsed);
         // Save as active chart
-        localStorage.setItem(activeKey, userDefaultData);
-        return parsed;
+        localStorage.setItem(activeKey, JSON.stringify(normalized));
+        return normalized;
       }
     }
   } catch (e) {

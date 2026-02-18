@@ -1,72 +1,35 @@
 {
   "kind": "build_request",
-  "title": "Restore editable Callaway chart (revert backend-managed chart lock)",
+  "title": "Reverse Callaway chart adjustment row to 2, 1, 0, -1, -2",
   "projectName": "Callaway Scoring",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Re-enable the Admin Callaway chart editor UI so that when Admin Access is enabled, the /admin page shows the editable chart interface instead of a locked “backend-managed chart” message.",
+      "text": "Update the Callaway chart “Adjustment” header row (columnAdjustments) so the five values are exactly: 2, 1, 0, -1, -2 (left-to-right) for both the 18-hole and 9-hole grid charts, including the shipped defaults and any normalization/migration logic that currently forces a different order.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-6"
+          "msg-6"
         ],
         "quotes": [
-          "return the app to the last version that allows editing the chart"
+          "update the adjustment row to: 2,1,0,-1,-2"
         ]
       },
       "acceptanceCriteria": [
-        "With Admin Access disabled, /admin continues to show the existing \"Admin Access Disabled\" card and Settings navigation.",
-        "With Admin Access enabled, /admin renders the CallawayChartEditor (18-hole and 9-hole tabs, editable grid, Save Changes, Reset to Defaults) and does not show messaging that chart editing is moved to the backend.",
-        "All user-facing text on the /admin page is in English."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Restore chart editing functionality end-to-end by making the scoring calculations and chart display use the locally editable Callaway chart (from the localStorage-backed chart persistence layer) so user edits affect results.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "recent-6"
-        ],
-        "quotes": [
-          "return the app to the last version that allows editing the chart"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Editing chart values in the CallawayChartEditor and clicking \"Save Changes\" changes the chart used by the app when calculating results in LeaderboardView.",
-        "LeaderboardView no longer blocks results rendering solely due to failure to load the backend chart; it can calculate and display results using the locally editable chart.",
-        "The chart shown in the leaderboard \"Callaway Scoring Chart\" section reflects the same chart data being used for calculations (including any saved edits)."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Ensure the app no longer presents the Callaway chart as backend-locked/centrally managed, and remove any UI copy that implies chart edits require contacting a system administrator.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "recent-6"
-        ],
-        "quotes": [
-          "return the app to the last version that allows editing the chart"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Admin panel no longer shows text stating \"The Callaway scoring chart is now managed by the backend system\" or similar locked/centralized-management messaging.",
-        "The app’s Settings description for Admin Access remains accurate (admin features include the Callaway chart editor)."
+        "In the Admin Callaway Chart Editor, the Adjustment row displays (left-to-right) 2, 1, 0, -1, -2 when charts are using shipped defaults.",
+        "When loading a previously-saved chart whose columnAdjustments are in the opposite order (-2, -1, 0, 1, 2), the app normalizes it to the new required order (2, 1, 0, -1, -2).",
+        "Callaway scoring calculations use the updated adjustment values (i.e., results change consistently with the new columnAdjustments order)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only UI component sources).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx (immutable paths).",
-    "Keep all backend logic (if any is modified) within the single Motoko actor in backend/main.mo; add backend/migration.mo only if state migration is required."
+    "Do not modify any files under frontend/src/components/ui (read-only).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx (immutable paths)."
   ],
   "nonGoals": [
-    "Do not add multi-user or shared chart synchronization across devices.",
-    "Do not add third-party authentication or external database/storage.",
-    "Do not redesign the scoring algorithm beyond restoring chart editability impact (no new scoring modes)."
+    "Do not change the grossScore/worstHoles grid cell values (only the adjustment row values/order).",
+    "No backend Callaway chart changes are included in this request."
   ],
   "imageRequirements": {
     "required": [],
